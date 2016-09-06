@@ -8,7 +8,7 @@
 
 Using AidData’s extensive dataset (http://aiddata.org/country-level-research-datasets) tracking donors and recipients of Aid Data and measuring impact on GINI/Poverty via the WIID3’s income inequality data (https://www.wider.unu.edu/download/WIID3.3)
 
-Supplemental Sources
+###Supplemental Sources
    
    OECD Income Distribution Database (IDD):
    Gini, poverty, income, Methods and Concepts
@@ -26,7 +26,7 @@ Supplemental Sources
 
 Using historical data to see the immediate impact of political upheaval and violence (http://www.politicalterrorscale.org/Data/) on income inequality, using the afore-mentioned WIID3 dataset.
 
-Supplemental Sources
+###Supplemental Sources
 
    OECD Income Distribution Database (IDD):
    Gini, poverty, income, Methods and Concepts
