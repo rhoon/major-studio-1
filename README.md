@@ -34,7 +34,9 @@ http://iresearch.worldbank.org/PovcalNet/index.htm?0,1
 2. Expanding on the previous question, is there a specific category of aid that would be most helpful to see in comparison to the Gini?
 
 
+–––
 
+###2.
 
 ###“According to Freedom House, there were only four full electoral democracies in Africa in 1990, which increased to 20 countries by this year.” 
 ###p. 25 Growth, Poverty and Inequality Interactions in Africa: An Overview of Key Issues
