@@ -22,8 +22,8 @@ World Income Inequality Database’s by country / year / Gini data will allow th
 
 ###Supplemental Sources:
 
-The World Bank PovcalNet - establishes poverty line and “an assessment.. of how aggregate consumption or income is distributed across the population in each country” (their words)
-http://iresearch.worldbank.org/PovcalNet/index.htm?0,1
+"Poverty and Equity Database" The World Bank 
+http://data.worldbank.org/data-catalog/poverty-and-equity-database
 
 ###Questions:
 1. Because aid is sometimes related to crisis, the effectiveness of aid in countries experiencing crises may be dramatically different than non-crisis aid. Should the comparison limit aid data to that not associated with crises?
@@ -52,6 +52,9 @@ World Income Inequality Database’s by country / year / Gini data will allow th
 
 ###Supplemental Sources:
 
+"Poverty and Equity Database" The World Bank 
+http://data.worldbank.org/data-catalog/poverty-and-equity-database
+
 “Coups in the World: 1950 - Present” Jonathan M. Powell  / University Of Central Florida
  http://www.jonathanmpowell.com/coup-detat-dataset.html
 
@@ -60,4 +63,4 @@ Currently associated with George Mason University.
 http://www.systemicpeace.org/inscrdata.html
 
 ###Questions:
-1. Do difficulties in gathering income data during times of violence cloud Gini in ways that would make this not viable?
+1. Do difficulties in gathering income data during times of violence cloud Gini in ways that would make this concept not viable?
