@@ -22,9 +22,6 @@ World Income Inequality Database’s by country / year / Gini data will allow th
 
 ###Supplemental Sources:
 
-OECD Income Distribution Database (IDD): Gini, poverty, income, Methods and Concepts
-http://www.oecd.org/social/income-distribution-database.htm
-
 The World Bank PovcalNet - establishes poverty line and “an assessment.. of how aggregate consumption or income is distributed across the population in each country” (their words)
 http://iresearch.worldbank.org/PovcalNet/index.htm?0,1
 
@@ -39,7 +36,7 @@ http://iresearch.worldbank.org/PovcalNet/index.htm?0,1
 ###2.
 
 ###“According to Freedom House, there were only four full electoral democracies in Africa in 1990, which increased to 20 countries by this year.” 
-###p. 25 Growth, Poverty and Inequality Interactions in Africa: An Overview of Key Issues
+p. 25 Growth, Poverty and Inequality Interactions in Africa: An Overview of Key Issues
 
 ###With political upheaval comes political violence and trauma. Comparing this political violence to changes in Gini could reveal interesting stories about the economic byproducts of violence and revolution.
 
@@ -54,9 +51,6 @@ https://www.wider.unu.edu/download/WIID3.3
 World Income Inequality Database’s by country / year / Gini data will allow the relationship to be visualized in depth over time.
 
 ###Supplemental Sources:
-
-OECD Income Distribution Database (IDD): Gini, poverty, income, Methods and Concepts
-http://www.oecd.org/social/income-distribution-database.htm
 
 “Coups in the World: 1950 - Present” Jonathan M. Powell  / University Of Central Florida
  http://www.jonathanmpowell.com/coup-detat-dataset.html
