@@ -64,3 +64,7 @@ http://www.systemicpeace.org/inscrdata.html
 
 ###Questions:
 1. Do difficulties in gathering income data during times of violence cloud Gini in ways that would make this concept not viable?
+
+
+###Other Notes:
+1. There does not appear to be any Gini data in some countries (Libya & Somalia)
