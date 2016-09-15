@@ -21,13 +21,7 @@ function showData(data) {
         console.log(year);
         
         fill(0);
-        text(country + yearReader(year), 50, rowHeight*(i+1));
+        text(country + ' - ' + year, 50, rowHeight*(i+1));
         
-    }
-}
-
-function yearReader(year) {
-    for (var i=0; i<year.length; i++) {
-        return year[i] + ' - ';
     }
 }
