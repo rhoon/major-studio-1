@@ -4,37 +4,6 @@
 
 –––
 
-###1.
-
-###The impact on Gini by in/out flow of large sums of money into Africa is difficult to judge. While capital flights were examined to a degree, the relationship between the large inflow of aid (Primary Source 1) and Gini (Primary Source 2) could also be reveal interesting trends.
-
-###Primary Source 1:
-http://aiddata.org/country-level-research-datasets
-
-AidData’s data set details aid promised and received by/for donors & recipient countries, the reason for the aid (in broad terms) and year of donation.
-
-AidData was founded in 2009, is backed by the College of William & Mary, Development Gateway and Brigham Young University.
-
-###Primary Source 2:
-https://www.wider.unu.edu/download/WIID3.3
-
-World Income Inequality Database’s by country / year / Gini data will allow the relationship to be visualized in depth over time.
-
-###Supplemental Sources:
-
-"Poverty and Equity Database" The World Bank 
-http://data.worldbank.org/data-catalog/poverty-and-equity-database
-
-###Questions:
-1. Because aid is sometimes related to crisis, the effectiveness of aid in countries experiencing crises may be dramatically different than non-crisis aid. Should the comparison limit aid data to that not associated with crises?
-
-2. Expanding on the previous question, is there a specific category of aid that would be most helpful to see in comparison to the Gini?
-
-
-–––
-
-###2.
-
 ###“According to Freedom House, there were only four full electoral democracies in Africa in 1990, which increased to 20 countries by this year.” 
 p. 25 Growth, Poverty and Inequality Interactions in Africa: An Overview of Key Issues
 
@@ -63,10 +32,9 @@ Currently associated with George Mason University.
 http://www.systemicpeace.org/inscrdata.html
 
 ###Questions:
-1. Do difficulties in gathering income data during times of violence cloud Gini in ways that would make this concept not viable?
+1. The WIID3.3 database has several instances where multiple entries for a single year where there are multiple entries for a single year. (See example below) Some of these have clear differentiators but others less so. Should these be averaged?
+![Alt text](multipleEntries.png?raw=true "Optional Title")
+
+2. To have a more robust dataset, I would like to combine the Gini scores from the Poverty & Equity database with the WIID3.3. However, the World Bank data set does not offer the level of detail on survey type that the WIID3 does. Can the datasets be combined?
 
 ___
-
-###Other Notes:
-1. There does not appear to be any Gini data in some countries (Libya & Somalia)
-2. Overlapped data - best way to handle this? Average?
