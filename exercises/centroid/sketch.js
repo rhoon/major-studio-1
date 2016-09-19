@@ -1,5 +1,9 @@
+// global variables to keep track of mouse positions
 var x = [];
 var y = [];
+var cX; // centroid
+var cY; // centroid
+var a; // area of the polygon
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -20,9 +24,27 @@ function draw() {
     }
     fill(200, 50);
     endShape(CLOSE);
-
-    //finding center of centroid
     
+    // reset variables
+    cX = 0;
+    cY = 0;
+    a = 0;
+
+    //centroid formula summations
+    for(var i = 0; i<x.length-1; i++) {
+        // enumerate
+        cX += (x[i] + x[i+1]) * (x[i] * y[i+1] - x[i+1] * y[i]);
+        cY += (y[i] + y[i+1]) * (x[i] * y[i+1] - x[i+1] * y[i]);
+        a += (x[i] * y[i+1] - x[i+1] * y[i]);
+        
+    }
+    // last math on centroid formula
+    a = 0.5 * a;
+    cX = cX / (6*a);
+    cY = cY / (6*a);
+    // place circle at centroid
+    fill(0);
+    ellipse(cX, cY, 10, 10);
     
 }
 
