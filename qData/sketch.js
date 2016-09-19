@@ -1,5 +1,6 @@
 var startYear = 1976;
 var endYear = 2015;
+var africanCountries = ["Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic (CAR)", "Chad", "Comoros", "Democratic Republic of the Congo", "Republic of the Congo", "Cote d'Ivoire", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"];
 
 function setup() {
     
@@ -7,7 +8,7 @@ function setup() {
     //loadTable("worldbank_GINIbyCountry_AfricaOnly.csv", "csv", "header", showWBData);
     loadTable("wiid.csv", "csv", "header", showWIIDData);
     loadTable("pts.csv", "csv", "header", showPTSData);
-    
+
 }
 
 
@@ -19,7 +20,6 @@ function showWIIDData(data) {
     var lastCountry = data.getString(0, 0);
     var newCountry = data.getString(0, 0);
     
-    var lastYear = parseFloat(data.getString(0, 1));
     var newYear = parseFloat(data.getString(0, 1));
     
     var x = 0;
@@ -34,21 +34,19 @@ function showWIIDData(data) {
         //set thisCountry and thisYear to current row
         newCountry = data.getString(row, 0);
         newYear = parseFloat(data.getString(row, 1));
+        
+        //if new country, start new chart
+        if (newCountry != lastCountry) {
+            x += 100;
+            y = 20;
+            text(newCountry, x, y, 100);
+        }
 
         //check if the year is within the range to display
         if (newYear >= startYear  && newYear <= endYear) {
         
-            //if new country, start new chart
-            if (newCountry != lastCountry) {
-                x += 100;
-                y = 20;
-                text(lastCountry, x, y-10, 100);
-            }
-            
-            //increment y if the new year is not equal to the last year
-            if (newYear != lastYear) {
-                y += (newYear - lastYear) * 15;
-            } 
+            //y is equal to the current year minus the start year
+            y = ((newYear - startYear) * 15) + 20;
             
             // value needs to be parameterized
             val = data.getString(row, 4);
@@ -57,8 +55,9 @@ function showWIIDData(data) {
             
             // draw rectangle (translate and fill need to be parameterized)
             fill(212,95,95);
+            noStroke();
             rect(x, y, val, 15);
-            text(newYear + ' | ' + lastYear, x, y);
+            //text(newCountry, x, y);
         
         }
         
@@ -100,7 +99,7 @@ function showPTSData(data) {
         val = map(val, 0, 5, 0, 50);
         
         hashLine(x, y, width, y);
-        fill(51,51,51, 30);
+        fill(51,51,51, 50);
         noStroke();
         rect(x, y, val, 15);
         
@@ -112,6 +111,9 @@ function showPTSData(data) {
 }
 
 function hashLine(x, y, width) {
+    
     stroke(51,51,51);
     line(x, y, width, y);
+    
+    
 }
