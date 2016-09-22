@@ -6,32 +6,81 @@ var chartWidth = 150;
 var barWidth = 80;
 var allChartWidth = chartWidth * africanCountries.length +50;
 
-var leftPad = 50;
-
+var leftPad = 100;
+var topMargin = 120;
 
 
 function setup() {
     
+
+
     createCanvas(allChartWidth, windowHeight);
     //loadTable("worldbank_GINIbyCountry_AfricaOnly.csv", "csv", "header", showWBData);
     loadTable("wiid.csv", "csv", "header", showWIIDData);
     loadTable("pts.csv", "csv", "header", showPTSData);
-    
+    background(244, 223, 212);
 
 }
 
 function labels(color) {
     
+    //header
+    textStyle(BOLD);
+    textSize(32);
+    textLeading(30);
+    text("Political Violence & Income Inequality in Africa", 25, 40, 500);
+    
+    //use the array to establish position
     for (var c=0; c<africanCountries.length; c++) {
-        //labels
-        fill(color);
-        textAlign(CENTER);
-        noStroke();
-        text(africanCountries[c], c*chartWidth, 10, chartWidth-10);
         
-        //draw dividing lines
+        var x = c*chartWidth;
+        
+        if (c == 4) {
+            //key container box
+            noFill();
+            stroke(0);
+            rect(x+25, 20, chartWidth*2-20, (topMargin*.6)-20);
+            //key elements
+            textStyle(BOLD);
+            textSize(10);
+            noStroke();
+            fill(0);
+            text("GINI Score", x+35, topMargin/2-20);
+            text("Political Terror Scale", x+chartWidth+25, topMargin/2-20);
+            fill(70, 68, 67); //giniColor
+            rect(x+35, (topMargin-20)/2, 10, 10);
+            fill(240, 97, 60); //ptsColor
+            rect(x+chartWidth+25, (topMargin-20)/2, 10, 10);
+        }
+        
+        //country labels
+        fill(color);
+        textAlign(LEFT);
+        noStroke();
+        textStyle(BOLD);
+        textSize(10);
+        text(africanCountries[c], x+25, topMargin-20, chartWidth-25);
+        
+        //draw set of horizontal lines
+        for (var year = 0; year < (endYear-startYear+1); year++) {
+            
+            var y = (year*15)+topMargin;
+            
+            stroke(0, 0, 0);
+            line(x+25, y, x+30, y);
+            //year label
+            if (c%4==0 && (year+startYear)%5==0) { 
+                noStroke();
+                textSize(8);
+                text(startYear+year, x+30, y+10)
+            }
+        }
+        
+        //draw vertical lines
         stroke(0, 0, 0);
-        line(c*chartWidth,100,c*chartWidth,windowHeight-100);
+        line(x+25, topMargin, x+25, topMargin+((endYear-startYear+1)*15));
+        stroke(244, 223, 212);
+        line(x+100, topMargin, x+100, topMargin+((endYear-startYear+1)*15));
     }
     
     
@@ -47,19 +96,19 @@ function bars(x, y, val, color) {
 
 function extrapolator(newYear, lastYear, x, y, val, color) {
 
-                //set lastYear to startYear if necessary
-                if (lastYear < startYear) {
-                    lastYear = startYear;
-                } 
+        //set lastYear to startYear if necessary
+        if (lastYear < startYear) {
+            lastYear = startYear;
+        } 
                 
-                //find the number of years we need to infer data for
-                var yearDiff = newYear - lastYear;
+        //find the number of years we need to infer data for
+        var yearDiff = newYear - lastYear;
 
-                //set y value and draw charts
-                for (var i = 1; i<yearDiff; i++) {
-                    y = ((lastYear+i-startYear) * 15) + 20;
-                    bars(x-val, y, val, color);
-                }
+        //set y value and draw charts
+        for (var i = 1; i<yearDiff; i++) {
+            y = ((lastYear+i-startYear) * 15) + 20;
+             bars(x-val, y, val, color);
+        }
                 
 }
 
@@ -71,7 +120,7 @@ function extrapolatorFade(newYear, lastYear, x, y, val, color) {
     }
     
     //init y
-    y = ((lastYear-startYear) * 15) + 20;
+    y = ((lastYear-startYear) * 15) + topMargin;
     
     var yearDiff = (newYear - lastYear)*15;
     
@@ -98,7 +147,7 @@ function showWIIDData(data) {
     var lastYear = newYear;
     
     var x = 0;
-    var y = 20;
+    var y = topMargin;
     
     var val;
     
@@ -120,23 +169,23 @@ function showWIIDData(data) {
         //check if the year is within the range to display
         if (newYear >= startYear && newYear <= endYear) {
             
-            //extrapolate data for missing years
-            if (newYear != lastYear && newYear != lastYear+1) {
-                extrapolatorFade(newYear, lastYear, x, y, val, giniColor);
-            }
-            
-            /////////////this doesn't work yet  | extrapolate data for the last year
-            if (newCountry != africanCountries[africanCountries.length-1] && newCountry != data.getString(row+1, 0)) {
-                extrapolatorFade(endYear+1, lastYear, x, y, val, giniColor);
-            }
-            
             // value needs to be parameterized
             val = data.getString(row, 4);
             val = parseFloat(val);
             val = map(val, 0, 100, 0, barWidth/2);
             
             //y is equal to the current year minus the start year
-            y = ((newYear - startYear) * 15) + 20;
+            y = ((newYear - startYear) * 15) + topMargin;
+            
+            //extrapolate data for missing years
+            if (newYear != lastYear && newYear != lastYear+1) {
+                extrapolatorFade(newYear, lastYear, x, y, val, giniColor);
+            }
+            
+            // extrapolate data for the last year
+            if (newCountry != africanCountries[africanCountries.length-1] && newCountry != data.getString(row+1, 0)) {
+                extrapolatorFade(endYear+1, lastYear, x, y, val, giniColor);
+            }
             
             // draw rectangle
             bars(x-val, y, val, giniColor);
@@ -147,11 +196,6 @@ function showWIIDData(data) {
         lastYear = newYear;
         
     } // end loop
-    
-    //draw labels
-    labels(0);
-    
-    
 }
 
 function showPTSData(data) {
@@ -165,7 +209,7 @@ function showPTSData(data) {
     var newCountry = data.getString(0, 0);
     
     var x = 0;
-    var y = 20;
+    var y = topMargin;
     
     
     //start looping through rows
@@ -177,8 +221,10 @@ function showPTSData(data) {
         // if it's a new country, start new chart 
         if (thisCountry != newCountry) {
             x += chartWidth;
-            y = 20;
+            y = topMargin;
         }
+        
+        
         
         val = data.getString(row, 5);
         val = parseFloat(val);
@@ -194,4 +240,7 @@ function showPTSData(data) {
         newCountry = thisCountry;
         
     }
+    
+    //draw labels
+    labels(0);
 }
