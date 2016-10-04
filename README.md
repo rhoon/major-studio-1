@@ -1,5 +1,17 @@
 # major-studio-1
 
+## Qualitative Data
+
+___
+
+Using the CSP's data, I'd like to develop a categorical analysis of coup & revolution events to then overlay on the existing quantitative assignment.
+
+Center for Systemic Peace - broad datasets detailing coup events and other political violence.
+Currently associated with George Mason University.
+http://www.systemicpeace.org/inscrdata.html
+
+___
+
 ## Quantitative Data
 
 –––
