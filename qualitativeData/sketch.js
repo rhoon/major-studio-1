@@ -1,7 +1,3 @@
-
-var sorted = [];
-var textX = 100;
-
 var words = [];
 
 function setup() {
@@ -46,21 +42,63 @@ function callback(data) {
             
     } // end loop i
     
-    //now search for matches and combine
-    // for ( var i = 0; i < words.length; i++ ) {
-        
-    //     for (var j = 0; j < words.length; j++) {
-            
-    //         //check if they match
-    //         if (words[i].value)
-    //         //combine matching cases
-            
-    //     }
-        
-        
-    }
+    // search for matches, count and combine
+    for ( var i = 0; i < words.length; i++ ) {
 
-        
+        for (var j = words.length-1; j >= 0; j--) {
+            
+            //check for matches
+            if (words[i].value == words[j].value && i != j) {
+                
+                //combine words[j] to words[i]
+                words[i].count += 1;
+                words[i].nextStr.push(words[j].nextStr[0]);
+                words[i].country.push(words[j].country[0]);
+                words[i].conflict.push(words[j].conflict[0]);
+                
+                //delete entry
+                words.splice(j, 1);
+
+            }
+        } // end loop j
+    } // end loop i
+    
+    //-----------calculate positions
+    //build an array of counts to use the index as a multiplier on row height
+    var counts = [];
+    for (i in words) {
+        counts.push(words[i].count);
+    }
+    
+    counts.sort(function(a, b) {
+        return b - a;
+    });
+    
+    for (var i = 0; i < counts.length; i++) {
+        if (counts[i] == counts[i+1]) {
+            counts.splice(i+1, 1);
+            console.log('deleting ' + counts[i+1]);
+            i--;
+        }
+    }
+    
+    var margin;
+    
+    console.log(counts);
+    
+    
 }
     
-console.log(words);
+    
+// data is structured
+// next steps - calculate positions
+// use frequecy to calculate x, y position
+
+// the highest count is y = margin, next highest count, y = margin + row * 1; next highest count, y = margin + row * 2 etc
+// build an array of counts, in order? array length reveals height of the thing
+// 
+
+
+// assign those to data objects
+
+// draw lines
