@@ -1,8 +1,11 @@
 var words = [];
+var margin = 20;
+var rowHeight = 40;
+var metaData = [];
 
 function setup() {
     
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(windowWidth, 5000);
     loadTable("pitf.tsv", "tsv", "header", callback);
     textAlign(LEFT);
     
@@ -63,31 +66,72 @@ function callback(data) {
         } // end loop j
     } // end loop i
     
-    //-----------calculate positions
+    //--------------------------------------------structure position dependencies
     //build an array of counts to use the index as a multiplier on row height
     var counts = [];
     for (i in words) {
         counts.push(words[i].count);
     }
     
+    //sort largest to smallest
     counts.sort(function(a, b) {
         return b - a;
     });
     
-    for (var i = 0; i < counts.length; i++) {
-        if (counts[i] == counts[i+1]) {
-            counts.splice(i+1, 1);
-            console.log('deleting ' + counts[i+1]);
-            i--;
+    var dups = 0;
+    
+    for (var i = 0; i < counts.length; i++) { // for each thing in counts
+        
+        
+        if (counts[i] == counts[i+1]) { // test to see if is equal to the next thing
+            counts.splice(i+1, 1); //if it is, remove the next thing
+            i--; 
+            dups += 1; //add one to the population of words that have this count
+        } else {
+            
+            //build new metaData object and push it
+            var metaDatum = new Object();
+            metaDatum.count = counts[i]; // this is the count of the words
+            metaDatum.pop = dups+1; // this is the population of words that have this count
+            metaDatum.col = 1; // this will be used later in pos calc
+            metaData.push(metaDatum);
+            
+            dups = 0;
         }
     }
+
+    console.log(metaData);
+    // ------calculate positions
     
-    var margin;
+    for (var i = 0; i < words.length; i++) {
+        
+        //find row multiplier & columns
+        var row = 0;
+        while ( words[i].count != metaData[row].count && row < metaData.length) {
+            row++; 
+        }
+        
+        //assign y position
+        words[i].ypos = (row * rowHeight) + margin;
+
+        var colWidth = (width)/(metaData[row].pop+1);        
+        //assign x position
+        words[i].xpos = (metaData[row].col*colWidth);
+        
+        
+        //start drawin'
+        textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
+        
+        textAlign(CENTER);
+        text(textToWrite, words[i].xpos, words[i].ypos);
+        
+        // start next column
+        metaData[row].col += 1;
+        
+    }
+        
     
-    console.log(counts);
-    
-    
-}
+} // end callback
     
     
 // data is structured
