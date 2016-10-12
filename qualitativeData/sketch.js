@@ -3,35 +3,13 @@ var margin = 20;
 var rowHeight = 40;
 var metaData = [];
 
-//Word Object
-function Word(value, nextStr, country, conflict) {
+function hashMap(hash, word) {
     
-    this.value = value;
-    this.count = 1;
-
-    this.nextStr = [nextStr];
-    this.country = [country];
-    this.conflict = [conflict];
-    
-    //need to calculate position
-    
-    //write text and lines to screen
-    this.viz = function() {
-        textAlign(CENTER);
-        text(this.value, this.xpos, this.ypos);
-        
-        //need lines
+    if (hash[word] >= 1) { 
+        hash[word] += 1; 
+    } else {
+        hash[word] = 1; 
     }
-    
-    //mouseover function
-    
-}
-
-function MetaDatum(count, population) {
-    
-    this.count = count; // this is the count of the words
-    this.population = population; // this is the population of words that have this count
-    this.col = 1; // adds a column for each word
     
 }
 
@@ -49,97 +27,73 @@ function callback(data) {
     
     for (var i = 0; i < count; i++) {
         
+        console.log(data.getString(i,4));
         //break up description
-        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/]/g, ' ').trim().toLowerCase().split(' ');
+        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').toLowerCase().trim().split(' ');
         
         //clean out the blanks
         for (var j in description) { 
-            if (description[j]=="" || description[j]==undefined) { description.splice(j,1); }
+            var word = description[j];
+            
+            if (word=='' || word==undefined || word==' ' || word=='  ') { 
+                description.splice(j,1); 
+            }
+            
         } // end loop j
         
         // loop through broken up description and assign each word to an object
         for (var j = 0; j < description.length; j++) { 
             
-            var word = description[j];
+            var word = description[j].trim();
             
-            if (word in words) { 
-                words[word].count += 1; 
-                words[word].country.push(data.getString(i, 0));
-                words[word].conflict.push(data.getString(i, 1));
-                words[word].nextStr.push(description[j+1]);
-                console.log('adding to: ' + word);
-            } else {
-                words[word] = new Object();
-                words[word].count = 1; // nextStr, country, conflict
-                words[word].country = [data.getString(i, 0)];
-                words[word].conflict = [data.getString(i, 1)];
-                words[word].nextStr = [description[j+1]];
+            if (word in words && word != 'reduce' && word != "") { //there is some very weird bug associated with the word 'reduce'
 
-                console.log('creating new instance of: ' + word);
-            }
-            // var word = new Word(description[j], description[j+1], data.getString(i,0), data.getString(i,1));
+                words[word].count += 1; 
+                hashMap(words[word].country, data.getString(i, 0)); // countries
+                hashMap(words[word].conflict, data.getString(i, 1)); // conflict
+                hashMap(words[word].nextStr, description[j+1]); // next words
                 
+            } else  { 
+                
+                // initialize variables
+                words[word] = new Object();
+                words[word].count = 1; 
+                words[word].country = [];
+                words[word].conflict = [];
+                words[word].nextStr = [];
+                
+                // make hashes
+                hashMap(words[word].country, data.getString(i, 0)); // countries
+                hashMap(words[word].conflict, data.getString(i, 1)); // conflict
+                hashMap(words[word].nextStr, description[j+1]); // next words
+                
+                words[word].viz = function() {
+                    textAlign(CENTER);
+                    text(this.value, this.xpos, this.ypos);
+                    //need lines
+                    
+                }
+            }
             // could also get date data here
-            // words.push(description[j]);
 
         } // end loop j
             
     } // end loop i
     
     console.log(words);
-    
-    // // search for matches, count and combine
-    // for ( var i = 0; i < words.length; i++ ) {
 
-    //     for (var j = words.length-1; j >= 0; j--) {
-            
-    //         //check for matches
-    //         if (words[i].value == words[j].value && i != j) {
-                
-    //             //combine words[j] to words[i]
-    //             words[i].count += 1;
-    //             words[i].nextStr.push(words[j].nextStr[0]);
-    //             words[i].country.push(words[j].country[0]);
-    //             words[i].conflict.push(words[j].conflict[0]);
-                
-    //             //delete entry
-    //             words.splice(j, 1);
+    
+    //---------------------------------------structure position dependencies
+    //build an array of counts to use the index as a multiplier on row height
 
-    //         }
-    //     } // end loop j
-    // } // end loop i
-    
-    // //---------------------------------------structure position dependencies
-    // //build an array of counts to use the index as a multiplier on row height
-    // // make this better
-    // var counts = [];
-    // for (i in words) {
-    //     counts.push(words[i].count);
-    // }
-    
-    // //sort largest to smallest
-    // counts.sort(function(a, b) {
-    //     return b - a;
-    // });
-    
-    // var dups = 0;
-    
-    // for (var i = 0; i < counts.length; i++) { // for each thing in counts
-        
-    //     if (counts[i] == counts[i+1]) { // test to see if is equal to the next thing
-    //         counts.splice(i+1, 1); //if it is, remove the next thing
-    //         i--; 
-    //         dups += 1; //add one to the population of words that have this count
-    //     } else {
-    //         //build new metaData object and push it
-    //         console.log(counts[i], dups+1);
-    //         var metaDatum = new MetaDatum(counts[i], dups+1);
-    //         metaData.push(metaDatum);
-    //         dups = 0;
-    //     }
-    // }
+    var population = [];
+    for (word in words) {
+        hashMap(population, words[word].count);
+    }
 
-    // console.log(metaData);
+    console.log(population); //changed 'counts' to population, bc that's what we're doing
+
+
     // // ------calculate positions
     
     // for (var i = 0; i < words.length; i++) {
