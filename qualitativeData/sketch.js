@@ -50,7 +50,7 @@ function callback(data) {
     for (var i = 0; i < count; i++) {
         
         //break up description
-        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};]/g, ' ').trim().toLowerCase().split(' ');
+        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/]/g, ' ').trim().toLowerCase().split(' ');
         
         //clean out the blanks
         for (var j in description) { 
@@ -60,94 +60,115 @@ function callback(data) {
         // loop through broken up description and assign each word to an object
         for (var j = 0; j < description.length; j++) { 
             
-            var word = new Word(description[j], description[j+1], data.getString(i,0), data.getString(i,1));
+            var word = description[j];
+            
+            if (word in words) { 
+                words[word].count += 1; 
+                words[word].country.push(data.getString(i, 0));
+                words[word].conflict.push(data.getString(i, 1));
+                words[word].nextStr.push(description[j+1]);
+                console.log('adding to: ' + word);
+            } else {
+                words[word] = new Object();
+                words[word].count = 1; // nextStr, country, conflict
+                words[word].country = [data.getString(i, 0)];
+                words[word].conflict = [data.getString(i, 1)];
+                words[word].nextStr = [description[j+1]];
+
+                console.log('creating new instance of: ' + word);
+            }
+            // var word = new Word(description[j], description[j+1], data.getString(i,0), data.getString(i,1));
                 
             // could also get date data here
-            words.push(word);
+            // words.push(description[j]);
 
         } // end loop j
             
     } // end loop i
     
-    // search for matches, count and combine
-    for ( var i = 0; i < words.length; i++ ) {
+    console.log(words);
+    
+    // // search for matches, count and combine
+    // for ( var i = 0; i < words.length; i++ ) {
 
-        for (var j = words.length-1; j >= 0; j--) {
+    //     for (var j = words.length-1; j >= 0; j--) {
             
-            //check for matches
-            if (words[i].value == words[j].value && i != j) {
+    //         //check for matches
+    //         if (words[i].value == words[j].value && i != j) {
                 
-                //combine words[j] to words[i]
-                words[i].count += 1;
-                words[i].nextStr.push(words[j].nextStr[0]);
-                words[i].country.push(words[j].country[0]);
-                words[i].conflict.push(words[j].conflict[0]);
+    //             //combine words[j] to words[i]
+    //             words[i].count += 1;
+    //             words[i].nextStr.push(words[j].nextStr[0]);
+    //             words[i].country.push(words[j].country[0]);
+    //             words[i].conflict.push(words[j].conflict[0]);
                 
-                //delete entry
-                words.splice(j, 1);
+    //             //delete entry
+    //             words.splice(j, 1);
 
-            }
-        } // end loop j
-    } // end loop i
+    //         }
+    //     } // end loop j
+    // } // end loop i
     
-    //---------------------------------------structure position dependencies
-    //build an array of counts to use the index as a multiplier on row height
-    // make this better
-    var counts = [];
-    for (i in words) {
-        counts.push(words[i].count);
-    }
+    // //---------------------------------------structure position dependencies
+    // //build an array of counts to use the index as a multiplier on row height
+    // // make this better
+    // var counts = [];
+    // for (i in words) {
+    //     counts.push(words[i].count);
+    // }
     
-    //sort largest to smallest
-    counts.sort(function(a, b) {
-        return b - a;
-    });
+    // //sort largest to smallest
+    // counts.sort(function(a, b) {
+    //     return b - a;
+    // });
     
-    var dups = 0;
+    // var dups = 0;
     
-    for (var i = 0; i < counts.length; i++) { // for each thing in counts
+    // for (var i = 0; i < counts.length; i++) { // for each thing in counts
         
-        if (counts[i] == counts[i+1]) { // test to see if is equal to the next thing
-            counts.splice(i+1, 1); //if it is, remove the next thing
-            i--; 
-            dups += 1; //add one to the population of words that have this count
-        } else {
-            //build new metaData object and push it
-            console.log(counts[i], dups+1);
-            var metaDatum = new MetaDatum(counts[i], dups+1);
-            metaData.push(metaDatum);
-            dups = 0;
-        }
-    }
+    //     if (counts[i] == counts[i+1]) { // test to see if is equal to the next thing
+    //         counts.splice(i+1, 1); //if it is, remove the next thing
+    //         i--; 
+    //         dups += 1; //add one to the population of words that have this count
+    //     } else {
+    //         //build new metaData object and push it
+    //         console.log(counts[i], dups+1);
+    //         var metaDatum = new MetaDatum(counts[i], dups+1);
+    //         metaData.push(metaDatum);
+    //         dups = 0;
+    //     }
+    // }
 
-    console.log(metaData);
-    // ------calculate positions
+    // console.log(metaData);
+    // // ------calculate positions
     
-    for (var i = 0; i < words.length; i++) {
+    // for (var i = 0; i < words.length; i++) {
         
-        //find row multiplier & columns
-        var row = 0;
-        while ( words[i].count != metaData[row].count && row < metaData.length) {
-            row++; 
-        }
+    //     //find row multiplier & columns
+    //     var row = 0;
+    //     while ( words[i].count != metaData[row].count && row < metaData.length) {
+    //         row++; 
+    //     }
         
-        //assign y position
-        words[i].ypos = (row * rowHeight) + margin;
+    //     //calc sub row
+        
+    //     //assign y position
+    //     words[i].ypos = (row * rowHeight) + margin;
 
-        var colWidth = (width)/(metaData[row].population+1);
+    //     var colWidth = (width)/(metaData[row].population+1);
         
-        //assign x position
-        words[i].xpos = (metaData[row].col*colWidth);
+    //     //assign x position
+    //     words[i].xpos = (metaData[row].col*colWidth);
         
         
-        //-----------------------------------------start drawin'
-        // textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
-        words[i].viz();
+    //     //-----------------------------------------start drawin'
+    //     // textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
+    //     words[i].viz();
         
-        // start next column
-        metaData[row].col += 1;
+    //     // start next column
+    //     metaData[row].col += 1;
         
-    }
+    // }
         
     
 } // end callback
