@@ -3,6 +3,38 @@ var margin = 20;
 var rowHeight = 40;
 var metaData = [];
 
+//Word Object
+function Word(value, nextStr, country, conflict) {
+    
+    this.value = value;
+    this.count = 1;
+
+    this.nextStr = [nextStr];
+    this.country = [country];
+    this.conflict = [conflict];
+    
+    //need to calculate position
+    
+    //write text and lines to screen
+    this.viz = function() {
+        textAlign(CENTER);
+        text(this.value, this.xpos, this.ypos);
+        
+        //need lines
+    }
+    
+    //mouseover function
+    
+}
+
+function MetaDatum(count, population) {
+    
+    this.count = count; // this is the count of the words
+    this.population = population; // this is the population of words that have this count
+    this.col = 1; // adds a column for each word
+    
+}
+
 function setup() {
     
     createCanvas(windowWidth, 5000);
@@ -14,7 +46,6 @@ function setup() {
 function callback(data) {
     
     var count = data.getRowCount();
-    
     
     for (var i = 0; i < count; i++) {
         
@@ -29,17 +60,10 @@ function callback(data) {
         // loop through broken up description and assign each word to an object
         for (var j = 0; j < description.length; j++) { 
             
-            var word = new Object();
-                    
-                word.value = description[j];
-                word.count = 1;
-                //initialize these as arrays so they can be added to later
-                word.nextStr = [description[j+1]];
-                word.country = [data.getString(i,0)];
-                word.conflict = [data.getString(i,1)];
+            var word = new Word(description[j], description[j+1], data.getString(i,0), data.getString(i,1));
                 
-                // could also get date data here
-                words.push(word);
+            // could also get date data here
+            words.push(word);
 
         } // end loop j
             
@@ -66,8 +90,9 @@ function callback(data) {
         } // end loop j
     } // end loop i
     
-    //--------------------------------------------structure position dependencies
+    //---------------------------------------structure position dependencies
     //build an array of counts to use the index as a multiplier on row height
+    // make this better
     var counts = [];
     for (i in words) {
         counts.push(words[i].count);
@@ -82,20 +107,15 @@ function callback(data) {
     
     for (var i = 0; i < counts.length; i++) { // for each thing in counts
         
-        
         if (counts[i] == counts[i+1]) { // test to see if is equal to the next thing
             counts.splice(i+1, 1); //if it is, remove the next thing
             i--; 
             dups += 1; //add one to the population of words that have this count
         } else {
-            
             //build new metaData object and push it
-            var metaDatum = new Object();
-            metaDatum.count = counts[i]; // this is the count of the words
-            metaDatum.pop = dups+1; // this is the population of words that have this count
-            metaDatum.col = 1; // this will be used later in pos calc
+            console.log(counts[i], dups+1);
+            var metaDatum = new MetaDatum(counts[i], dups+1);
             metaData.push(metaDatum);
-            
             dups = 0;
         }
     }
@@ -114,16 +134,15 @@ function callback(data) {
         //assign y position
         words[i].ypos = (row * rowHeight) + margin;
 
-        var colWidth = (width)/(metaData[row].pop+1);        
+        var colWidth = (width)/(metaData[row].population+1);
+        
         //assign x position
         words[i].xpos = (metaData[row].col*colWidth);
         
         
-        //start drawin'
-        textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
-        
-        textAlign(CENTER);
-        text(textToWrite, words[i].xpos, words[i].ypos);
+        //-----------------------------------------start drawin'
+        // textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
+        words[i].viz();
         
         // start next column
         metaData[row].col += 1;
@@ -134,15 +153,3 @@ function callback(data) {
 } // end callback
     
     
-// data is structured
-// next steps - calculate positions
-// use frequecy to calculate x, y position
-
-// the highest count is y = margin, next highest count, y = margin + row * 1; next highest count, y = margin + row * 2 etc
-// build an array of counts, in order? array length reveals height of the thing
-// 
-
-
-// assign those to data objects
-
-// draw lines

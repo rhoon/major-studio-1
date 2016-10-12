@@ -6,6 +6,7 @@ ___
 
 Using the CSP's data, I'd like to develop a categorical analysis of coup & revolution events to then overlay on the existing quantitative assignment.
 
+###Primary Source 1:
 Center for Systemic Peace - broad datasets detailing coup events and other political violence.
 Currently associated with George Mason University.
 http://www.systemicpeace.org/inscrdata.html

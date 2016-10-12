@@ -1,0 +1,32 @@
+{
+  "description": "A list of dog breeds and their colors.",
+  "dogs":
+    [
+      { "breed": "American Staffordshire Terrier",
+        "r":201,
+        "g":211,
+        "b":214
+      },
+    {   "breed":"Chihuahua",
+        "r":232,
+        "g":193,
+        "b":153
+    },
+    {   "breed":"Golden Retriever",
+        "r":224,
+        "g":204,
+        "b":72
+    },
+
+    {  "breed":"West Highland White Terrier",
+        "r":255,
+        "g":255,
+        "b":255
+    },
+    {  "breed":"Yorkshire Terrier",
+        "r":128,
+        "g":74,
+        "b":20
+    }
+    ]
+}
