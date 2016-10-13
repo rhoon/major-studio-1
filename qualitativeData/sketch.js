@@ -1,7 +1,7 @@
 var words = [];
 var margin = 20;
 var rowHeight = 40;
-var population = [];
+var groups = [];
 
 function hashMap(hash, word) {
     
@@ -10,6 +10,27 @@ function hashMap(hash, word) {
     } else {
         hash[word] = 1; 
     }
+    
+}
+
+function Group(count, population) {
+    
+    //row is the groups[i]
+    this.count = count;
+    this.population = population;
+    this.col = 1;
+    this.subRow = 0;
+    
+    if (population <= 10) {
+        this.maxCol = population;
+        this.maxSubRow = 0;
+    } else {
+        this.maxCol = 10;
+        this.maxSubRow = Math.ceil(population/10);
+    }
+    
+    this.rowHeight = 40+(20*this.maxSubRow);
+    this.colWidth = width/this.maxCol;
     
 }
 
@@ -56,21 +77,22 @@ function callback(data) {
                 // initialize variables
                 words[word] = new Object();
                 words[word].count = 1; 
+                words[word].value = word;
                 words[word].country = [];
                 words[word].conflict = [];
                 words[word].nextStr = [];
+                
+                // declare functions
+                words[word].viz = function () {
+                    textAlign(CENTER);
+                    text(this.value, this.xpos, this.ypos);
+                }
                 
                 // make hashes
                 hashMap(words[word].country, data.getString(i, 0)); // countries
                 hashMap(words[word].conflict, data.getString(i, 1)); // conflict
                 hashMap(words[word].nextStr, description[j+1]); // next words
                 
-                words[word].viz = function() {
-                    textAlign(CENTER);
-                    text(this.value, this.xpos, this.ypos);
-                    //need lines
-                    
-                }
             }
             // could also get date data here
 
@@ -80,52 +102,42 @@ function callback(data) {
 
 
     //build an array 'population' to use the index as a multiplier on row height
-
+    var population = [];
     for (word in words) {
         hashMap(population, words[word].count);
     }
-    
-    var row = 0;
+
     for (count in population) {
-        row++;
-        console.log(count);
-        console.log(population[count]);
+        var group = new Group(count, population[count]);
+        groups.push(group);
     }
-
-    console.log(population); //changed 'counts' to population, bc that's what we're doing
-
-
     // ------calculate positions
+    
+    console.log(groups);
     
     for (word in words) {
         
-        //find row multiplier & columns
-        var row = 38;
-        for (count in population) {
-            row--;
-            if (words[word].count == count) { break; }
+        //find row multiplier & columns. 38 is the 'length' of population
+        var row = groups.length;
+        for (var i = 0; i < groups.length; i++) {
+            if (words[word].count == groups[i].count) { 
+                row = i;
+                break; 
+            }
         }
-        console.log('ROW= ' + row);
-        
-    //     //calc sub row
         
         //assign y position
-        words[word].ypos = (row * rowHeight) + margin;
+        words[word].ypos = (row * rowHeight) + margin; // + subRow*subRowHeight
         
-        console.log(words[word].ypos)
+        // assign x position
+        words[word].xpos = (groups[row].col*groups[row].colWidth);
 
-    //     var colWidth = (width)/(metaData[row].population+1);
-        
-    //     //assign x position
-    //     words[i].xpos = (metaData[row].col*colWidth);
+        //-----------------------------------------start drawin'
+        words[word].viz();
         
         
-    //     //-----------------------------------------start drawin'
-    //     // textToWrite = words[i].value + " | col: " + metaData[row].col + " | count: " + metaData[row].count;
-    //     words[i].viz();
-        
-    //     // start next column
-    //     metaData[row].col += 1;
+        // start next column
+        groups[row].col += 1;
         
     }
         
