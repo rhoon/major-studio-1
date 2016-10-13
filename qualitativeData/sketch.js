@@ -1,7 +1,7 @@
 var words = [];
 var margin = 20;
 var rowHeight = 40;
-var metaData = [];
+var population = [];
 
 function hashMap(hash, word) {
     
@@ -26,8 +26,6 @@ function callback(data) {
     var count = data.getRowCount();
     
     for (var i = 0; i < count; i++) {
-        
-        console.log(data.getString(i,4));
         //break up description
         var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').toLowerCase().trim().split(' ');
         
@@ -79,35 +77,42 @@ function callback(data) {
         } // end loop j
             
     } // end loop i
-    
-    console.log(words);
 
-    
-    //---------------------------------------structure position dependencies
-    //build an array of counts to use the index as a multiplier on row height
 
-    var population = [];
+    //build an array 'population' to use the index as a multiplier on row height
+
     for (word in words) {
         hashMap(population, words[word].count);
+    }
+    
+    var row = 0;
+    for (count in population) {
+        row++;
+        console.log(count);
+        console.log(population[count]);
     }
 
     console.log(population); //changed 'counts' to population, bc that's what we're doing
 
 
-    // // ------calculate positions
+    // ------calculate positions
     
-    // for (var i = 0; i < words.length; i++) {
+    for (word in words) {
         
-    //     //find row multiplier & columns
-    //     var row = 0;
-    //     while ( words[i].count != metaData[row].count && row < metaData.length) {
-    //         row++; 
-    //     }
+        //find row multiplier & columns
+        var row = 38;
+        for (count in population) {
+            row--;
+            if (words[word].count == count) { break; }
+        }
+        console.log('ROW= ' + row);
         
     //     //calc sub row
         
-    //     //assign y position
-    //     words[i].ypos = (row * rowHeight) + margin;
+        //assign y position
+        words[word].ypos = (row * rowHeight) + margin;
+        
+        console.log(words[word].ypos)
 
     //     var colWidth = (width)/(metaData[row].population+1);
         
@@ -122,7 +127,7 @@ function callback(data) {
     //     // start next column
     //     metaData[row].col += 1;
         
-    // }
+    }
         
     
 } // end callback
