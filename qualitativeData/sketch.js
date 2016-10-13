@@ -1,5 +1,5 @@
 var words = [];
-var margin = 20;
+var margin = 100;
 var rowHeight = 40;
 var groups = [];
 
@@ -21,24 +21,24 @@ function Group(count, population) {
     this.col = 1;
     this.subRow = 0;
     
-    if (population <= 10) {
-        this.maxCol = population;
+    if (population <= 15) {
+        this.maxCol = population+1;
         this.maxSubRow = 0;
     } else {
         this.maxCol = 10;
         this.maxSubRow = Math.ceil(population/10);
     }
     
-    this.rowHeight = 40+(20*this.maxSubRow);
-    this.colWidth = width/this.maxCol;
+    this.rowHeight = 40; //+(20*this.maxSubRow); this doesn't work
+    this.colWidth = (width-margin)/this.maxCol;
     
 }
 
 function setup() {
     
     createCanvas(windowWidth, 5000);
+    background(220);
     loadTable("pitf.tsv", "tsv", "header", callback);
-    textAlign(LEFT);
     
 }
 
@@ -83,9 +83,18 @@ function callback(data) {
                 words[word].nextStr = [];
                 
                 // declare functions
-                words[word].viz = function () {
+                words[word].drawText = function () {
                     textAlign(CENTER);
-                    text(this.value, this.xpos, this.ypos);
+                    text(this.value+' | '+this.count, this.xpos, this.ypos); // this.value
+                }
+                
+                words[word].drawLine = function () {
+                    for (nxt in this.nextStr) {
+                        if (words[nxt] != undefined) { //dealing with junk in nextString array
+                            stroke(250,250,250,50)
+                            line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
+                        }
+                    }
                 }
                 
                 // make hashes
@@ -113,35 +122,37 @@ function callback(data) {
     }
     // ------calculate positions
     
-    console.log(groups);
-    
     for (word in words) {
         
         //find row multiplier & columns. 38 is the 'length' of population
-        var row = groups.length;
+        var group = groups.length;
         for (var i = 0; i < groups.length; i++) {
             if (words[word].count == groups[i].count) { 
-                row = i;
+                group = i;
                 break; 
             }
         }
         
         //assign y position
-        words[word].ypos = (row * rowHeight) + margin; // + subRow*subRowHeight
+        words[word].ypos = (group * groups[group].rowHeight) + margin; // + subRow*subRowHeight
         
         // assign x position
-        words[word].xpos = (groups[row].col*groups[row].colWidth);
-
-        //-----------------------------------------start drawin'
-        words[word].viz();
-        
+        words[word].xpos = (groups[group].col*groups[group].colWidth);
         
         // start next column
-        groups[row].col += 1;
+        groups[group].col += 1;
+        groups[group].subRow += 1;
         
     }
+    
+    for (word in words) {
+            words[word].drawLine();
+            words[word].drawText();
+    }
+    
+    
         
     
 } // end callback
     
-    
+    //use mouseX/Y dist to posx/posy to detect mouse over
