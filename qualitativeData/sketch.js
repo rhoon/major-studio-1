@@ -1,7 +1,10 @@
 var words = [];
 var margin = 100;
-var rowHeight = 40;
+var rowHeight = 50;
 var groups = [];
+var maxWordsInRow = 10;
+var subRowHeight = 10;
+var height;
 
 function hashMap(hash, word) {
     
@@ -21,23 +24,23 @@ function Group(count, population) {
     this.col = 1;
     this.subRow = 0;
     
-    if (population <= 15) {
+    if (population <= maxWordsInRow) {
         this.maxCol = population+1;
         this.maxSubRow = 0;
     } else {
         this.maxCol = 10;
-        this.maxSubRow = Math.ceil(population/10);
+        this.maxSubRow = Math.ceil(population/maxWordsInRow);
     }
     
-    this.rowHeight = 40; //+(20*this.maxSubRow); this doesn't work
+    this.rowHeight = 50; // + (this.maxSubRow * subRowHeight);
     this.colWidth = (width-margin)/this.maxCol;
     
 }
 
 function setup() {
     
-    createCanvas(windowWidth, 5000);
-    background(220);
+    createCanvas(1024, 5000);
+    background(200);
     loadTable("pitf.tsv", "tsv", "header", callback);
     
 }
@@ -84,7 +87,9 @@ function callback(data) {
                 
                 // declare functions
                 words[word].drawText = function () {
-                    textAlign(CENTER);
+                    textAlign(LEFT);
+                    textSize(8);
+                    textStyle(BOLD);
                     text(this.value+' | '+this.count, this.xpos, this.ypos); // this.value
                 }
                 
@@ -118,8 +123,11 @@ function callback(data) {
 
     for (count in population) {
         var group = new Group(count, population[count]);
-        groups.push(group);
+        groups.unshift(group);
     }
+
+    console.log(groups);
+
     // ------calculate positions
     
     for (word in words) {
@@ -134,19 +142,28 @@ function callback(data) {
         }
         
         //assign y position
-        words[word].ypos = (group * groups[group].rowHeight) + margin; // + subRow*subRowHeight
-        
+        console.log(word);
+        words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // 
+        console.log(groups[group].subRow * subRowHeight);
         // assign x position
         words[word].xpos = (groups[group].col*groups[group].colWidth);
         
+        
         // start next column
         groups[group].col += 1;
-        groups[group].subRow += 1;
+        if (groups[group].col == maxWordsInRow) {
+            groups[group].col = 1;
+            groups[group].subRow++;
+            console.log('subRow: ' + groups[group].subRow);
+        }
+        
+        // draw lines
+        words[word].drawLine();
         
     }
     
     for (word in words) {
-            words[word].drawLine();
+            
             words[word].drawText();
     }
     
