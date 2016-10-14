@@ -16,6 +16,16 @@ function hashMap(hash, word) {
     
 }
 
+function yposCalc(row) {
+	var height = 0;
+	// calculate the height of every group before this group
+	for (var i = 0; i<row; i++) {
+		height += (40 + groups[i].maxSubRow * subRowHeight);
+	}
+	// add the other stuff
+	return height + (groups[row].subRow * subRowHeight) + margin;
+}
+
 function Group(count, population) {
     
     //row is the groups[i]
@@ -143,7 +153,9 @@ function callback(data) {
         
         //assign y position
         console.log(word);
-        words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // 
+        // words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // old ypos
+        words[word].ypos = yposCalc(group);
+        
         console.log(groups[group].subRow * subRowHeight);
         // assign x position
         words[word].xpos = (groups[group].col*groups[group].colWidth);
@@ -164,7 +176,7 @@ function callback(data) {
     
     for (word in words) {
             
-            words[word].drawText();
+        words[word].drawText();
     }
     
     
