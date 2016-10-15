@@ -17,13 +17,13 @@ function hashMap(hash, word) {
 }
 
 function yposCalc(row) {
-	var height = 0;
-	// calculate the height of every group before this group
-	for (var i = 0; i<row; i++) {
-		height += (40 + groups[i].maxSubRow * subRowHeight);
-	}
-	// add the other stuff
-	return height + (groups[row].subRow * subRowHeight) + margin;
+    	var height = 0;
+    	// calculate the height of every group before this group
+    	for (var i = 0; i<row; i++) {
+    		height += (40 + groups[i].maxSubRow * subRowHeight);
+    	}
+    	// add the other stuff
+    	return height + (groups[row].subRow * subRowHeight) + margin;
 }
 
 function Group(count, population) {
@@ -49,8 +49,8 @@ function Group(count, population) {
 
 function setup() {
     
-    createCanvas(1024, 5000);
-    background(200);
+    createCanvas(1024, 3000);
+    background(255);
     loadTable("pitf.tsv", "tsv", "header", callback);
     
 }
@@ -61,7 +61,8 @@ function callback(data) {
     
     for (var i = 0; i < count; i++) {
         //break up description
-        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').toLowerCase().trim().split(' ');
+        var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').trim().split(' ');
+        // var description = RiTa.tokenize(data.getString(i,4));
         
         //clean out the blanks
         for (var j in description) { 
@@ -106,7 +107,18 @@ function callback(data) {
                 words[word].drawLine = function () {
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
-                            stroke(250,250,250,50)
+                            stroke(200,200,200,50)
+                            line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
+                        }
+                    }
+                }
+                
+                words[word].highlight = function () {
+                    fill(0,0,255);
+                    text(this.value+' | '+this.count, this.xpos, this.ypos); // this.value
+                    for (nxt in this.nextStr) {
+                        if (words[nxt] != undefined) { //dealing with junk in nextString array
+                            stroke(0,0,255,50);
                             line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
@@ -136,8 +148,6 @@ function callback(data) {
         groups.unshift(group);
     }
 
-    console.log(groups);
-
     // ------calculate positions
     
     for (word in words) {
@@ -151,37 +161,39 @@ function callback(data) {
             }
         }
         
-        //assign y position
-        console.log(word);
-        // words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // old ypos
-        words[word].ypos = yposCalc(group);
+            //assign y position
+            console.log(word);
+            // words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // old ypos
+            words[word].ypos = yposCalc(group);
+            
+            // assign x position
+            words[word].xpos = (groups[group].col*groups[group].colWidth);
         
-        console.log(groups[group].subRow * subRowHeight);
-        // assign x position
-        words[word].xpos = (groups[group].col*groups[group].colWidth);
         
+            // start next column
         
-        // start next column
-        groups[group].col += 1;
-        if (groups[group].col == maxWordsInRow) {
-            groups[group].col = 1;
-            groups[group].subRow++;
-            console.log('subRow: ' + groups[group].subRow);
-        }
-        
-        // draw lines
-        words[word].drawLine();
-        
+            groups[group].col += 1;
+            if (groups[group].col == maxWordsInRow) {
+                groups[group].col = 1;
+                groups[group].subRow++;
+            }
+            
+            // draw lines
+            words[word].drawLine();
+
     }
     
     for (word in words) {
-            
         words[word].drawText();
+
     }
     
     
-        
-    
 } // end callback
     
-    //use mouseX/Y dist to posx/posy to detect mouse over
+//use mouseX/Y dist to posx/posy to detect mouse over
+    
+function draw() {
+    
+    words[government].highlight();
+}   
