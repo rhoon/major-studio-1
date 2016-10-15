@@ -3,7 +3,7 @@ var margin = 100;
 var rowHeight = 50;
 var groups = [];
 var maxWordsInRow = 10;
-var subRowHeight = 10;
+var subRowHeight = 12;
 var height;
 
 function hashMap(hash, word) {
@@ -48,9 +48,7 @@ function Group(count, population) {
 }
 
 function setup() {
-    
     createCanvas(1024, 3000);
-    background(255);
     loadTable("pitf.tsv", "tsv", "header", callback);
     
 }
@@ -63,6 +61,7 @@ function callback(data) {
         //break up description
         var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').trim().split(' ');
         // var description = RiTa.tokenize(data.getString(i,4));
+        
         
         //clean out the blanks
         for (var j in description) { 
@@ -97,17 +96,18 @@ function callback(data) {
                 words[word].nextStr = [];
                 
                 // declare functions
-                words[word].drawText = function () {
+                words[word].drawText = function (faded) {
                     textAlign(LEFT);
-                    textSize(8);
+                    textSize(10);
                     textStyle(BOLD);
-                    text(this.value+' | '+this.count, this.xpos, this.ypos); // this.value
+                    if (faded) { fill(200); } else { fill(0); }
+                    text(this.value, this.xpos, this.ypos); // this.value
                 }
                 
-                words[word].drawLine = function () {
+                words[word].drawLine = function (faded) {
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
-                            stroke(200,200,200,50)
+                        if (faded) {stroke(200,200,200,10); } else { stroke(200,200,200,50); }
                             line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
@@ -115,7 +115,13 @@ function callback(data) {
                 
                 words[word].highlight = function () {
                     fill(0,0,255);
-                    text(this.value+' | '+this.count, this.xpos, this.ypos); // this.value
+                    //write Text
+                    text(this.value, this.xpos, this.ypos);
+                    for (country in this.country) {
+                        i++;
+                        console.log();
+                        text(country, this.xpos, this.ypos+(10*i)); 
+                    }
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
                             stroke(0,0,255,50);
@@ -135,7 +141,7 @@ function callback(data) {
         } // end loop j
             
     } // end loop i
-
+    _.compact(words);
 
     //build an array 'population' to use the index as a multiplier on row height
     var population = [];
@@ -162,8 +168,6 @@ function callback(data) {
         }
         
             //assign y position
-            console.log(word);
-            // words[word].ypos = (group * rowHeight) + (groups[group].subRow * subRowHeight) + margin; // old ypos
             words[word].ypos = yposCalc(group);
             
             // assign x position
@@ -171,22 +175,14 @@ function callback(data) {
         
         
             // start next column
-        
             groups[group].col += 1;
             if (groups[group].col == maxWordsInRow) {
                 groups[group].col = 1;
                 groups[group].subRow++;
             }
-            
-            // draw lines
-            words[word].drawLine();
-
     }
     
-    for (word in words) {
-        words[word].drawText();
-
-    }
+    drawChart(null, false);
     
     
 } // end callback
@@ -194,6 +190,34 @@ function callback(data) {
 //use mouseX/Y dist to posx/posy to detect mouse over
     
 function draw() {
-    
-    words[government].highlight();
+    // the browser is overwhelmed by the looping & drawing - just too much data
 }   
+
+function drawChart(exception, faded) {
+    background(255);
+    
+    // for (word in words) {
+    //     if (word != exception) {
+    //         words[word].drawLine(faded);
+    //     }
+    // }
+    
+    for (word in words) {
+        if (word != exception ) {
+            words[word].drawText(faded);
+        }
+    }
+    
+    words[exception].highlight();
+
+}
+
+function mouseClicked() {
+    for (word in words) {
+        var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
+        if (distance < 10) {
+            drawChart(word, true);
+        }
+        
+    }
+}
