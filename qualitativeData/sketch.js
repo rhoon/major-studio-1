@@ -67,7 +67,7 @@ function callback(data) {
         for (var j in description) { 
             var word = description[j];
             
-            if (word=='' || word==undefined || word==' ' || word=='  ') { 
+            if (word==''||word==undefined||word==' '||word=='if'||word=='and'||word=='in'||word=='or'||word=='the'||word=='for'||word=='of'||word=='a'||word=='to'||word=='by'||word=='-'||word=='s'||word=='a'||word=='as'||word=='on'||word=='an'||word=='are') { 
                 description.splice(j,1); 
             }
             
@@ -117,10 +117,11 @@ function callback(data) {
                     fill(0,0,255);
                     //write Text
                     text(this.value, this.xpos, this.ypos);
+                    var i = 0;
                     for (country in this.country) {
                         i++;
                         console.log();
-                        text(country, this.xpos, this.ypos+(10*i)); 
+                        text(country, this.xpos, this.ypos+(10+subRowHeight*i)); 
                     }
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
@@ -190,7 +191,21 @@ function callback(data) {
 //use mouseX/Y dist to posx/posy to detect mouse over
     
 function draw() {
-    // the browser is overwhelmed by the looping & drawing - just too much data
+    // --------- the browser can almost handle this, maybe just do a cursor change rather than full chart redraw
+    for (word in words) {
+        var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
+        
+        var hover = false;
+        if (distance < 10) {
+            hover = true;
+        }
+        
+        if (hover) {
+            drawChart(word, false);
+            // cursor(HAND);
+        } 
+        
+    }
 }   
 
 function drawChart(exception, faded) {
@@ -208,7 +223,9 @@ function drawChart(exception, faded) {
         }
     }
     
-    words[exception].highlight();
+    if (exception != null) {
+        words[exception].highlight();
+    }
 
 }
 
