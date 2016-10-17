@@ -1,26 +1,30 @@
 var words = [];
 var margin = 100;
-var rowHeight = 50;
+var rowHeight = 20;
 var groups = [];
 var maxWordsInRow = 10;
 var subRowHeight = 12;
 var height;
+var calcCount = 0;
+var hover = false;
 
 function hashMap(hash, word) {
     
-    if (hash[word] >= 1) { 
-        hash[word] += 1; 
-    } else {
-        hash[word] = 1; 
-    }
+        if (hash[word] >= 1) { 
+            hash[word] += 1; 
+        } else {
+            hash[word] = 1; 
+        }
     
 }
 
 function yposCalc(row) {
+        calcCount += 1;
+        console.log(calcCount);
     	var height = 0;
     	// calculate the height of every group before this group
     	for (var i = 0; i<row; i++) {
-    		height += (40 + groups[i].maxSubRow * subRowHeight);
+    		height += (rowHeight + groups[i].maxSubRow * subRowHeight);
     	}
     	// add the other stuff
     	return height + (groups[row].subRow * subRowHeight) + margin;
@@ -28,22 +32,22 @@ function yposCalc(row) {
 
 function Group(count, population) {
     
-    //row is the groups[i]
-    this.count = count;
-    this.population = population;
-    this.col = 1;
-    this.subRow = 0;
-    
-    if (population <= maxWordsInRow) {
-        this.maxCol = population+1;
-        this.maxSubRow = 0;
-    } else {
-        this.maxCol = 10;
-        this.maxSubRow = Math.ceil(population/maxWordsInRow);
-    }
-    
-    this.rowHeight = 50; // + (this.maxSubRow * subRowHeight);
-    this.colWidth = (width-margin)/this.maxCol;
+        //row is the groups[i]
+        this.count = count;
+        this.population = population;
+        this.col = 1;
+        this.subRow = 0;
+        
+        // this conditional centers it if active. liking the left-aligned layout better
+        // if (population <= maxWordsInRow) {
+        //     this.maxCol = population+1;
+        //     this.maxSubRow = 0;
+        // } else {
+            this.maxCol = 10;
+            this.maxSubRow = Math.ceil(population/maxWordsInRow);
+        // }
+        
+        this.colWidth = (width-margin)/this.maxCol;
     
 }
 
@@ -60,7 +64,7 @@ function callback(data) {
     for (var i = 0; i < count; i++) {
         //break up description
         var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').trim().split(' ');
-        // var description = RiTa.tokenize(data.getString(i,4));
+        // var description = RiTa.tokenize(data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' '));
         
         
         //clean out the blanks
@@ -114,18 +118,22 @@ function callback(data) {
                 }
                 
                 words[word].highlight = function () {
+                    fill(255, 150);
+                    rect(0, 0, width, height);
                     fill(0,0,255);
                     //write Text
                     text(this.value, this.xpos, this.ypos);
+                    text(this.count, this.xpos, this.ypos+10);
+                    
                     var i = 0;
                     for (country in this.country) {
                         i++;
                         console.log();
-                        text(country, this.xpos, this.ypos+(10+subRowHeight*i)); 
+                        text(country, this.xpos, this.ypos+(20+subRowHeight*i)); 
                     }
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
-                            stroke(0,0,255,50);
+                            stroke(200,50);
                             line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
@@ -142,7 +150,7 @@ function callback(data) {
         } // end loop j
             
     } // end loop i
-    _.compact(words);
+    
 
     //build an array 'population' to use the index as a multiplier on row height
     var population = [];
@@ -152,22 +160,25 @@ function callback(data) {
 
     for (count in population) {
         var group = new Group(count, population[count]);
-        groups.unshift(group);
+        //add group to front of array groups
+        groups.unshift(group); 
     }
-
+    
+    console.log(groups);
     // ------calculate positions
     
     for (word in words) {
         
-        //find row multiplier & columns. 38 is the 'length' of population
-        var group = groups.length;
-        for (var i = 0; i < groups.length; i++) {
-            if (words[word].count == groups[i].count) { 
-                group = i;
-                break; 
+        if (word != '_arrayContains') { //solving for error
+            //find row multiplier & columns. 38 is the 'length' of population
+            var group = groups.length;
+            for (var i = 0; i < groups.length; i++) {
+                if (words[word].count == groups[i].count) { 
+                    group = i;
+                    break; 
+                }
             }
-        }
-        
+            console.log(word);
             //assign y position
             words[word].ypos = yposCalc(group);
             
@@ -181,6 +192,7 @@ function callback(data) {
                 groups[group].col = 1;
                 groups[group].subRow++;
             }
+        }
     }
     
     drawChart(null, false);
@@ -195,15 +207,20 @@ function draw() {
     for (word in words) {
         var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
         
-        var hover = false;
+
         if (distance < 10) {
             hover = true;
+        } else {
+            hover = false;
         }
         
-        if (hover) {
-            drawChart(word, false);
+        // if (hover) {
+            // hovers(word, true);
             // cursor(HAND);
-        } 
+        // }  else { this crashes the browser
+            // drawChart(null, false); 
+            // cursor(ARROW);
+        //}
         
     }
 }   
@@ -218,7 +235,7 @@ function drawChart(exception, faded) {
     // }
     
     for (word in words) {
-        if (word != exception ) {
+        if (word != exception && word != '_arrayContains') {
             words[word].drawText(faded);
         }
     }
@@ -233,8 +250,11 @@ function mouseClicked() {
     for (word in words) {
         var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
         if (distance < 10) {
-            drawChart(word, true);
-        }
-        
+            // drawChart(null, false);
+            words[word].highlight();
+
+        } //else {
+            // drawChart(null, false);
+        // }
     }
 }
