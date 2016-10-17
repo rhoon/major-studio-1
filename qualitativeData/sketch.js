@@ -38,21 +38,15 @@ function Group(count, population) {
         this.col = 1;
         this.subRow = 0;
         
-        // this conditional centers it if active. liking the left-aligned layout better
-        // if (population <= maxWordsInRow) {
-        //     this.maxCol = population+1;
-        //     this.maxSubRow = 0;
-        // } else {
-            this.maxCol = 10;
-            this.maxSubRow = Math.ceil(population/maxWordsInRow);
-        // }
+        this.maxCol = 10;
+        this.maxSubRow = Math.ceil(population/maxWordsInRow+.5);
         
         this.colWidth = (width-margin)/this.maxCol;
     
 }
 
 function setup() {
-    createCanvas(1024, 3000);
+    createCanvas(windowWidth, 3000);
     loadTable("pitf.tsv", "tsv", "header", callback);
     
 }
@@ -102,7 +96,7 @@ function callback(data) {
                 // declare functions
                 words[word].drawText = function (faded) {
                     textAlign(LEFT);
-                    textSize(10);
+                    textSize(9);
                     textStyle(BOLD);
                     if (faded) { fill(200); } else { fill(0); }
                     text(this.value, this.xpos, this.ypos); // this.value
@@ -118,22 +112,24 @@ function callback(data) {
                 }
                 
                 words[word].highlight = function () {
-                    fill(255, 150);
+                    fill(255, 200);
                     rect(0, 0, width, height);
-                    fill(0,0,255);
+                    fill(0,0,0);
                     //write Text
                     text(this.value, this.xpos, this.ypos);
-                    text(this.count, this.xpos, this.ypos+10);
+                    textSize(10);
+                    textStyle(NORMAL);
+                    text('Count: '+ this.count, this.xpos, this.ypos+20);
                     
                     var i = 0;
                     for (country in this.country) {
                         i++;
                         console.log();
-                        text(country, this.xpos, this.ypos+(20+subRowHeight*i)); 
+                        text(country, this.xpos, this.ypos+(30+subRowHeight*i)); 
                     }
                     for (nxt in this.nextStr) {
                         if (words[nxt] != undefined) { //dealing with junk in nextString array
-                            stroke(200,50);
+                            stroke(0,0,255,50);
                             line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
@@ -195,7 +191,7 @@ function callback(data) {
         }
     }
     
-    drawChart(null, false);
+    drawChart();
     
     
 } // end callback
@@ -203,58 +199,38 @@ function callback(data) {
 //use mouseX/Y dist to posx/posy to detect mouse over
     
 function draw() {
-    // --------- the browser can almost handle this, maybe just do a cursor change rather than full chart redraw
-    for (word in words) {
-        var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
-        
-
-        if (distance < 10) {
-            hover = true;
-        } else {
-            hover = false;
-        }
-        
-        // if (hover) {
-            // hovers(word, true);
-            // cursor(HAND);
-        // }  else { this crashes the browser
-            // drawChart(null, false); 
-            // cursor(ARROW);
-        //}
-        
-    }
+    // --------- defaulting to mousePressed for functionality, draw()-based hovers are too heavy on CPU
 }   
 
-function drawChart(exception, faded) {
+function drawChart() {
     background(255);
     
-    // for (word in words) {
-    //     if (word != exception) {
-    //         words[word].drawLine(faded);
-    //     }
-    // }
-    
     for (word in words) {
-        if (word != exception && word != '_arrayContains') {
-            words[word].drawText(faded);
+        if (word != '_arrayContains') {
+            words[word].drawLine();
         }
     }
     
-    if (exception != null) {
-        words[exception].highlight();
+    for (word in words) {
+        if (word != '_arrayContains') {
+            words[word].drawText();
+        }
     }
+    
+    // if (exception != null) {
+    //     words[exception].highlight();
+    // }
 
 }
 
 function mouseClicked() {
     for (word in words) {
         var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
+        // drawChart(); 
         if (distance < 10) {
-            // drawChart(null, false);
             words[word].highlight();
-
         } //else {
-            // drawChart(null, false);
+         
         // }
     }
 }
