@@ -39,8 +39,8 @@ function Group(count, population) {
         this.maxCol = 10;
         this.maxSubRow = Math.ceil(population/maxWordsInRow+.5);
         this.colWidth = (width-margin)/this.maxCol;
-        this.xpos = this.colWidth/2;
-        this.xposLine = this.colWidth*0.78;
+        this.xpos = this.colWidth*0.8;
+        this.xposLine = this.colWidth*0.89;
         
         this.drawLabels = function() {
             //lines
@@ -52,6 +52,7 @@ function Group(count, population) {
             noStroke();
             textSize(10);
             textStyle(BOLD);
+            textAlign(RIGHT);
             text(this.count, this.xpos, this.ypos);
         }
     
@@ -190,9 +191,9 @@ function callback(data) {
             words[word].ypos = yposCalc(group);
             groups[group].ypos = yposCalc(group);
             if (group!=0) { 
-                groups[group].yposLine = (yposCalc(group-1))+20; 
+                groups[group].yposLine = (yposCalc(group-1))+25; 
             } else {
-                groups[group].yposLine = yposCalc(group)-10;
+                groups[group].yposLine = yposCalc(group)-8;
             }
             
             // assign x position
@@ -220,10 +221,21 @@ function draw() {
 function drawChart() {
     background(255);
     
+    // LABELS
+    
     for (group in groups) {
         groups[group].drawLabels();
     }
     
+    var topLabelypos = groups[0].ypos-30;
+    
+    textSize(8);
+    text("COUNT", groups[0].xpos, topLabelypos);
+    fill(0);
+    textAlign(RIGHT);
+    text("WORD", groups[0].colWidth+25, topLabelypos);
+    
+    // DATA
     for (word in words) {
         if (word != '_arrayContains') {
             words[word].drawLine();
