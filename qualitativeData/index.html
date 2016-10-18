@@ -11,8 +11,53 @@
     <!--rita-->
     <!--<script src="libraries/rita-full.js" type="text/javascript"></script>-->
 
-    <style> body {padding: 0; margin: 0;} canvas {vertical-align: top;} </style>
+    <style> 
+    
+    body {
+      padding: 0; 
+      margin: 0;
+      font-size: 1em;
+      font-family: sans-serif;
+    } 
+    
+    canvas {
+      vertical-align: top;
+      position: relative;
+      z-index: 0;
+    }
+    
+    h3 {
+      margin: 3% 0 0 5%;
+      font-size: .5em;
+      position: relative;
+      z-index: 2;
+    }
+    
+    h1 {
+      margin: .2em 0 0 5%;
+      font-size: 2em;
+      line-height: .9em;
+      position: relative;
+      z-index: 2;
+    }
+    
+    #intro {
+      width: 25%;
+      text-align: justify;
+      font-size: .75em;
+      position: absolute;
+      right: 5%;
+      top: 5%;
+      z-index: 2;
+    }
+    
+    </style>
   </head>
   <body>
+    <h3>Center for Systemic Peace, Political Instability Task Force Consolidated Problem Set</h3>
+    <h1>African State Armed Conflicts <br>& Regime Crises, Deconstructed</h1>
+    <p id="intro">
+      This visualization shows the relative usage of every word describing an African conflict from the Center for Systemic Peace’s dataset. Words are connected to words immediately following (for instance, in this sentance, 'for' would be connected to 'instance') for greater context.
+    </p>
   </body>
 </html>
