@@ -1,19 +1,11 @@
 # major-studio-1
 
-## Qualitative Data
+>I am studying the relationship between political violence and income inequality in Sub-Saharan Africa because I want to learn more about the outcomes of political violence. I am using Wider’s World Income Inequality Database, Political Terror Scale’s database, and Center for Systemic Peace’s PITF State Failure Problem Set.>
+
 
 ___
 
-Using the CSP's data, I'd like to develop a categorical analysis of coup & revolution events to then overlay on the existing quantitative assignment.
-
-###Primary Source 1:
-Center for Systemic Peace - broad datasets detailing coup events and other political violence.
-Currently associated with George Mason University.
-http://www.systemicpeace.org/inscrdata.html
-
-___
-
-## Quantitative Data
+## Data Review
 
 –––
 

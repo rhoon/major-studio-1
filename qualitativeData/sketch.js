@@ -1,19 +1,19 @@
-var words = [];
+var wrds = [];
 var margin = 100;
 var rowHeight = 20;
 var groups = [];
-var maxWordsInRow = 10;
+var maxwrdsInRow = 10;
 var subRowHeight = 12;
 var height;
 var calcCount = 0;
 var hover = false;
 
-function hashMap(hash, word) {
+function hashMap(hash, wrd) {
     
-        if (hash[word] >= 1) { 
-            hash[word] += 1; 
+        if (hash[wrd] >= 1) { 
+            hash[wrd] += 1; 
         } else {
-            hash[word] = 1; 
+            hash[wrd] = 1; 
         }
     
 }
@@ -37,7 +37,7 @@ function Group(count, population) {
         this.col = 1;
         this.subRow = 0;
         this.maxCol = 10;
-        this.maxSubRow = Math.ceil(population/maxWordsInRow+.5);
+        this.maxSubRow = Math.ceil(population/maxwrdsInRow+.5);
         this.colWidth = (width-margin)/this.maxCol;
         this.xpos = this.colWidth*0.8;
         this.xposLine = this.colWidth*0.89;
@@ -73,41 +73,43 @@ function callback(data) {
         var description = data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' ').trim().split(' ');
         // var description = RiTa.tokenize(data.getString(i,4).replace(/[.,?!@#$%^&*()_~{};1234567890/'"]/g, ' '));
         
+        var RegularTypeOf = typeof(description);
+        console.log(RegularTypeOf);
         
         //clean out the blanks
         for (var j in description) { 
-            var word = description[j];
+            var wrd = description[j];
             
-            if (word==''||word==undefined||word==' '||word=='if'||word=='and'||word=='in'||word=='or'||word=='the'||word=='for'||word=='of'||word=='a'||word=='to'||word=='by'||word=='-'||word=='s'||word=='a'||word=='as'||word=='on'||word=='an'||word=='are') { 
+            if (wrd==''||wrd==undefined||wrd==' '||wrd=='if'||wrd=='and'||wrd=='in'||wrd=='or'||wrd=='the'||wrd=='for'||wrd=='of'||wrd=='a'||wrd=='to'||wrd=='by'||wrd=='-'||wrd=='s'||wrd=='a'||wrd=='as'||wrd=='on'||wrd=='an'||wrd=='are') { 
                 description.splice(j,1); 
             }
             
         } // end loop j
         
-        // loop through broken up description and assign each word to an object
+        // loop through broken up description and assign each wrd to an object
         for (var j = 0; j < description.length; j++) { 
             
-            var word = description[j].trim();
+            var wrd = description[j].trim();
             
-            if (word in words && word != 'reduce' && word != "") { //there is some very weird bug associated with the word 'reduce'
+            if (wrd in wrds && wrd != 'reduce' && wrd != "") { //there is some very weird bug associated with the wrd 'reduce'
 
-                words[word].count += 1; 
-                hashMap(words[word].country, data.getString(i, 0)); // countries
-                hashMap(words[word].conflict, data.getString(i, 1)); // conflict
-                hashMap(words[word].nextStr, description[j+1]); // next words
+                wrds[wrd].count += 1; 
+                hashMap(wrds[wrd].country, data.getString(i, 0)); // countries
+                hashMap(wrds[wrd].conflict, data.getString(i, 1)); // conflict
+                hashMap(wrds[wrd].nextStr, description[j+1]); // next wrds
                 
             } else  { 
                 
                 // initialize variables
-                words[word] = new Object();
-                words[word].count = 1; 
-                words[word].value = word;
-                words[word].country = [];
-                words[word].conflict = [];
-                words[word].nextStr = [];
+                wrds[wrd] = new Object();
+                wrds[wrd].count = 1; 
+                wrds[wrd].value = wrd;
+                wrds[wrd].country = [];
+                wrds[wrd].conflict = [];
+                wrds[wrd].nextStr = [];
                 
                 // declare functions
-                words[word].drawText = function (faded) {
+                wrds[wrd].drawText = function (faded) {
                     textAlign(LEFT);
                     textSize(9);
                     textStyle(BOLD);
@@ -115,16 +117,16 @@ function callback(data) {
                     text(this.value, this.xpos, this.ypos); // this.value
                 }
                 
-                words[word].drawLine = function (faded) {
+                wrds[wrd].drawLine = function (faded) {
                     for (nxt in this.nextStr) {
-                        if (words[nxt] != undefined) { //dealing with junk in nextString array
+                        if (wrds[nxt] != undefined) { //dealing with junk in nextString array
                         if (faded) {stroke(200,200,200,10); } else { stroke(200,200,200,50); }
-                            line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
+                            line(wrds[nxt].xpos, wrds[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
                 }
                 
-                words[word].highlight = function () {
+                wrds[wrd].highlight = function () {
                     fill(255, 200);
                     rect(0, 0, width, height);
                     fill(0,0,0);
@@ -140,17 +142,17 @@ function callback(data) {
                         text(country, this.xpos, this.ypos+(30+subRowHeight*i)); 
                     }
                     for (nxt in this.nextStr) {
-                        if (words[nxt] != undefined) { //dealing with junk in nextString array
+                        if (wrds[nxt] != undefined) { //dealing with junk in nextString array
                             stroke(0,0,255,50);
-                            line(words[nxt].xpos, words[nxt].ypos, this.xpos, this.ypos);
+                            line(wrds[nxt].xpos, wrds[nxt].ypos, this.xpos, this.ypos);
                         }
                     }
                 }
                 
                 // make hashes
-                hashMap(words[word].country, data.getString(i, 0)); // countries
-                hashMap(words[word].conflict, data.getString(i, 1)); // conflict
-                hashMap(words[word].nextStr, description[j+1]); // next words
+                hashMap(wrds[wrd].country, data.getString(i, 0)); // countries
+                hashMap(wrds[wrd].conflict, data.getString(i, 1)); // conflict
+                hashMap(wrds[wrd].nextStr, description[j+1]); // next wrds
                 
             }
             // could also get date data here
@@ -159,11 +161,14 @@ function callback(data) {
             
     } // end loop i
     
+    console.log(wrds);
 
     //build an arrays 'population' and 'groups' to use as index and labels
     var population = [];
-    for (word in words) {
-        hashMap(population, words[word].count);
+    for (wrd in wrds) {
+        if (wrd != '_arrayContains') {
+            hashMap(population, wrds[wrd].count);
+        }
     }
 
     for (count in population) {
@@ -172,23 +177,23 @@ function callback(data) {
         groups.unshift(group); 
     }
     
-    // calculate label and word positions
+    // calculate label and wrd positions
     
-    for (word in words) {
+    for (wrd in wrds) {
         
-        if (word != '_arrayContains') { //solving for error
+        if (wrd != '_arrayContains') { //solving for error
             //find row multiplier & columns. 38 is the 'length' of population
             var group = groups.length;
             for (var i = 0; i < groups.length; i++) {
                 //set index
-                if (words[word].count == groups[i].count) { 
+                if (wrds[wrd].count == groups[i].count) { 
                     group = i;
                     break; 
                 }
             }
             
             //assign y position
-            words[word].ypos = yposCalc(group);
+            wrds[wrd].ypos = yposCalc(group);
             groups[group].ypos = yposCalc(group);
             if (group!=0) { 
                 groups[group].yposLine = (yposCalc(group-1))+25; 
@@ -197,11 +202,11 @@ function callback(data) {
             }
             
             // assign x position
-            words[word].xpos = (groups[group].col*groups[group].colWidth);
+            wrds[wrd].xpos = (groups[group].col*groups[group].colWidth);
         
             // start next column
             groups[group].col += 1;
-            if (groups[group].col == maxWordsInRow) {
+            if (groups[group].col == maxwrdsInRow) {
                 groups[group].col = 1;
                 groups[group].subRow++;
             }
@@ -233,33 +238,33 @@ function drawChart() {
     text("COUNT", groups[0].xpos, topLabelypos);
     fill(0);
     textAlign(RIGHT);
-    text("WORD", groups[0].colWidth+25, topLabelypos);
+    text("wrd", groups[0].colWidth+25, topLabelypos);
     
     // DATA
-    for (word in words) {
-        if (word != '_arrayContains') {
-            words[word].drawLine();
+    for (wrd in wrds) {
+        if (wrd != '_arrayContains') {
+            wrds[wrd].drawLine();
         }
     }
     
-    for (word in words) {
-        if (word != '_arrayContains') {
-            words[word].drawText();
+    for (wrd in wrds) {
+        if (wrd != '_arrayContains') {
+            wrds[wrd].drawText();
         }
     }
     
     // if (exception != null) {
-    //     words[exception].highlight();
+    //     wrds[exception].highlight();
     // }
 
 }
 
 function mouseClicked() {
-    for (word in words) {
-        var distance = dist(mouseX, mouseY, words[word].xpos, words[word].ypos);
+    for (wrd in wrds) {
+        var distance = dist(mouseX, mouseY, wrds[wrd].xpos, wrds[wrd].ypos);
         // drawChart(); 
         if (distance < 10) {
-            words[word].highlight();
+            wrds[wrd].highlight();
         } //else {
          // redrawing chart causes browser to freeze
         // }
