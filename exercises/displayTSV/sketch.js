@@ -19,6 +19,7 @@ function showData(data) {
     var count = data.getRowCount();
     var rowHeight = 30;
     
+    
     for (var row = 0; row < count; row ++) {
         for (col = 3; col < 26; col++) {
             var val = data.getString(row, col);
