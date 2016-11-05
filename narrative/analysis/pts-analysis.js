@@ -2,6 +2,8 @@ var fs = require('fs');
 var async = require('async');
 var d3 = require('d3');
 
+var countries = [];
+
 function pushNum(isNum, toArray) {
     if (!isNaN(parseFloat(isNum))) {
         toArray.push(parseFloat(isNum));
@@ -35,24 +37,36 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         delete data[datum].ptsh;
         delete data[datum].ptss;
         
-        console.log(data[datum]);
-         
-        //combine years into array
-        // var years = []
-        
-        // if (isNaN(parseFloat(datum)) != true) {
-        //     var nextDatum = parseFloat(datum)+1;
-        //     console.log('this '+datum);
-        //     console.log('nxt '+nextDatum);
-            
-        //     if (data[nextDatum].country == data[datum].country) {
-                
-        //     }
-        // }
-        
+        // console.log(data[datum]);
+
     }
     
-    // console.log(JSON.stringify(data));
+    for (var datum in data) {
+        
+        var country = new Object();
+        country.byYear = [];
+        country.value = data[datum].country;
 
+        var nxt = parseFloat(datum)+1;
+        
+        do {
+            var year = new Object();
+            year.ptsAvg = data[nxt].ptsAvg;
+            year.value = data[nxt]
+            
+            country.byYear.push(year);
+        }
+        while (data[datum].country == data[nxt].country) ;
+        
+        console.log(country);
+        
+    }
+    //need to consolidate countries
+    //step one: create a new country object
+    //step two: loop through rows and add their data to country object until encounter a new country
+    //back to step one
+    
+    // console.log(JSON.stringify(data));
+    
     
 });
