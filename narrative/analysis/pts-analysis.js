@@ -18,6 +18,24 @@ function pushNum(isNum, toArray) {
     }
 }
 
+function calcAvg(itemsToAvg) {
+    
+    //itemsToAvg is an array of datapoints
+    var sum = itemsToAvg.reduce(function(a, b) { // <- MDN
+          return a + b;
+    }, 0);
+    
+    //if there is data
+    if (sum != 0) { 
+        var avg = (sum/itemsToAvg.length).toFixed(2);
+    //handle no data
+    } else if (itemsToAvg.length == 0) { 
+        var avg = 'NA';
+    }
+        
+    return avg;
+}
+
 function Country(fullName) {
     this.years = {};
     this.name = fullName;
@@ -41,21 +59,12 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         
         //average PTS scores into single PTS score and consolidate
         var ptsArr = [];
-        var ptsAvg = 0;
         // calc average
         pushNum(data[datum].ptsa, ptsArr);
         pushNum(data[datum].ptsh, ptsArr);
         pushNum(data[datum].ptss, ptsArr);
-        console.log('ptsArr: '+ptsArr);
-        var sum = ptsArr.reduce(function(a, b) { //thanks, MDN
-          return a + b;
-        }, 0);
-        
-        if (sum != 0) { //stop bad math
-            ptsAvg = sum/ptsArr.length;
-        } else if (ptsArr.length == 0) { //no data != 0;
-            ptsAvg = 'NA';
-        }
+        var ptsAvg = calcAvg(ptsArr);
+        // remove old data
         data[datum].ptsAvg = ptsAvg;
         delete data[datum].ptsa;
         delete data[datum].ptsh;
@@ -64,10 +73,9 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         // restructure data - index by country and then by year
         var country = data[datum].country;
         if (datum == 0) {
-            console.log('making new country: '+country);
-            //if it's a new country, add an object
+            //new country? add Country()
             countries[country] = new Country(data[datum].country);
-            //nest year objects in country, using year as index
+            //nest years
             countries[country].years[year] = new Year(ptsAvg);
         }
         
@@ -77,13 +85,11 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
             var year = data[datum].year;
             
             if (country != data[prev].country) {
-                console.log('making new country: '+country);
-                //if it's a new country, add an object
+                //new country? add Country()
                 countries[country] = new Country(data[datum].country);
-                //nest year objects in country, using year as index
+                //nest years
                 countries[country].years[year] = new Year(ptsAvg);
             } else {
-                console.log('adding to '+country);
                 countries[country].years[year] = new Year(ptsAvg);
             }
             
@@ -91,20 +97,43 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         
     }
     
-    console.log(JSON.stringify(countries));
+    // console.log(JSON.stringify(countries));
     // console.log(data);
     
     //fallback data structure
     fs.writeFile('pts-mod1.json', JSON.stringify(data), function(err) {
         if (err) {throw err;}
-        console.log("done");
+        console.log("pts-mod1 written");
     });
+    
+    countryAvgs();
     
     //better data structure
     fs.writeFile('pts-mod2.json', JSON.stringify(countries), function(err) {
         if (err) {throw err;}
-        console.log("done");
+        console.log("pts-mod2 written");
     });
     
-    
 });
+
+//calculate overall averages for each country
+function countryAvgs() {
+    
+    for (var country in countries) {
+        //collect averages for the last five years, last ten years, and overall PTS
+        var allPTS = [];
+        for (var year in countries[country].years) {
+            pushNum(countries[country].years[year].ptsAvg, allPTS);
+        }
+        
+        // console.log(allPTS);
+        //get averages
+        countries[country].overallPTS = calcAvg(allPTS);
+        countries[country].tenYearPTS = calcAvg(allPTS.splice(0, allPTS.length-10));
+        countries[country].fiveYearPTS = calcAvg(allPTS.splice(0, allPTS.length-5));
+        console.log(country, countries[country].overallPTS, countries[country].tenYearPTS, countries[country].fiveYearPTS);
+    }
+    
+}
+
+
