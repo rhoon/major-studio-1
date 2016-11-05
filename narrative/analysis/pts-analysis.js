@@ -12,6 +12,10 @@ var fs = require('fs');
 var async = require('async');
 var d3 = require('d3');
 
+//Global storage
+var countries = {};
+var countriesMeta = [];
+
 function pushNum(isNum, toArray) {
     if (!isNaN(parseFloat(isNum))) {
         toArray.push(parseFloat(isNum));
@@ -45,8 +49,6 @@ function Year(ptsAvg) {
     this.ptsAvg = ptsAvg;
 }
 
-var countries = {};
-
 fs.readFile("data/pts.csv", "utf8", function(error, data) {
     data = d3.csvParse(data);
     
@@ -71,12 +73,15 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         delete data[datum].ptss;
         
         // restructure data - index by country and then by year
+        var countryCode = data[datum].country.slice(0,3).toUpperCase();
+        
+        console.log(countryCode);
         var country = data[datum].country;
         if (datum == 0) {
             //new country? add Country()
-            countries[country] = new Country(data[datum].country);
+            countries[countryCode] = new Country(data[datum].country);
             //nest years
-            countries[country].years[year] = new Year(ptsAvg);
+            countries[countryCode].years[year] = new Year(ptsAvg);
         }
         
         if (datum != 0) { // will need to handle first case
@@ -86,11 +91,11 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
             
             if (country != data[prev].country) {
                 //new country? add Country()
-                countries[country] = new Country(data[datum].country);
+                countries[countryCode] = new Country(data[datum].country);
                 //nest years
-                countries[country].years[year] = new Year(ptsAvg);
+                countries[countryCode].years[year] = new Year(ptsAvg);
             } else {
-                countries[country].years[year] = new Year(ptsAvg);
+                countries[countryCode].years[year] = new Year(ptsAvg);
             }
             
         }
@@ -114,11 +119,19 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         console.log("pts-mod2 written");
     });
     
+    //create a meta-data excel-friendly data object
+    
+    fs.writeFile('pts-meta.json', JSON.stringify(countriesMeta), function(err) {
+        if (err) {throw err;}
+        console.log("pts-meta written");
+    });
+    
 });
 
 //calculate overall averages for each country
 function countryAvgs() {
     
+    var i = 0;
     for (var country in countries) {
         //collect averages for the last five years, last ten years, and overall PTS
         var allPTS = [];
@@ -131,9 +144,20 @@ function countryAvgs() {
         countries[country].overallPTS = calcAvg(allPTS);
         countries[country].tenYearPTS = calcAvg(allPTS.splice(0, allPTS.length-10));
         countries[country].fiveYearPTS = calcAvg(allPTS.splice(0, allPTS.length-5));
-        console.log(country, countries[country].overallPTS, countries[country].tenYearPTS, countries[country].fiveYearPTS);
+        // console.log(country, countries[country].overallPTS, countries[country].tenYearPTS, countries[country].fiveYearPTS);
+        
+        
+        // excel-friendly meta data (to help build narrative)
+        countriesMeta[i] = new Object();
+        countriesMeta[i].country = countries[country].name;
+        countriesMeta[i].overallPTS = countries[country].overallPTS;
+        countriesMeta[i].tenYearPTS = countries[country].tenYearPTS;
+        countriesMeta[i].fiveYearPTS = countries[country].fiveYearPTS;
+        i++;
+        
     }
     
 }
+
 
 

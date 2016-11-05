@@ -10,6 +10,24 @@ var d3 = require('d3');
 
 var pts = JSON.parse(fs.readFileSync('pts-mod2.json', 'utf8'));
 
+function calcAvg(itemsToAvg) {
+    
+    //itemsToAvg is an array of datapoints
+    var sum = itemsToAvg.reduce(function(a, b) { // <- MDN
+          return a + b;
+    }, 0);
+    
+    //if there is data
+    if (sum != 0) { 
+        var avg = (sum/itemsToAvg.length).toFixed(2);
+    //handle no data
+    } else if (itemsToAvg.length == 0) { 
+        var avg = 'NA';
+    }
+        
+    return avg;
+}
+
 
 fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
     wiid = d3.csvParse(wiid);
@@ -33,25 +51,21 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
             } else {
                 
                 //average gini
-                var sum = ginis.reduce(function(a, b) { //thanks, MDN
-                  return a + b;
-                }, 0);
-                if (sum != 0) {                         //stop bad math
-                    var giniAvg = sum/ginis.length;
-                } else if (ginis.length == 0) {         //no data != 0;
-                    var giniAvg = 'NA';
-                }
+                var giniAvg = calcAvg(ginis);
                 // console.log('country: '+wiid[item].Country+' year: '+wiid[item].Year+' gini: '+giniAvg);
                 
                 //add it to pts object
-                var thisYear = JSON.stringify(wiid[item].Year);
-                var thisCountry = JSON.stringify(wiid[item].Country);
+                var thisYear = wiid[item].Year;
+                var thisCountry = wiid[item].Country;
                 
                 console.log('wiid '+thisCountry);
-                console.log(pts[thisCountry]);
-                console.log(pts[thisCountry].years[thisYear]);
-                
-                // pts[wiid[item].Country].year[wiid[item].Year].giniAvg = giniAvg;
+                if (thisCountry == 'Sao Tome And Principe') {
+                    console.log(pts[thisCountry]);
+                }
+                // if (thisYear > 1976) {
+                //     console.log(pts[thisCountry].years[thisYear]); //doesn't work because the year for the gini may not be added
+                //     // pts[wiid[item].Country].year[wiid[item].Year].giniAvg = giniAvg;
+                // }
 
             }
         }
