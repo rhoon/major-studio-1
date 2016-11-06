@@ -1,12 +1,11 @@
-// PTS Analysis reads the Political Terror Scale data
+// PTS Analysis reads the Political Terror Scale data (pts.csv)
 // averages the three scores (mean)
-// and writes a new file, pts-mod1.json
+// and collects meta data in trends from those averages
 
-// DATA STRUCTURE (pts-mod1.json):
-// { country: 'Zimbabwe', year: '2006', ptsAvg: 4 } should use country and year as index value for easy lookup
-
-// TO ADD: 
-// improving / decline data (per country)
+// DATA STRUCTURES:
+// pts-simple.json includes PTS average per year per country in an easily converted format
+// pts-meta.json shows only metadata for each country in an easily-converted format
+// pts-nested.json includes all of the data mentioned above and is meant to be combined with wiid gini data for use in website
 
 var fs = require('fs');
 var async = require('async');
@@ -68,36 +67,29 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         var ptsAvg = calcAvg(ptsArr);
         // remove old data
         data[datum].ptsAvg = ptsAvg;
+        
         delete data[datum].ptsa;
         delete data[datum].ptsh;
         delete data[datum].ptss;
         
-        // restructure data - index by country and then by year
-        var countryCode = data[datum].country.slice(0,3).toUpperCase();
-        
-        console.log(countryCode);
+        // restructure data - index by country and then by year 
+        var countryCode = data[datum].country.split(' ')[0].toLowerCase().replace(',','');
         var country = data[datum].country;
+        // year index
         if (datum == 0) {
             //new country? add Country()
             countries[countryCode] = new Country(data[datum].country);
             //nest years
             countries[countryCode].years[year] = new Year(ptsAvg);
-        }
-        
-        if (datum != 0) { // will need to handle first case
+        } else { 
             var prev = datum-1;
-            
             var year = data[datum].year;
-            
             if (country != data[prev].country) {
-                //new country? add Country()
                 countries[countryCode] = new Country(data[datum].country);
-                //nest years
                 countries[countryCode].years[year] = new Year(ptsAvg);
             } else {
                 countries[countryCode].years[year] = new Year(ptsAvg);
             }
-            
         }
         
     }
@@ -106,21 +98,20 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
     // console.log(data);
     
     //fallback data structure
-    fs.writeFile('pts-mod1.json', JSON.stringify(data), function(err) {
+    fs.writeFile('pts-simple.json', JSON.stringify(data), function(err) {
         if (err) {throw err;}
-        console.log("pts-mod1 written");
+        console.log("pts-simple written");
     });
     
     countryAvgs();
     
     //better data structure
-    fs.writeFile('pts-mod2.json', JSON.stringify(countries), function(err) {
+    fs.writeFile('pts-nested.json', JSON.stringify(countries), function(err) {
         if (err) {throw err;}
-        console.log("pts-mod2 written");
+        console.log("pts-nested written");
     });
     
     //create a meta-data excel-friendly data object
-    
     fs.writeFile('pts-meta.json', JSON.stringify(countriesMeta), function(err) {
         if (err) {throw err;}
         console.log("pts-meta written");
@@ -135,24 +126,29 @@ function countryAvgs() {
     for (var country in countries) {
         //collect averages for the last five years, last ten years, and overall PTS
         var allPTS = [];
-        for (var year in countries[country].years) {
-            pushNum(countries[country].years[year].ptsAvg, allPTS);
+        var current = countries[country];
+        
+        for (var year in current.years) {
+            pushNum(current.years[year].ptsAvg, allPTS);
         }
-        
         // console.log(allPTS);
+        
         //get averages
-        countries[country].overallPTS = calcAvg(allPTS);
-        countries[country].tenYearPTS = calcAvg(allPTS.splice(0, allPTS.length-10));
-        countries[country].fiveYearPTS = calcAvg(allPTS.splice(0, allPTS.length-5));
-        // console.log(country, countries[country].overallPTS, countries[country].tenYearPTS, countries[country].fiveYearPTS);
+        current.overallPTS = calcAvg(allPTS);
+        current.tenYearPTS = calcAvg(allPTS.splice(0, allPTS.length-10));
+        current.fiveYearPTS = calcAvg(allPTS.splice(0, allPTS.length-5));
+
+        //find min max and range
+        current.max = d3.max(allPTS); 
+        current.min = d3.min(allPTS);
+        current.range = current.max-current.min;
+        current.range = current.range.toFixed(2);
+        console.log('max: '+current.max+' min: '+current.min+' range: '+current.range);
         
-        
-        // excel-friendly meta data (to help build narrative)
+        // excel-friendly meta data
         countriesMeta[i] = new Object();
-        countriesMeta[i].country = countries[country].name;
-        countriesMeta[i].overallPTS = countries[country].overallPTS;
-        countriesMeta[i].tenYearPTS = countries[country].tenYearPTS;
-        countriesMeta[i].fiveYearPTS = countries[country].fiveYearPTS;
+        countriesMeta[i] = current;
+        delete countriesMeta[i].years;
         i++;
         
     }

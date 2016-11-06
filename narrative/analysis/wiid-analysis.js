@@ -8,7 +8,7 @@ var fs = require('fs');
 var async = require('async');
 var d3 = require('d3');
 
-var pts = JSON.parse(fs.readFileSync('pts-mod2.json', 'utf8'));
+var pts = JSON.parse(fs.readFileSync('pts-nested.json', 'utf8'));
 
 function calcAvg(itemsToAvg) {
     
@@ -42,31 +42,27 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
         if (nxt < wiid.length) {
             // check for overlap
             if (wiid[item].Country == wiid[nxt].Country && wiid[item].Year == wiid[nxt].Year) {
-                // push the next gini to the ginis array (to calc average)
+                
+                // push the next gini to the ginis array
                 ginis.push(parseFloat(wiid[nxt].Gini));
                 // delete next item
                 wiid.splice(nxt, 0);
                 // stay with the current item and check for another match
                 item = item-1;
+                
             } else {
                 
                 //average gini
                 var giniAvg = calcAvg(ginis);
-                // console.log('country: '+wiid[item].Country+' year: '+wiid[item].Year+' gini: '+giniAvg);
-                
+
                 //add it to pts object
                 var thisYear = wiid[item].Year;
-                var thisCountry = wiid[item].Country;
+                var countryCode = wiid[item].Country.split(' ')[0].toLowerCase();
                 
-                console.log('wiid '+thisCountry);
-                if (thisCountry == 'Sao Tome And Principe') {
-                    console.log(pts[thisCountry]);
+                if (thisYear > 1976) {
+                    console.log(countryCode, giniAvg); 
+                    pts[countryCode].years[thisYear].giniAvg = giniAvg;
                 }
-                // if (thisYear > 1976) {
-                //     console.log(pts[thisCountry].years[thisYear]); //doesn't work because the year for the gini may not be added
-                //     // pts[wiid[item].Country].year[wiid[item].Year].giniAvg = giniAvg;
-                // }
-
             }
         }
         
