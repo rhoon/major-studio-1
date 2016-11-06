@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <meta charset="UTF-8">
+    <title>161011-MajorStudioExercises</title>
+    <!--D3-->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+    <style> 
+    </style>
+    
+  </head>
+
+  <body>
+    
+    <script>
+    
+    var margin = {top: 20, right: 10, bottom: 20, left: 30};
+
+    var width = 100 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
+        
+    var xScale = d3.scaleLinear()
+        .range([0, width]);
+
+    var yScale = d3.scaleLinear()
+        .range([height, 0]);
+    
+    // var xAxis = d3.svg.axis()
+    //     .orient("bottom")
+    //     .tickFormat(d3.format("d")) 
+    //     .tickValues([1980, 2010])
+    //     .scale(xScale);
+
+    // var yAxis = d3.svg.axis()
+    //     .orient("right")
+    //     .scale(yScale);
+        
+    // var generateLine = d3.svg.line()
+    //     .x(function(d) { return xScale(d.year); })
+    //     .y(function(d) { return yScale(d.val); });
+        
+    d3.json("data/pts+wiid.json", (error, data) => {
+        if (error) throw "error loading data";
+        
+        console.log(data);
+        
+    });
+
+
+    
+    </script>
+  </body>
