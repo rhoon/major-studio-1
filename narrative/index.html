@@ -3,7 +3,7 @@
   <head>
     
     <meta charset="UTF-8">
-    <title>161011-MajorStudioExercises</title>
+    <title>UNDP-Narrative</title>
     <!--D3-->
     <script src="https://d3js.org/d3.v4.min.js"></script>
     
@@ -18,33 +18,97 @@
     
     var margin = {top: 20, right: 10, bottom: 20, left: 30};
 
-    var width = 100 - margin.left - margin.right,
+    var width = 800 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
         
     var xScale = d3.scaleLinear()
-        .range([0, width]);
+        .range([0, width])
+        .domain([1976, 2015]);
 
     var yScale = d3.scaleLinear()
-        .range([height, 0]);
-    
-    // var xAxis = d3.svg.axis()
-    //     .orient("bottom")
-    //     .tickFormat(d3.format("d")) 
-    //     .tickValues([1980, 2010])
-    //     .scale(xScale);
-
-    // var yAxis = d3.svg.axis()
-    //     .orient("right")
-    //     .scale(yScale);
+        .range([height, 0])
+        .domain([0, 100]);
         
+    var xAxis = d3.axisTop()
+        .tickFormat(d3.format("d"))
+        .scale(xScale);
+    
+    var yAxis = d3.axisLeft()
+        .scale(yScale);
+    
     // var generateLine = d3.svg.line()
     //     .x(function(d) { return xScale(d.year); })
     //     .y(function(d) { return yScale(d.val); });
-        
-    d3.json("data/pts+wiid.json", (error, data) => {
+
+    d3.json("data/pts.json", (error, data) => {
         if (error) throw "error loading data";
         
-        console.log(data);
+        //parse strings to numbers
+        data.forEach(function(d) {
+            d.ptsAvg = +d.ptsAvg;
+            d.year = +d.year;
+        });
+        
+        // nests data structure
+        var ptsByCountry = d3.nest()
+            .key(function(d) { return d.country; })
+            .entries(data);
+        
+        console.log(ptsByCountry);
+        
+        // append div container for chart per cutoff
+        var countryBox = d3.select("body")
+            .selectAll("countryBox")
+            .data(ptsByCountry)
+            .enter()
+            .append("div")
+            .attr("class", "countryBox");
+        
+        //append country name
+        countryBox.append("h2")
+            .text(function(d) { return d.key });
+        
+        //append chart container
+        var svg = countryBox.append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        //append bars
+        svg.selectAll('rect')
+            .data((d) => { return d.values })
+            .enter()
+            .append('rect')
+            .attr('x', (d) => { 
+                return xScale(d.year);
+            })
+            .attr('y', (d) => { 
+                return yScale(20*d.ptsAvg);
+            })
+            .attr('width', 10)
+            .attr('height', (d) => { 
+                return height-yScale(20*d.ptsAvg);
+            })
+            .attr('fill', 'black')
+            .attr('opacity', 0.1);
+            
+        //append axes
+        svg.append("g")
+            .call(xAxis)
+            .attr("transform", "translate(0, " + height + ")");
+        
+        svg.append("g")
+            .call(yAxis);
+        
+        //append lines
+        // var countryLine = svg.selectAll(".country-line")
+        //     .data((d) => { return d })
+        //     .enter()
+        //     .append("path")
+        //     .attr("d", function(d) { return generateLine(d.values); });
+        
+        
         
     });
 
