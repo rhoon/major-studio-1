@@ -81,6 +81,8 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
             countries[countryCode] = new Country(data[datum].country);
             //nest years
             countries[countryCode].years[year] = new Year(ptsAvg);
+            
+            
         } else { 
             var prev = datum-1;
             var year = data[datum].year;
@@ -148,7 +150,7 @@ function countryAvgs() {
         // excel-friendly meta data
         countriesMeta[i] = new Object();
         countriesMeta[i] = current;
-        delete countriesMeta[i].years;
+        // delete countriesMeta[i].years;
         i++;
         
     }

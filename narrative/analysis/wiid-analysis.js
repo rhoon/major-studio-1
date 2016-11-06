@@ -69,5 +69,9 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
         
     }
     
-    // console.log(wiid);
+    fs.writeFile('pts+wiid.json', JSON.stringify(pts), function(err) {
+        if (err) {throw err;}
+        console.log("pts+wiid written");
+    });
+    
 });
