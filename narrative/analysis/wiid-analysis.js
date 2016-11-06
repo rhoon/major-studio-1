@@ -10,6 +10,8 @@ var d3 = require('d3');
 
 var pts = JSON.parse(fs.readFileSync('pts-nested.json', 'utf8'));
 
+var wiidBeta = [];
+
 function calcAvg(itemsToAvg) {
     
     //itemsToAvg is an array of datapoints
@@ -59,6 +61,13 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
                 var thisYear = wiid[item].Year;
                 var countryCode = wiid[item].Country.split(' ')[0].toLowerCase();
                 
+                //make wiid-only dataset
+                var country = new Object();
+                country.country = wiid[item].Country;
+                country.year = wiid[item].Year;
+                country.giniAvg = giniAvg;
+                wiidBeta.push(country);
+                
                 if (thisYear > 1976) {
                     console.log(countryCode, giniAvg); 
                     pts[countryCode].years[thisYear].giniAvg = giniAvg;
@@ -68,6 +77,11 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
         
         
     }
+    
+    fs.writeFile('wiid.json', JSON.stringify(wiidBeta), function(err) {
+        if (err) {throw err;}
+        console.log("wiid written");
+    });
     
     fs.writeFile('pts+wiid.json', JSON.stringify(pts), function(err) {
         if (err) {throw err;}
