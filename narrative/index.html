@@ -6,8 +6,12 @@
     <title>UNDP-Narrative</title>
     <!--D3-->
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    
+
     <style> 
+    body {
+        
+    }
+    
     </style>
     
   </head>
@@ -39,12 +43,22 @@
     // var generateLine = d3.svg.line()
     //     .x(function(d) { return xScale(d.year); })
     //     .y(function(d) { return yScale(d.val); });
-
-    d3.json("data/pts.json", (error, data) => {
-        if (error) throw "error loading data";
+    
+d3.queue()
+    .defer(d3.json, "data/pitf.json")
+    .defer(d3.json, "data/pts.json")
+    .defer(d3.json, "data/wiid.json")
+    .awaitAll(ready);
+    
+function ready(error, results) {
+  if (error) throw error;
+  drawCharts(results[0], results[1], results[2]);
+}
+    
+    function drawCharts(pitf, pts, wiid) {
         
         //parse strings to numbers
-        data.forEach(function(d) {
+        pts.forEach((d) => {
             d.ptsAvg = +d.ptsAvg;
             d.year = +d.year;
         });
@@ -52,7 +66,7 @@
         // nests data structure
         var ptsByCountry = d3.nest()
             .key(function(d) { return d.country; })
-            .entries(data);
+            .entries(pts);
         
         console.log(ptsByCountry);
         
@@ -110,7 +124,7 @@
         
         
         
-    });
+    }
 
 
     
