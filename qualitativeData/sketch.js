@@ -67,6 +67,7 @@ function setup() {
 function callback(data) {
     
     var count = data.getRowCount();
+    console.log("number of events in Africa: " + count);
     
     for (var i = 0; i < count; i++) {
         //break up description
