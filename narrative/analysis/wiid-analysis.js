@@ -59,7 +59,12 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
 
                 //add it to pts object
                 var thisYear = wiid[item].Year;
-                var countryCode = wiid[item].Country.split(' ')[0].toLowerCase();
+                
+                var countryCodes = wiid[item].Country.split(' ');
+                var countryCode = countryCodes[0].replace(',','')+countryCodes[1];
+                countryCode = countryCode.toLowerCase().replace('undefined','');
+                console.log(countryCode);
+                
                 
                 //make wiid-only dataset
                 var country = new Object();

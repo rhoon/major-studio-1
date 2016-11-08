@@ -4,6 +4,8 @@ var fs = require('fs');
 var async = require('async');
 var d3 = require('d3');
 
+var pts = JSON.parse(fs.readFileSync('pts-nested.json', 'utf8'));
+
 fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://learnjsdata.com/node.html
     data = d3.tsvParse(data);
     
@@ -21,10 +23,24 @@ fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://lear
                 endYear = 2017;
             }
             
+            var countryCodes = data[event].country.split(' ');
+            var countryCode = countryCodes[0].replace(',','')+countryCodes[1];
+            countryCode = countryCode.toLowerCase().replace('undefined','');
+            
             data[event].duration = endYear - data[event].began;
             data[event].duration = data[event].duration.toFixed(2);
-            data[event].countryCode = data[event].country.split(' ')[0].toLowerCase().replace(',','');
-        
+            data[event].countryCode = countryCode;
+            
+            var began = Math.floor(data[event].began);
+            
+            if (began > 1976) {
+                pts[countryCode].years[began].duration = data[event].duration;
+                pts[countryCode].years[began].began = data[event].began;
+                pts[countryCode].years[began].ended = data[event].ended;
+                pts[countryCode].years[began].conflictType = data[event].conflictType;
+                pts[countryCode].years[began].eventDescription = data[event].eventDescription;
+            }
+            
         // get rid of junk
         } else {
             data.splice(event, 1);
@@ -35,6 +51,12 @@ fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://lear
         if (err) {throw err;}
         console.log("done");
     });
+    
+    fs.writeFile('pts+pitf.json', JSON.stringify(pts), function(err) {
+        if (err) {throw err;}
+        console.log("pts+wiid written");
+    });
+    
 });
 
 function parseYear(yearString) {
