@@ -80,8 +80,7 @@
         .scale(yScale);
         
     var barWidth = width/(2016-1976);
-    console.log('barWidth: '+barWidth);
-    
+
     d3.json('data/pts+pitf.json', drawCharts);
     
     //show full detail view of country
@@ -93,6 +92,33 @@
         thisDiv.transition()
           .duration(500)
           .style('height', '300px');
+        
+        var newHeight = 100;
+          
+        yScale.range([newHeight, 0]);
+        
+        var years = d3.entries(d.value.years);
+          
+        var chart = thisDiv.select('svg')
+          .attr('height', newHeight);
+        
+        // console.log(years);
+        chart.selectAll('rect.ptsAvg')
+          .attr('y', (d) => { 
+          return yScale(20*d.value.ptsAvg);
+          })
+          .attr('height', (d) => { 
+              return newHeight-yScale(20*d.value.ptsAvg);
+          });
+        
+        // axis for chart
+        chart.append('g')
+          .call(xAxis)
+          .attr('transform', 'translate(0, '+newHeight+')');
+          
+        chart.append('g')
+          .call(yAxis)
+          .attr('transform', 'translate('+margin.left+', 0)');
         
       }
     }
@@ -137,14 +163,14 @@
           .duration(500)
           .remove();
 
-        console.log('mouseOFF');
+        // console.log('mouseOFF');
       }
     }
     
     
     function drawCharts(data) {
-      console.log('entries');
-      console.log(d3.entries(data));
+      // console.log('entries');
+      // console.log(d3.entries(data));
       
       data = d3.entries(data);
       
@@ -209,8 +235,7 @@ function drawChart(elem, d) {
       .attr('height', 1)
       .attr('width', (d) => {
         var length = xScale(parseFloat(d.ended))-xScale(parseFloat(d.began));
-        console.log('duration');
-        console.log(parseFloat(d.duration));
+        
         if (length > 0) {
           return length;
         } else {
