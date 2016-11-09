@@ -41,10 +41,27 @@
       var width = 400;
       var height = 300;
       
+      var min = 100000;
+      var max = 0;
+      
       d3.tsv("LaborInNonAgricultSector.tsv", function(error, data) {
         if (error) throw error;
         
-        console.log(data);
+        // console.log(data);
+        
+        data.forEach(function(d) {
+          for(var i=0; i<24; i++) {
+            var val = d[Object.keys(d)[i]];
+            if (min > parseFloat(d[val])) {
+              min = parseFloat(d[val]);
+            }
+            if (max < parseFloat(d[val])) {
+              max = parseFloat(d[val]);
+            }
+          }
+        })
+        
+        console.log('min: '+min+' max: '+max);
         
         var body = d3.select('body');
         
@@ -81,9 +98,11 @@
                     // .attr('cy', mapY(d[1990+i])) 
                     .attr('cy', function(){ return mapY(d[Object.keys(d)[i]]); })
                     .attr('r', 3)
-                    .attr('fill', 'black');
+                    .on('mouseover', function() {
+                      d3.select(this).style('fill', 'green');
+                    })
                     
-              console.log(d[Object.keys(d)[i]]);
+              // console.log(d[Object.keys(d)[i]]);
                   
               }
               

@@ -6,10 +6,49 @@
     <title>UNDP-Narrative</title>
     <!--D3-->
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
 
     <style> 
     body {
-        
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 400;
+      text-align: left;
+    }
+    
+    h1 {
+      text-align: left;
+      font-size: 15px;
+      font-weight: 300;
+      display: none;
+    }
+    
+    div {
+      padding: 0;
+      margin: 0;
+      height: 20px;
+      /*border: 1px solid grey;*/
+      overflow: hidden;
+      width: 1000px;
+      margin: auto 50%;
+    }
+    
+    svg {
+      padding: 0;
+      margin: 0;
+      position: relative;
+      top: 0px;
+    }
+    
+    rect.ptsAvg {
+      fill: #ffe41f;
+      opacity: 1;
+    }
+    
+    p.country {
+      position: relative;
+      top: -20px;
+      text-align: left;
     }
     
     </style>
@@ -20,14 +59,14 @@
     
     <script>
     
-    var margin = {top: 20, right: 10, bottom: 20, left: 30};
+    var margin = {top: 0, right: 10, bottom: 5, left: 5};
 
     var width = 800 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        height = 15 - margin.top - margin.bottom;
         
     var xScale = d3.scaleLinear()
         .range([0, width])
-        .domain([1976, 2015]);
+        .domain([1976, 2016]);
 
     var yScale = d3.scaleLinear()
         .range([height, 0])
@@ -39,92 +78,172 @@
     
     var yAxis = d3.axisLeft()
         .scale(yScale);
-    
-    // var generateLine = d3.svg.line()
-    //     .x(function(d) { return xScale(d.year); })
-    //     .y(function(d) { return yScale(d.val); });
-    
-d3.queue()
-    .defer(d3.json, "data/pitf.json")
-    .defer(d3.json, "data/pts.json")
-    .defer(d3.json, "data/wiid.json")
-    .awaitAll(ready);
-    
-function ready(error, results) {
-  if (error) throw error;
-  drawCharts(results[0], results[1], results[2]);
-}
-    
-    function drawCharts(pitf, pts, wiid) {
         
-        //parse strings to numbers
-        pts.forEach((d) => {
-            d.ptsAvg = +d.ptsAvg;
-            d.year = +d.year;
-        });
-        
-        // nests data structure
-        var ptsByCountry = d3.nest()
-            .key(function(d) { return d.country; })
-            .entries(pts);
-        
-        console.log(ptsByCountry);
-        
-        // append div container for chart per cutoff
-        var countryBox = d3.select("body")
-            .selectAll("countryBox")
-            .data(ptsByCountry)
-            .enter()
-            .append("div")
-            .attr("class", "countryBox");
-        
-        //append country name
-        countryBox.append("h2")
-            .text(function(d) { return d.key });
-        
-        //append chart container
-        var svg = countryBox.append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var barWidth = width/(2016-1976);
 
-        //append bars
-        svg.selectAll('rect')
-            .data((d) => { return d.values })
-            .enter()
-            .append('rect')
-            .attr('x', (d) => { 
-                return xScale(d.year);
-            })
-            .attr('y', (d) => { 
-                return yScale(20*d.ptsAvg);
-            })
-            .attr('width', 10)
-            .attr('height', (d) => { 
-                return height-yScale(20*d.ptsAvg);
-            })
-            .attr('fill', 'black')
-            .attr('opacity', 0.1);
-            
-        //append axes
-        svg.append("g")
-            .call(xAxis)
-            .attr("transform", "translate(0, " + height + ")");
+    d3.json('data/pts+pitf.json', drawCharts);
+    
+    //show full detail view of country
+    function chartClick() {
+      return function(d) {
         
-        svg.append("g")
-            .call(yAxis);
+        var thisDiv = d3.select(this);
         
-        //append lines
-        // var countryLine = svg.selectAll(".country-line")
-        //     .data((d) => { return d })
-        //     .enter()
-        //     .append("path")
-        //     .attr("d", function(d) { return generateLine(d.values); });
+        thisDiv.transition()
+          .duration(500)
+          .style('height', '300px');
         
+        var newHeight = 100;
+          
+        yScale.range([newHeight, 0]);
         
+        var years = d3.entries(d.value.years);
+          
+        var chart = thisDiv.select('svg')
+          .attr('height', newHeight);
         
+        // console.log(years);
+        chart.selectAll('rect.ptsAvg')
+          .attr('y', (d) => { 
+          return yScale(20*d.value.ptsAvg);
+          })
+          .attr('height', (d) => { 
+              return newHeight-yScale(20*d.value.ptsAvg);
+          });
+        
+        // axis for chart
+        chart.append('g')
+          .call(xAxis)
+          .attr('transform', 'translate(0, '+newHeight+')');
+          
+        chart.append('g')
+          .call(yAxis)
+          .attr('transform', 'translate('+margin.left+', 0)');
+        
+      }
     }
+    
+    
+    //show a light detail view of a country
+    function chartOn(name, dy) {
+      return function() {
+        
+      d3.select(this)
+        .transition()
+        .duration(500)
+        .style('height', '80px')
+      .select('svg')
+        .style('top', '50px');
+        
+      //appending element transitions? (eg having text fade in)
+        
+      d3.select(this)
+      .append('p')
+        .attr('class', 'country')
+        .attr('x', 0)
+        .attr('y', height)
+        .text(name);
+      
+      };
+    }
+    
+    //move things back
+    function chartOff() {
+      return function() {
+        
+      var thisBlock = d3.select(this);
+        thisBlock.transition()
+          .duration(500)
+          .style('height', '20px')
+        .select('svg')
+          .style('top', '0px');
+          
+        thisBlock.select('p.country')
+          .transition()
+          .duration(500)
+          .remove();
+
+        // console.log('mouseOFF');
+      }
+    }
+    
+    
+    function drawCharts(data) {
+      // console.log('entries');
+      // console.log(d3.entries(data));
+      
+      data = d3.entries(data);
+      
+      body = d3.select('body');
+    
+      var svg = body.selectAll('div')
+          .data(data)
+          .enter()
+          .append('div')
+            .each(function(d) {
+              // console.log(d);
+              
+              //   var firstLetter = d['Country Name'].toUpperCase().charAt(0);
+              var block = d3.select(this);
+              
+              block.on('mouseenter', chartOn(d.value.name, "-1em"))
+                .on('mouseleave', chartOff())
+                .on('click', chartClick());
+              
+              drawChart(block, d);
+                  
+              }); //end each
+        
+      }
+        
+function drawChart(elem, d) {
+  var chart = elem.append('svg')
+    .attr('width', width+margin.right+margin.left)
+    .attr('height', height+margin.top+margin.bottom)
+  
+  var years = d3.entries(d.value.years);
+  
+  //append bars
+  chart.selectAll('rect.ptsAvg')
+      .data(years)
+      .enter()
+      .append('rect')
+      .attr('class', 'ptsAvg')
+      .attr('x', (d) => { 
+          return xScale(parseFloat(d.key));
+      })
+      .attr('y', (d) => { 
+          return yScale(20*d.value.ptsAvg);
+      })
+      .attr('width', barWidth)
+      .attr('height', (d) => { 
+          return height-yScale(20*d.value.ptsAvg);
+      });
+
+  var pitf = d.value.pitf;
+  
+  // append pitf
+  chart.selectAll('rect.pitf')
+      .data(pitf)
+      .enter()
+      .append('rect')
+      .attr('class', 'pitf')
+      .attr('x', (d) => {
+        return xScale(parseFloat(d.began));
+      })
+      .attr('y', height-1)
+      .attr('height', 1)
+      .attr('width', (d) => {
+        var length = xScale(parseFloat(d.ended))-xScale(parseFloat(d.began));
+        
+        if (length > 0) {
+          return length;
+        } else {
+          return barWidth;
+        }
+      }); 
+}
+
 
 
     

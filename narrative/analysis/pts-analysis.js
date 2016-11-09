@@ -42,6 +42,7 @@ function calcAvg(itemsToAvg) {
 function Country(fullName) {
     this.years = {};
     this.name = fullName;
+    this.pitf = [];
 }
 
 function Year(ptsAvg) {
@@ -73,7 +74,11 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         delete data[datum].ptss;
         
         // restructure data - index by country and then by year 
-        var countryCode = data[datum].country.split(' ')[0].toLowerCase().replace(',','');
+        var countryCodes = data[datum].country.split(' ');
+        var countryCode = countryCodes[0].replace(',','')+countryCodes[1];
+        countryCode = countryCode.toLowerCase().replace('undefined','');
+        // console.log(countryCode);
+        
         var country = data[datum].country;
         // year index
         if (datum == 0) {
@@ -145,7 +150,7 @@ function countryAvgs() {
         current.min = d3.min(allPTS);
         current.range = current.max-current.min;
         current.range = current.range.toFixed(2);
-        console.log('max: '+current.max+' min: '+current.min+' range: '+current.range);
+        // console.log('max: '+current.max+' min: '+current.min+' range: '+current.range);
         
         // excel-friendly meta data
         countriesMeta[i] = new Object();
