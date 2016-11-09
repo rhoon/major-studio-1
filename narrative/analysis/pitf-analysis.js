@@ -33,13 +33,17 @@ fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://lear
             
             var began = Math.floor(data[event].began);
             
+            //construct pitf object
             if (began > 1976) {
-                pts[countryCode].years[began].duration = data[event].duration;
-                pts[countryCode].years[began].began = data[event].began;
-                pts[countryCode].years[began].ended = data[event].ended;
-                pts[countryCode].years[began].conflictType = data[event].conflictType;
-                pts[countryCode].years[began].eventDescription = data[event].eventDescription;
+                var pitf = new Object()
+                pitf.duration = data[event].duration;
+                pitf.began = data[event].began;
+                pitf.ended = data[event].ended;
+                pitf.conflictType = data[event].conflictType;
+                pitf.eventDescription = data[event].eventDescription;
             }
+            //push to pts
+                pts[countryCode].pitf.push(pitf);
             
         // get rid of junk
         } else {

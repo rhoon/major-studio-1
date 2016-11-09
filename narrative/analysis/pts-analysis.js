@@ -42,6 +42,7 @@ function calcAvg(itemsToAvg) {
 function Country(fullName) {
     this.years = {};
     this.name = fullName;
+    this.pitf = [];
 }
 
 function Year(ptsAvg) {
