@@ -13,6 +13,7 @@
     body {
       font-family: 'Open Sans', sans-serif;
       font-weight: 400;
+      font-family: sans-serif;
       text-align: left;
     }
     
@@ -20,24 +21,45 @@
       text-align: left;
       font-size: 15px;
       font-weight: 300;
-      display: none;
+      /*display: none;*/
+      opacity: 0;
+      /*border: 1px solid red;*/
+      padding: 0;
     }
     
-    div {
+    div.chart {
       padding: 0;
-      margin: 0;
-      height: 20px;
+      height: 10px;
       /*border: 1px solid grey;*/
-      overflow: hidden;
-      width: 1000px;
-      margin: auto 50%;
+      /*overflow: hidden;*/
+      width: 800px;
+      margin: 0 auto;
+      display: block;
+      position: relative;
     }
     
     svg {
-      padding: 0;
+      padding: 0 0 0 0;
       margin: 0;
-      position: relative;
-      top: 0px;
+      position: absolute;
+      bottom: 0;
+      display: block;
+      z-index: 100;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 400;
+    }
+    
+    .axis {
+      opacity: 0;
+    }
+    
+    .x.axis path.domain {
+      display: none;
+    }
+    
+    .axis text {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 8px;
     }
     
     rect.ptsAvg {
@@ -45,10 +67,51 @@
       opacity: 1;
     }
     
-    p.country {
-      position: relative;
-      top: -20px;
+    text.pitf {
+      font-size: 8px;
+      opacity: 0;
+    }
+    
+    .read {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    div.modal.back {
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: .8;
+      position: absolute;
+      z-index: 500;
+      top: 0px;
+    }
+    
+    div.modal.front {
+      width: 33%;
+      height: auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 5px;
+      position: absolute;
+      top: 10%;
+      left: 33%;
+      font-size: 14px;
+      z-index: 501;
+      margin: auto 0;
+    }
+    
+    h1.modal {
       text-align: left;
+      font-size: 15px;
+      font-weight: 300;
+      opacity: 0;
+      border-bottom: 1px solid black;
+      padding: 0;
+    }
+    
+    h6.modal {
+      
     }
     
     </style>
@@ -89,36 +152,61 @@
         
         var thisDiv = d3.select(this);
         
+        thisDiv.attr('class','chart open');
+        
+        //make chart taller
         thisDiv.transition()
           .duration(500)
-          .style('height', '300px');
+          .style('height', '175px');
         
+        //declare var for use in svg, adjust yScale
         var newHeight = 100;
-          
+        margin.top = 20;
         yScale.range([newHeight, 0]);
         
+        //access data
         var years = d3.entries(d.value.years);
-          
+        
+        //update height of container
         var chart = thisDiv.select('svg')
+          .transition()
+          .duration(500)
           .attr('height', newHeight);
         
-        // console.log(years);
+        //update pts bars
         chart.selectAll('rect.ptsAvg')
           .attr('y', (d) => { 
-          return yScale(20*d.value.ptsAvg);
+            return yScale(20*d.value.ptsAvg);
           })
           .attr('height', (d) => { 
-              return newHeight-yScale(20*d.value.ptsAvg);
+            return newHeight-yScale(20*d.value.ptsAvg);
           });
-        
-        // axis for chart
-        chart.append('g')
-          .call(xAxis)
-          .attr('transform', 'translate(0, '+newHeight+')');
           
-        chart.append('g')
-          .call(yAxis)
-          .attr('transform', 'translate('+margin.left+', 0)');
+        //show pitf data
+        chart.selectAll('text.pitf.brief')
+          .attr('y', margin.top+12)
+          .style('opacity', 1);
+          
+        chart.selectAll('text.pitf.date')
+          .attr('y', margin.top)
+          .style('opacity', 1);
+          
+        chart.selectAll('text.pitf.read')
+          .attr('y', margin.top+24)
+          .style('opacity', 1);
+          
+        //show axes
+        chart.select('.axis')
+          .attr('opacity', 1);
+        
+        chart.select('.y')
+          .call(yAxis);
+        
+        chart.selectAll('x.axis')
+          .attr('transform', 'translate(0, '+newHeight+')');
+        
+        thisDiv.select('svg')
+          .attr('overflow', 'visible');
         
       }
     }
@@ -128,42 +216,44 @@
     function chartOn(name, dy) {
       return function() {
         
-      d3.select(this)
-        .transition()
-        .duration(500)
-        .style('height', '80px')
-      .select('svg')
-        .style('top', '50px');
-        
-      //appending element transitions? (eg having text fade in)
-        
-      d3.select(this)
-      .append('p')
-        .attr('class', 'country')
-        .attr('x', 0)
-        .attr('y', height)
-        .text(name);
+      thisDiv = d3.select(this);
       
+      if (thisDiv.classed('open') == false) {
+      
+        thisDiv.transition()
+          .duration(500)
+          .style('height', '50px'); // HEIGHT OPEN
+        
+        thisDiv.select('h1')
+          .transition()
+          .duration(500)
+          .style('opacity', 1);
+          
+      } // end if
+        
       };
     }
     
+    
     //move things back
     function chartOff() {
-      return function() {
+      return function(d) {
         
-      var thisBlock = d3.select(this);
-        thisBlock.transition()
-          .duration(500)
-          .style('height', '20px')
-        .select('svg')
-          .style('top', '0px');
-          
-        thisBlock.select('p.country')
-          .transition()
-          .duration(500)
-          .remove();
-
-        // console.log('mouseOFF');
+        var thisDiv = d3.select(this);
+       
+        if (thisDiv.classed('open') == false) {
+        
+          thisDiv.transition()
+            .duration(500)
+            .style('height', '10px'); // HEIGHT CLOSED
+            
+          thisDiv.select('h1')
+            .transition()
+            .duration(500)
+            .style('opacity', 0);
+            
+        } //end if
+  
       }
     }
     
@@ -180,10 +270,13 @@
           .data(data)
           .enter()
           .append('div')
+          .attr('class', 'chart')
             .each(function(d) {
               // console.log(d);
               
-              //   var firstLetter = d['Country Name'].toUpperCase().charAt(0);
+              // set variable add object to detect if open
+              d.value.open = 'F';
+              
               var block = d3.select(this);
               
               block.on('mouseenter', chartOn(d.value.name, "-1em"))
@@ -193,10 +286,15 @@
               drawChart(block, d);
                   
               }); //end each
-        
       }
+      
         
 function drawChart(elem, d) {
+  // console.log(d.value.name);
+  var country = d.value.name;
+  
+  elem.append('h1').text(country);
+  
   var chart = elem.append('svg')
     .attr('width', width+margin.right+margin.left)
     .attr('height', height+margin.top+margin.bottom)
@@ -242,9 +340,101 @@ function drawChart(elem, d) {
           return barWidth;
         }
       }); 
+      
+  //descriptions of events
+      
+  chart.selectAll('text.pitf.brief')
+      .data(pitf)
+      .enter()
+      .append('text')
+      .attr('class', 'pitf brief')
+      .attr('x', (d) => {
+        return xScale(parseFloat(d.began));
+      })
+      .text((d) => {
+        console.log(d);
+        var findSpace = d.eventDescription.slice(30,50).indexOf(' ');
+        return d.eventDescription.slice(0,30+findSpace)+'...';
+      });
+      
+  chart.selectAll('text.pitf.date')
+      .data(pitf)
+      .enter()
+      .append('text')
+      .attr('class', 'pitf date')
+      .attr('x', (d) => {
+        return xScale(parseFloat(d.began));
+      })
+      .text((d) => {
+        var dates = Math.floor(parseFloat(d.began))+'-'+Math.floor(parseFloat(d.ended));
+        return dates;
+      });
+      
+  chart.selectAll('text.pitf.read')
+      .data(pitf)
+      .enter()
+      .append('text')
+      .attr('class', 'pitf read')
+      .attr('x', (d) => {
+        return xScale(parseFloat(d.began));
+      })
+      .text('Read More')
+      .on('click', showFullText(d, country));
+      
+  chart.selectAll('text.pitf')
+    .attr('text-anchor', (d) => {
+        if (parseFloat(d.began) > 2008 ) {
+          return 'end';
+        } else { return 'start'; }
+      });
+  
+  // create axes
+  chart.append('g')
+    .call(xAxis)
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0, '+height+')');
+                
+  chart.append('g')
+    .call(yAxis)
+    .attr('class', 'y axis')
+    .attr('transform', 'translate('+margin.left+', 0)');
+  
 }
 
-
+  function showFullText(d, country) {
+    return function(d) {
+    
+    console.log(country);
+    
+    d3.select('body')
+      .append('div')
+      .attr('class', 'modal back')
+      .on('click', removeModal());
+      
+    textBox = d3.select('body')
+      .append('div')
+      .attr('class', 'modal front');
+    
+    // textBox.append('h1')
+    //   .attr('class', 'modal')
+    //   .text(country);
+      
+    // textBox.append('')
+    
+    textBox.append('p')
+      .text(d.eventDescription);
+      
+    }
+  }
+  
+  function removeModal() {
+    return function() {
+      
+      d3.selectAll('div.modal')
+        .remove();
+      
+    }
+  }
 
     
     </script>
