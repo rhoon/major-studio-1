@@ -13,18 +13,37 @@
     body {
       font-family: 'Open Sans', sans-serif;
       font-weight: 400;
-      font-family: sans-serif;
       text-align: left;
+      font-size: 15px;
     }
     
-    h1 {
+    div#intro {
+      width: 800px;
+      margin: 0 auto 30px;
+      padding: 0;
+      font-weight: 300;
+    }
+    
+    h1#title {
+      text-align: left;
+      font-size: 30px;
+      font-weight: 300;
+      margin-bottom: 0;
+    }
+    
+    div p {
+      /*margin-top: 5px;*/
+    }
+    
+    h1.chart {
       text-align: left;
       font-size: 15px;
       font-weight: 300;
-      /*display: none;*/
+      display: block;
       opacity: 0;
-      /*border: 1px solid red;*/
-      padding: 0;
+      border-top: 1px solid gray;
+      padding: 5px 0 0 0;
+      width: 785px;
     }
     
     div.chart {
@@ -49,6 +68,7 @@
       font-weight: 400;
     }
     
+    /* AXES */
     .axis {
       opacity: 0;
     }
@@ -62,19 +82,32 @@
       font-size: 8px;
     }
     
+    /* PTS DATA */
     rect.ptsAvg {
       fill: #ffe41f;
       opacity: 1;
     }
     
+    /* PITF TEASER INFO */
     text.pitf {
       font-size: 8px;
       opacity: 0;
     }
     
+    /* READ MORE BUTTON */
     .read {
       text-decoration: underline;
       cursor: pointer;
+    }
+    
+    /* X / CLOSE BUTTON */
+    .close {
+      width: 15px;
+      height: 15px;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      
     }
     
     div.modal.back {
@@ -114,11 +147,37 @@
       
     }
     
+    .open {
+      margin-bottom: 15px;
+    }
+    
+    #groupAxis {
+      margin: 30px 0 0 0;
+      width: 785px;
+    }
+    
+    #key {
+      display: inline;
+      width: 300px;
+      float: right;
+      padding: 10px 20px 0 0;
+    }
+    
     </style>
     
   </head>
 
   <body>
+    
+    <div id='intro'>
+      <h1 id='title'>Violence & Revolution in Africa <img id='key' src='key-01.svg'></h1>
+      
+      <img id='groupAxis' src="groupAxis-01.svg">
+      <!--<p>-->
+      <!--  Black bars show the duration of a revolution or coup event. <br />-->
+      <!--  Yellow vertical bars show the PTS score in the year (x axis).-->
+      <!--</p>-->
+    </div>
     
     <script>
     
@@ -133,7 +192,7 @@
 
     var yScale = d3.scaleLinear()
         .range([height, 0])
-        .domain([0, 100]);
+        .domain([0, 5]);
         
     var xAxis = d3.axisTop()
         .tickFormat(d3.format("d"))
@@ -147,6 +206,15 @@
 
     d3.json('data/pts+pitf.json', drawCharts);
     
+    //close full detail view -- NEEDS TO BE REFINED
+    function closeChart() {
+      return function(d) {
+        
+        window.location.reload(false);
+        
+      }
+    }
+    
     //show full detail view of country on click
     function chartClick() {
       return function(d) {
@@ -154,6 +222,14 @@
         var thisDiv = d3.select(this);
         
         thisDiv.attr('class','chart open');
+        
+        //append 'close country' button
+        thisDiv.append('img')
+          .attr('src', 'closeButton-01.svg')
+          .attr('class', 'close')
+        
+        thisDiv.select('img')  
+          .on('click', closeChart());
         
         //make chart taller
         thisDiv.transition()
@@ -177,10 +253,10 @@
         //update pts bars
         chart.selectAll('rect.ptsAvg')
           .attr('y', (d) => { 
-            return yScale(20*d.value.ptsAvg);
+            return yScale(d.value.ptsAvg);
           })
           .attr('height', (d) => { 
-            return newHeight-yScale(20*d.value.ptsAvg);
+            return newHeight-yScale(d.value.ptsAvg);
           });
           
         //show pitf data
@@ -209,6 +285,7 @@
         thisDiv.select('svg')
           .attr('overflow', 'visible');
         
+        
       }
     }
     
@@ -225,7 +302,7 @@
           .duration(500)
           .style('height', '50px'); // HEIGHT OPEN
         
-        thisDiv.select('h1')
+        thisDiv.select('h1.chart')
           .transition()
           .duration(500)
           .style('opacity', 1);
@@ -248,9 +325,9 @@
             .duration(500)
             .style('height', '10px'); // HEIGHT CLOSED
             
-          thisDiv.select('h1')
+          thisDiv.select('h1.chart')
             .transition()
-            .duration(500)
+            .duration(200)
             .style('opacity', 0);
             
         } //end if
@@ -264,6 +341,10 @@
       // console.log(d3.entries(data));
       
       data = d3.entries(data);
+      console.log(data);
+      data.sort(function(a,b) {
+        return b.value.overallPTS-a.value.overallPTS;
+      })
       
       body = d3.select('body');
     
@@ -274,9 +355,6 @@
           .attr('class', 'chart')
             .each(function(d) {
               // console.log(d);
-              
-              // set variable add object to detect if open
-              d.value.open = 'F';
               
               var block = d3.select(this);
               
@@ -294,7 +372,7 @@ function drawChart(elem, d) {
   // console.log(d.value.name);
   var country = d.value.name;
   
-  elem.append('h1').text(country);
+  elem.append('h1').attr('class', 'chart').text(country);
   
   var chart = elem.append('svg')
     .attr('width', width+margin.right+margin.left)
@@ -312,14 +390,30 @@ function drawChart(elem, d) {
           return xScale(parseFloat(d.key));
       })
       .attr('y', (d) => { 
-          return yScale(20*d.value.ptsAvg);
+          return yScale(d.value.ptsAvg);
       })
       .attr('width', barWidth)
       .attr('height', (d) => { 
-          return height-yScale(20*d.value.ptsAvg);
+          return height-yScale(d.value.ptsAvg);
       });
 
   var pitf = d.value.pitf;
+  
+  function began(d) {
+    if (parseFloat(d) > 1976) {
+      return parseFloat(d);
+    } else {
+      return 1976;
+    }
+  }
+  
+  function beganText(d) {
+    if (parseFloat(d) > 1976) {
+      return parseFloat(d);
+    } else {
+      return 1977.5;
+    }
+  }
   
   // append pitf
   chart.selectAll('rect.pitf')
@@ -328,12 +422,12 @@ function drawChart(elem, d) {
       .append('rect')
       .attr('class', 'pitf')
       .attr('x', (d) => {
-        return xScale(parseFloat(d.began));
+        return xScale(began(d.began));
       })
-      .attr('y', height-1)
-      .attr('height', 1)
+      .attr('y', height-2)
+      .attr('height', 2)
       .attr('width', (d) => {
-        var length = xScale(parseFloat(d.ended))-xScale(parseFloat(d.began));
+        var length = xScale(parseFloat(d.ended))-xScale(began(d.began));
         
         if (length > 0) {
           return length;
@@ -350,10 +444,9 @@ function drawChart(elem, d) {
       .append('text')
       .attr('class', 'pitf brief')
       .attr('x', (d) => {
-        return xScale(parseFloat(d.began));
+        return xScale(parseFloat(beganText(d.began)));
       })
       .text((d) => {
-        console.log(d);
         var findSpace = d.eventDescription.slice(30,50).indexOf(' ');
         return d.eventDescription.slice(0,30+findSpace)+'...';
       });
@@ -364,7 +457,7 @@ function drawChart(elem, d) {
       .append('text')
       .attr('class', 'pitf date')
       .attr('x', (d) => {
-        return xScale(parseFloat(d.began));
+        return xScale(parseFloat(beganText(d.began)));
       })
       .text((d) => {
         var dates = Math.floor(parseFloat(d.began))+'-'+Math.floor(parseFloat(d.ended));
@@ -377,7 +470,7 @@ function drawChart(elem, d) {
       .append('text')
       .attr('class', 'pitf read')
       .attr('x', (d) => {
-        return xScale(parseFloat(d.began));
+        return xScale(parseFloat(beganText(d.began)));
       })
       .text('Read More')
       .on('click', showFullText(d, country));
@@ -404,8 +497,6 @@ function drawChart(elem, d) {
   function showFullText(d, country) {
     return function(d) {
     
-    console.log(country);
-    
     d3.select('body')
       .append('div')
       .attr('class', 'modal back')
@@ -414,12 +505,6 @@ function drawChart(elem, d) {
     textBox = d3.select('body')
       .append('div')
       .attr('class', 'modal front');
-    
-    // textBox.append('h1')
-    //   .attr('class', 'modal')
-    //   .text(country);
-      
-    // textBox.append('')
     
     textBox.append('p')
       .text(d.eventDescription);

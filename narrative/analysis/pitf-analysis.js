@@ -39,11 +39,13 @@ fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://lear
             
             //construct pitf object
             if (began >= 1976) {
+                
                 console.log('make new pitf object for pts');
+                
                 var pitf = new Object()
-                pitf.duration = data[event].duration;
-                pitf.began = data[event].began;
-                pitf.ended = data[event].ended;
+                pitf.duration = Math.floor(data[event].duration);
+                pitf.began = Math.floor(data[event].began);
+                pitf.ended = Math.floor(data[event].ended);
                 pitf.conflictType = data[event].conflictType;
                 pitf.eventDescription = data[event].eventDescription;
                 var check = pitf.eventDescription.slice(0, 15);
