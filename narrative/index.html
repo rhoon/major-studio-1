@@ -139,14 +139,15 @@
         .tickFormat(d3.format("d"))
         .scale(xScale);
     
-    var yAxis = d3.axisLeft()
+    var yAxis = d3.axisRight()
+        .ticks(4)
         .scale(yScale);
         
     var barWidth = width/(2016-1976);
 
     d3.json('data/pts+pitf.json', drawCharts);
     
-    //show full detail view of country
+    //show full detail view of country on click
     function chartClick() {
       return function(d) {
         
@@ -196,13 +197,13 @@
           .style('opacity', 1);
           
         //show axes
-        chart.select('.axis')
-          .attr('opacity', 1);
+        chart.selectAll('.axis')
+          .style('opacity', 1);
         
         chart.select('.y')
           .call(yAxis);
         
-        chart.selectAll('x.axis')
+        chart.selectAll('.x.axis')
           .attr('transform', 'translate(0, '+newHeight+')');
         
         thisDiv.select('svg')
@@ -396,8 +397,7 @@ function drawChart(elem, d) {
                 
   chart.append('g')
     .call(yAxis)
-    .attr('class', 'y axis')
-    .attr('transform', 'translate('+margin.left+', 0)');
+    .attr('class', 'y axis');
   
 }
 
