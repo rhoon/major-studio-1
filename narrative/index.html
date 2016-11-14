@@ -210,7 +210,79 @@
     function closeChart() {
       return function(d) {
         
-        window.location.reload(false);
+        //easy out: forced refresh
+        // window.location.reload(false);
+        
+        //this selector does not work
+        // var thisDiv = d3.select('.open');
+        
+        var thisDiv = d3.select(this.parentNode);
+        
+        var newHeight = 10;
+        yScale.range([newHeight, 0]);
+        
+        //select the chart
+        var chart = thisDiv.select('svg')
+          .transition()
+          .duration(500);
+        
+        //update pts bars  
+        chart.selectAll('rect.ptsAvg')
+          .attr('y', (d) => { 
+            return yScale(d.value.ptsAvg);
+          })
+          .attr('height', (d) => { 
+            return newHeight-yScale(d.value.ptsAvg);
+          });
+          
+        //hide pitf data
+        chart.selectAll('text.pitf.brief')
+          .attr('y', 0)
+          .style('opacity', 0);
+          
+        chart.selectAll('text.pitf.date')
+          .attr('y', 0)
+          .style('opacity', 0);
+          
+        chart.selectAll('text.pitf.read')
+          .attr('y', 0)
+          .style('opacity', 0);
+          
+        //hide axes
+        chart.selectAll('.axis')
+          .style('opacity', 0);
+        
+        chart.select('.y')
+          .call(yAxis);
+        
+        chart.selectAll('.x.axis')
+          .attr('transform', 'translate(0, '+newHeight+')');
+        
+        thisDiv.select('svg')
+          .attr('overflow', 'hidden');
+        
+        chart.attr('height', newHeight);
+        
+        
+        //close div
+        thisDiv.transition()
+          .duration(500)
+          .style('height', '10px'); // HEIGHT CLOSED
+            
+        thisDiv.select('h1.chart')
+          .transition()
+          .duration(200)
+          .style('opacity', 0);
+          
+        thisDiv.select('img')
+          .transition()
+          .duration(200)
+          .style('opacity', 0)
+          .remove();
+        
+        //remove class 'open'
+        thisDiv.select('.open')
+          .classed('open', false);
         
       }
     }
@@ -221,6 +293,9 @@
         
         var thisDiv = d3.select(this);
         
+        //make sure chart is not already open
+        if (!thisDiv.classed('open')) {
+          
         thisDiv.attr('class','chart open');
         
         //append 'close country' button
@@ -229,7 +304,7 @@
           .attr('class', 'close')
         
         thisDiv.select('img')  
-          .on('click', closeChart());
+          .on('mouseup', closeChart());
         
         //make chart taller
         thisDiv.transition()
@@ -284,7 +359,8 @@
         
         thisDiv.select('svg')
           .attr('overflow', 'visible');
-        
+          
+        }
         
       }
     }
@@ -360,7 +436,7 @@
               
               block.on('mouseenter', chartOn(d.value.name, "-1em"))
                 .on('mouseleave', chartOff())
-                .on('click', chartClick());
+                .on('mouseup', chartClick());
               
               drawChart(block, d);
                   
@@ -473,7 +549,7 @@ function drawChart(elem, d) {
         return xScale(parseFloat(beganText(d.began)));
       })
       .text('Read More')
-      .on('click', showFullText(d, country));
+      .on('mouseup', showFullText(d, country));
       
   chart.selectAll('text.pitf')
     .attr('text-anchor', (d) => {
@@ -500,7 +576,7 @@ function drawChart(elem, d) {
     d3.select('body')
       .append('div')
       .attr('class', 'modal back')
-      .on('click', removeModal());
+      .on('mouseup', removeModal());
       
     textBox = d3.select('body')
       .append('div')
