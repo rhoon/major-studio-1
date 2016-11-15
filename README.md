@@ -2,6 +2,7 @@
 
 >I am studying the relationship between political violence and income inequality in Sub-Saharan Africa because I want to learn more about the outcomes of political violence. I am using Gini coefficient and Political Terror Scale’s 1-5 rating as my variables. My visualization is based on Wider’s World Income Inequality Database, Political Terror Scale’s database, and Center for Systemic Peace’s PITF State Failure Problem Set.
 
+[![](preview.png)](https://rhoon.github.io/major-studio-1/narrative/)
 ___
 
 ## Data Review
