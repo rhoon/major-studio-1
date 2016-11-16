@@ -149,7 +149,6 @@
       height: auto;
       padding: 30px;
       background-color: white;
-      border-radius: 5px;
       position: fixed;
       top: 10%;
       left: 33%;
@@ -165,8 +164,9 @@
       font-weight: 100;
       opacity: 1;
       border-bottom: 1px solid black;
-      padding: 0 0 5px 0;
+      padding: 0 0 0 0;
       margin: 0;
+      position: relative;
     }
     
     /* Date */
@@ -175,12 +175,30 @@
       font-weight: 300;
       float: right;
       text-align: right;
+      position: absolute;
+      bottom: 5px;
+      right: 0px;
+      
     }
     
     div.modal p {
         font-size: 12px;
         font-weight: 300;
         line-height: 150%;
+        padding: 8px 0 8px 0;
+    }
+    
+    div.modal .sources {
+        border-top: 1px solid black;
+        margin-top: 5px;
+    }
+    
+    div.modal a {
+        color: black;
+    }
+    
+    div.modal a:hover {
+        color: gray;
     }
     
     .open {
