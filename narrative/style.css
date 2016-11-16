@@ -11,6 +11,7 @@
       margin: 0 auto 30px;
       padding: 0;
       font-weight: 300;
+      position: relative;
     }
     
     .btn {  
@@ -164,7 +165,7 @@
       font-weight: 100;
       opacity: 1;
       border-bottom: 1px solid black;
-      padding: 0 0 0 0;
+      padding: 0 0 10px 0;
       margin: 0;
       position: relative;
     }
@@ -176,7 +177,7 @@
       float: right;
       text-align: right;
       position: absolute;
-      bottom: 5px;
+      bottom: 15px;
       right: 0px;
       
     }
@@ -191,6 +192,7 @@
     div.modal .sources {
         border-top: 1px solid black;
         margin-top: 5px;
+        font-size: 10px;
     }
     
     div.modal a {
@@ -213,4 +215,11 @@
     img.key {
       display: inline;
       padding: 3px;
+    }
+    
+    #ptsKey {
+        position: absolute;
+        bottom: 10px;
+        right: 0;
+        width: 200px;
     }

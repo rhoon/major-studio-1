@@ -25,27 +25,19 @@
       <h1 id='title'>Violence & <br />Revolution in Africa</h1>
       
       <p id="explainer">
-      Africa has been home to over XX revolution events over the past thirty years. 
+      Africa has been home to over 60 revolution events over the past thirty years. 
       Even with the best of intentions, a coup can have a multitude of results, 
       from a public democracy, to military dictatorship, and everything in between.
       <br /><br />
-      This chart examines the relationship between <a href="#">political violence</a> (<img class="key" src="bars-01.png" />) 
-      and <a href="#">revolution events</a> (<img class="key" src="bars-02.png" />) by country, over the last thirty years, 
+      This chart examines the relationship between <a href="#" id="povo">political violence</a> (<img class="key" src="bars-01.png" />) 
+      and <a id="revo" href="#">revolution events</a> (<img class="key" src="bars-02.png" />) by country, over the last thirty years, 
       to further examine the causes and outcomes of these connected histories. 
       
       </p>
       
-      
-      <!--<img id='groupAxis' src="groupAxis-01.svg">-->
+      <img id="ptsKey" src="keyFixed.svg" />
       
     </div>
-    
-    <!--<div>-->
-    <!--  <ol id='footer'>-->
-    <!--    <li><a href="http://politicalterrorscale.org/">Political Terror Scale</a></li> -->
-    <!--    <li><a href="http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf">Center For Systemic Peace</a></li>-->
-    <!--  </ol>-->
-    <!--</div>-->
     
     
     <script>
@@ -88,8 +80,10 @@
     function closeChart() {
       return function(d) {
         var thisDiv = d3.select(this.parentNode);
-        collapseChart(d, thisDiv);
-        // closed(thisDiv); //causing error
+        collapseChart(d, thisDiv, function() {
+          closed(thisDiv);
+        });
+        //  //causing error
       }
     }
     
@@ -168,7 +162,7 @@
     function expandAll() {
       return function(d) {
         var allCharts = d3.selectAll('div.chart');
-        ////////////////////// need to add thing that shows COUNTRIES
+
         allCharts.select('h1.chart')
           .transition()
           .duration(500)
@@ -304,6 +298,10 @@
       }
     }
     
+    function modal() {
+      
+    }
+    
     function drawCharts(data) {
       // console.log('entries');
       // console.log(d3.entries(data));
@@ -322,6 +320,12 @@
         
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
+        
+      body.select('#revo')
+        .on('mouseup', modal());
+        
+      body.select('#povo')
+        .on('mouseup', modal());
     
       //draw chart
       var svg = body.selectAll('div')
@@ -485,7 +489,7 @@ function drawChart(elem, d) {
     return function(d) {
     
     // console.log(d.began);
-    var dates = d.began+'-'+endedString(d.ended);
+    var dates = d.began+' - '+endedString(d.ended);
     
     d3.select('body')
       .append('div')
