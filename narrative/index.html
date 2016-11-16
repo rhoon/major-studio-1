@@ -26,6 +26,7 @@
     }
     
     .btn {  
+      float: right;
       text-transform: uppercase;
       font-size: 10px;
       width: 86px;
@@ -33,7 +34,7 @@
       border: 1px solid black;
       border-radius: 3px;
       padding: 8px 0 8px 0;
-      margin-bottom: 10px;
+      margin: 0 10px 0 10px;
       cursor: pointer;
     }
     
@@ -60,6 +61,15 @@
       width: 62%;
     }
     
+    p#explainer a {
+      text-decoration: underline;
+      color: black;
+    }
+    
+    p#explainer a:hover {
+      color: gray;
+    }
+    
     h1.chart {
       text-align: left;
       font-size: 15px;
@@ -80,6 +90,7 @@
       margin: 0 auto;
       display: block;
       position: relative;
+      cursor: pointer;
     }
     
     svg {
@@ -140,7 +151,7 @@
       height: 100%;
       background-color: black;
       opacity: .8;
-      position: absolute;
+      position: fixed;
       z-index: 500;
       top: 0px;
     }
@@ -151,7 +162,7 @@
       padding: 30px;
       background-color: white;
       border-radius: 5px;
-      position: absolute;
+      position: fixed;
       top: 10%;
       left: 33%;
       font-size: 14px;
@@ -200,26 +211,33 @@
   <body>
     
     <div id='intro'>
+      <div class="btn" id="expandAll">Expand All</div>
+      <div class="btn" id="collapseAll">Collapse All</div>
+      
       <h1 id='title'>Violence & <br />Revolution in Africa</h1>
       
       <p id="explainer">
-      This chart maps Africa’s conflicts<sup>1</sup> (<img class="key" src="bars-01.png" />) and Political Terror Scale<sup>2</sup> 
-      (<img class="key" src="bars-02.png" />) by country, over the last thirty years. 
+      Africa has been home to over XX revolution events over the past thirty years. 
+      Even with the best of intentions, a coup can have a multitude of results, 
+      from a public democracy, to military dictatorship, and everything in between.
+      <br /><br />
+      This chart examines the relationship between <a href="#">political violence</a> (<img class="key" src="bars-01.png" />) 
+      and <a href="#">revolution events</a> (<img class="key" src="bars-02.png" />) by country, over the last thirty years, 
+      to further examine the causes and outcomes of these connected histories. 
       
       </p>
       
-      <div class="btn" id="expandAll">Expand All</div>
-      <div class="btn" id="collapseAll">Collapse All</div>
+      
       <!--<img id='groupAxis' src="groupAxis-01.svg">-->
       
     </div>
     
-    <div>
-      <ol id='footer'>
-        <li><a href="http://politicalterrorscale.org/">Political Terror Scale</a></li> 
-        <li><a href="http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf">Center For Systemic Peace</a></li>
-      </ol>
-    </div>
+    <!--<div>-->
+    <!--  <ol id='footer'>-->
+    <!--    <li><a href="http://politicalterrorscale.org/">Political Terror Scale</a></li> -->
+    <!--    <li><a href="http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf">Center For Systemic Peace</a></li>-->
+    <!--  </ol>-->
+    <!--</div>-->
     
     
     <script>
@@ -249,14 +267,22 @@
 
     d3.json('data/pts+pitf.json', drawCharts);
     
-    //close full detail view -- NEEDS TO BE REFINED
-    function closeChart() {
+    //close all charts
+    function collapseAll() {
       return function(d) {
-        
-        //easy out: forced refresh
-        // window.location.reload(false);
-        
-        var thisDiv = d3.select(this.parentNode);
+      var allCharts = d3.selectAll('div.chart');
+      collapseChart(d, allCharts);
+      closed(allCharts);
+      }
+    }
+    
+    //remove class 'open'
+    function closed(thisDiv) {
+        thisDiv.classed('open', false);
+        closed(thisDiv);
+    }
+    
+    function collapseChart(d, thisDiv) {
         
         var newHeight = 10;
         yScale.range([newHeight, 0]);
@@ -303,7 +329,6 @@
         
         chart.attr('height', newHeight);
         
-        
         //close div
         thisDiv.transition()
           .duration(500)
@@ -319,11 +344,15 @@
           .duration(200)
           .style('opacity', 0)
           .remove();
-        
-        //remove class 'open'
-        thisDiv.select('.open')
-          .classed('open', false);
-        
+      
+    }
+    
+    //close full detail view 
+    function closeChart() {
+      return function(d) {
+        var thisDiv = d3.select(this.parentNode);
+        collapseChart(d, thisDiv);
+        closed(thisDiv);
       }
     }
     
@@ -462,10 +491,6 @@
       }
     }
     
-    function collapseAll() {
-      
-    }
-    
     function drawCharts(data) {
       // console.log('entries');
       // console.log(d3.entries(data));
@@ -553,6 +578,17 @@ function drawChart(elem, d) {
     }
   }
   
+  function endedNum(d) {
+    var numDate = Math.floor(parseFloat(d)); //.ended
+    
+    if (isNaN(numDate)) {
+      return 2016;
+    } else {
+      return numDate;
+    }
+    
+  }
+  
   // append pitf
   chart.selectAll('rect.pitf')
       .data(pitf)
@@ -565,7 +601,7 @@ function drawChart(elem, d) {
       .attr('y', height-2)
       .attr('height', 2)
       .attr('width', (d) => {
-        var length = xScale(parseFloat(d.ended))-xScale(began(d.began));
+        var length = xScale(endedNum(d.ended))-xScale(began(d.began));
         
         if (length > 0) {
           return length;
@@ -589,6 +625,17 @@ function drawChart(elem, d) {
         return d.eventDescription.slice(0,30+findSpace)+'...';
       });
       
+  function endedString(d) {
+    var numDate = Math.floor(parseFloat(d)); //.ended
+    
+    if (isNaN(numDate)) {
+      return 'ONGOING';
+    } else {
+      return numDate;
+    }
+    
+  }
+      
   chart.selectAll('text.pitf.date')
       .data(pitf)
       .enter()
@@ -598,7 +645,7 @@ function drawChart(elem, d) {
         return xScale(parseFloat(beganText(d.began)));
       })
       .text((d) => {
-        var dates = Math.floor(parseFloat(d.began))+'-'+Math.floor(parseFloat(d.ended));
+        var dates = Math.floor(parseFloat(d.began))+'-'+endedString(d.ended);
         return dates;
       });
       
