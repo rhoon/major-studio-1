@@ -7,7 +7,7 @@
     <!--D3-->
     <script src="https://d3js.org/d3.v4.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
     
     <style> 
     body {
@@ -18,21 +18,46 @@
     }
     
     div#intro {
+      border-bottom: 1px solid black;
       width: 800px;
       margin: 0 auto 30px;
       padding: 0;
       font-weight: 300;
     }
     
-    h1#title {
-      text-align: left;
-      font-size: 30px;
-      font-weight: 300;
-      margin-bottom: 0;
+    .btn {  
+      text-transform: uppercase;
+      font-size: 10px;
+      width: 86px;
+      text-align: center;
+      border: 1px solid black;
+      border-radius: 3px;
+      padding: 8px 0 8px 0;
+      margin-bottom: 10px;
+      cursor: pointer;
     }
     
-    div p {
-      /*margin-top: 5px;*/
+    .btn:hover {
+      background-color: black;
+      color: white;
+    }
+    
+    ol#footer {
+      font-size: 10px;
+      position: absolute;
+      bottom: 10px;
+    }
+    
+    h1#title {
+      text-align: left;
+      font-size: 42px;
+      font-weight: 100;
+      margin-bottom: 0;
+      line-height: 42px;
+    }
+    
+    div p#explainer {
+      width: 62%;
     }
     
     h1.chart {
@@ -49,7 +74,7 @@
     div.chart {
       padding: 0;
       height: 10px;
-      /*border: 1px solid grey;*/
+      /*border-bottom: 1px solid black;*/
       /*overflow: hidden;*/
       width: 800px;
       margin: 0 auto;
@@ -156,12 +181,17 @@
       width: 785px;
     }
     
-    #key {
+    img.key {
       display: inline;
-      width: 300px;
-      float: right;
-      padding: 10px 20px 0 0;
+      padding: 3px;
     }
+    
+    /*#key {*/
+    /*  display: inline;*/
+    /*  width: 300px;*/
+    /*  float: right;*/
+    /*  padding: 10px 20px 0 0;*/
+    /*}*/
     
     </style>
     
@@ -170,14 +200,27 @@
   <body>
     
     <div id='intro'>
-      <h1 id='title'>Violence & Revolution in Africa <img id='key' src='key-01.svg'></h1>
+      <h1 id='title'>Violence & <br />Revolution in Africa</h1>
       
-      <img id='groupAxis' src="groupAxis-01.svg">
-      <!--<p>-->
-      <!--  Black bars show the duration of a revolution or coup event. <br />-->
-      <!--  Yellow vertical bars show the PTS score in the year (x axis).-->
-      <!--</p>-->
+      <p id="explainer">
+      This chart maps Africa’s conflicts<sup>1</sup> (<img class="key" src="bars-01.png" />) and Political Terror Scale<sup>2</sup> 
+      (<img class="key" src="bars-02.png" />) by country, over the last thirty years. 
+      
+      </p>
+      
+      <div class="btn" id="expandAll">Expand All</div>
+      <div class="btn" id="collapseAll">Collapse All</div>
+      <!--<img id='groupAxis' src="groupAxis-01.svg">-->
+      
     </div>
+    
+    <div>
+      <ol id='footer'>
+        <li><a href="http://politicalterrorscale.org/">Political Terror Scale</a></li> 
+        <li><a href="http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf">Center For Systemic Peace</a></li>
+      </ol>
+    </div>
+    
     
     <script>
     
@@ -212,9 +255,6 @@
         
         //easy out: forced refresh
         // window.location.reload(false);
-        
-        //this selector does not work
-        // var thisDiv = d3.select('.open');
         
         var thisDiv = d3.select(this.parentNode);
         
@@ -411,6 +451,13 @@
       }
     }
     
+    function expandAll() {
+      
+    }
+    
+    function collapseAll() {
+      
+    }
     
     function drawCharts(data) {
       // console.log('entries');
@@ -423,7 +470,15 @@
       })
       
       body = d3.select('body');
+      
+      // buttons to expand / collapse all
+      body.select('#expandAll')
+        .on('mouseup', expandAll());
+        
+      body.select('#collapseAll')
+        .on('mouseup', collapseAll());
     
+      //draw chart
       var svg = body.selectAll('div')
           .data(data)
           .enter()
@@ -599,4 +654,8 @@ function drawChart(elem, d) {
 
     
     </script>
+    
   </body>
+
+
+</html>

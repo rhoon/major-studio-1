@@ -5,6 +5,7 @@ var async = require('async');
 var d3 = require('d3');
 
 var pts = JSON.parse(fs.readFileSync('pts-nested.json', 'utf8'));
+//var region 
 
 fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://learnjsdata.com/node.html
     data = d3.tsvParse(data);
