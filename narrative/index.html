@@ -327,84 +327,95 @@
       }
     }
     
-    //show full detail view of country on click
-    function chartClick() {
+    
+    function expandAll() {
       return function(d) {
-        
-        var thisDiv = d3.select(this);
-        
-        //make sure chart is not already open
-        if (!thisDiv.classed('open')) {
-          
-        thisDiv.attr('class','chart open');
-        
-        //append 'close country' button
-        thisDiv.append('img')
-          .attr('src', 'closeButton-01.svg')
-          .attr('class', 'close')
-        
-        thisDiv.select('img')  
-          .on('mouseup', closeChart());
-        
-        //make chart taller
-        thisDiv.transition()
-          .duration(500)
-          .style('height', '175px');
-        
-        //declare var for use in svg, adjust yScale
-        var newHeight = 100;
-        margin.top = 20;
-        yScale.range([newHeight, 0]);
-        
-        //access data
-        var years = d3.entries(d.value.years);
-        
-        //update height of container
-        var chart = thisDiv.select('svg')
-          .transition()
-          .duration(500)
-          .attr('height', newHeight);
-        
-        //update pts bars
-        chart.selectAll('rect.ptsAvg')
-          .attr('y', (d) => { 
-            return yScale(d.value.ptsAvg);
-          })
-          .attr('height', (d) => { 
-            return newHeight-yScale(d.value.ptsAvg);
-          });
-          
-        //show pitf data
-        chart.selectAll('text.pitf.brief')
-          .attr('y', margin.top+12)
-          .style('opacity', 1);
-          
-        chart.selectAll('text.pitf.date')
-          .attr('y', margin.top)
-          .style('opacity', 1);
-          
-        chart.selectAll('text.pitf.read')
-          .attr('y', margin.top+24)
-          .style('opacity', 1);
-          
-        //show axes
-        chart.selectAll('.axis')
-          .style('opacity', 1);
-        
-        chart.select('.y')
-          .call(yAxis);
-        
-        chart.selectAll('.x.axis')
-          .attr('transform', 'translate(0, '+newHeight+')');
-        
-        thisDiv.select('svg')
-          .attr('overflow', 'visible');
-          
-        }
-        
+        // to expand all charts, change selection:
+        var allCharts = d3.selectAll('div.chart');
+        expandChart(allCharts, d)
       }
     }
     
+    
+    //show full detail view of country on click
+    function chartClick() {
+      return function(d) {
+        var thisDiv = d3.select(this);
+        expandChart(thisDiv, d);
+      }
+    }
+    
+        function expandChart(thisDiv, d) {
+          //make sure chart is not already open
+          if (!thisDiv.classed('open')) {
+            
+          thisDiv.attr('class','chart open');
+          
+          //append 'close country' button
+          thisDiv.append('img')
+            .attr('src', 'closeButton-01.svg')
+            .attr('class', 'close')
+          
+          thisDiv.select('img')  
+            .on('mouseup', closeChart());
+          
+          //make chart taller
+          thisDiv.transition()
+            .duration(500)
+            .style('height', '175px');
+          
+          //declare var for use in svg, adjust yScale
+          var newHeight = 100;
+          margin.top = 20;
+          yScale.range([newHeight, 0]);
+          
+          //access data
+          var years = d3.entries(d.value.years);
+          
+          //update height of container
+          var chart = thisDiv.select('svg')
+            .transition()
+            .duration(500)
+            .attr('height', newHeight);
+          
+          //update pts bars
+          chart.selectAll('rect.ptsAvg')
+            .attr('y', (d) => { 
+              return yScale(d.value.ptsAvg);
+            })
+            .attr('height', (d) => { 
+              return newHeight-yScale(d.value.ptsAvg);
+            });
+            
+          //show pitf data
+          chart.selectAll('text.pitf.brief')
+            .attr('y', margin.top+12)
+            .style('opacity', 1);
+            
+          chart.selectAll('text.pitf.date')
+            .attr('y', margin.top)
+            .style('opacity', 1);
+            
+          chart.selectAll('text.pitf.read')
+            .attr('y', margin.top+24)
+            .style('opacity', 1);
+            
+          //show axes
+          chart.selectAll('.axis')
+            .style('opacity', 1);
+          
+          chart.select('.y')
+            .call(yAxis);
+          
+          chart.selectAll('.x.axis')
+            .attr('transform', 'translate(0, '+newHeight+')');
+          
+          thisDiv.select('svg')
+            .attr('overflow', 'visible');
+            
+          
+          } // end if
+        } // end function expand chart   
     
     //show a light detail view of a country
     function chartOn(name, dy) {
@@ -449,10 +460,6 @@
         } //end if
   
       }
-    }
-    
-    function expandAll() {
-      
     }
     
     function collapseAll() {
