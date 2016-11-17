@@ -6,9 +6,9 @@
     }
     
     div#intro {
-      border-bottom: 1px solid black;
-      width: 800px;
-      margin: 0 auto 30px;
+      /*border-bottom: 1px solid black;*/
+      width: 785px;
+      margin: 0 auto 50px;
       padding: 0;
       font-weight: 300;
       position: relative;
@@ -48,6 +48,8 @@
     
     div p#explainer {
       width: 62%;
+      margin-top: 35px;
+      line-height: 145%;
     }
     
     p#explainer a {
@@ -79,6 +81,7 @@
       margin: 0 auto;
       display: block;
       position: relative;
+      left: 7px;
       cursor: pointer;
     }
     
@@ -171,15 +174,9 @@
     }
     
     /* Date */
-    div.modal h1 span {
-      font-size: 14px;
+    div.modal span {
+      font-size: 10px;
       font-weight: 300;
-      float: right;
-      text-align: right;
-      position: absolute;
-      bottom: 15px;
-      right: 0px;
-      
     }
     
     div.modal p {
@@ -219,7 +216,7 @@
     
     #ptsKey {
         position: absolute;
-        bottom: 10px;
+        bottom: -10px;
         right: 0;
         width: 200px;
     }
