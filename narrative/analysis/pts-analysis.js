@@ -77,18 +77,19 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         var countryCodes = data[datum].country.split(' ');
         var countryCode = countryCodes[0].replace(',','')+countryCodes[1];
         countryCode = countryCode.toLowerCase().replace('undefined','');
-        // console.log(countryCode);
+        console.log('CC'+countryCode);
         
         var country = data[datum].country;
         // year index
         if (datum == 0) {
+            
             //new country? add Country()
             countries[countryCode] = new Country(data[datum].country);
             //nest years
             countries[countryCode].years[year] = new Year(ptsAvg);
             
-            
         } else { 
+            
             var prev = datum-1;
             var year = data[datum].year;
             if (country != data[prev].country) {
@@ -159,8 +160,4 @@ function countryAvgs() {
         i++;
         
     }
-    
 }
-
-
-

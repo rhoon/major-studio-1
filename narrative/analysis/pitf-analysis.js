@@ -1,4 +1,8 @@
-//adds a 'duration' and 'countryCode' to pitf data
+//pitf-analysis.js combines the pts & pitf datasets, and adds a 'duration' value
+//for the length of the conflict
+
+//It does calculate exact durations, but for the purposes of the visualization
+//the data is used in, rounds them off to year (rather than months)
 
 var fs = require('fs');
 var async = require('async');

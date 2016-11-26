@@ -92,6 +92,10 @@
     var xScale = d3.scaleLinear()
       .range([0, width])
       .domain([1976, 2016]);
+      
+    var yScaleGini = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, 100]);
 
     var yScale = d3.scaleLinear()
       .range([height, 0])
@@ -108,7 +112,7 @@
 
     var barWidth = width / (2016 - 1976);
 
-    d3.json('data/pts+pitf.json', drawCharts);
+    d3.json('data/v2-consolidated.json', drawCharts);
 
     //close all charts
     function collapseAll() {
@@ -221,6 +225,7 @@
       return function(d) {
         var thisDiv = d3.select(this);
         expandChart(thisDiv, d);
+        console.log(d);
       }
     }
 
@@ -244,9 +249,10 @@
           .style('height', '160px');
 
         //declare var for use in svg, adjust yScale
-        var newHeight = 110;
+        var newHeight = 60;
         margin.top = 20;
         yScale.range([newHeight, 0]);
+        yScaleGini.range([newHeight, 0]);
 
         //access data
         var years = d3.entries(d.value.years);
@@ -278,6 +284,13 @@
         chart.selectAll('text.pitf.read')
           .attr('y', margin.top + 24)
           .style('opacity', 1);
+          
+        chart.selectAll('rect.giniAvg')
+          .attr('y', newHeight);
+          
+        chart.selectAll('rect.pitf')
+          .attr('y', newHeight);
+
 
         //show axes
         chart.selectAll('.axis')
@@ -397,13 +410,15 @@
         // .on('mouseenter', chartOn(d.value.name, "-1em"))
         // .on('mouseleave', chartOff())
 
-          drawChart(block, d);
+          drawPTSChart(block, d);
+          // drawWIIDChart(block, d);
 
         }); //end each
     }
 
 
-    function drawChart(elem, d) {
+
+    function drawPTSChart(elem, d) {
       // console.log(d.value.name);
       var country = d.value.name;
 
@@ -411,7 +426,7 @@
 
       var chart = elem.append('svg')
         .attr('width', width + margin.right + margin.left)
-        .attr('height', height + margin.top + margin.bottom)
+        .attr('height', height + margin.top + margin.bottom);
 
       var years = d3.entries(d.value.years);
 
@@ -432,37 +447,24 @@
           return height - yScale(d.value.ptsAvg);
         });
 
+      chart.selectAll('rect.giniAvg')
+        .data(years)
+        .enter()
+        .append('rect')
+        .attr('class', 'giniAvg')
+        .attr('fill', 'blue')
+        .attr('x', (d) => {
+          return xScale(parseFloat(d.key));
+        })
+        .attr('y', (d) => {
+          return height;
+        })
+        .attr('width', barWidth)
+        .attr('height', (d) => {
+          return height - yScaleGini(d.value.giniAvg)
+        });
+
       var pitf = d.value.pitf;
-
-      function began(d) {
-        if (parseFloat(d) > 1976) {
-          return parseFloat(d);
-        }
-        else {
-          return 1976;
-        }
-      }
-
-      function beganText(d) {
-        if (parseFloat(d) > 1976) {
-          return parseFloat(d);
-        }
-        else {
-          return 1977.5;
-        }
-      }
-
-      function endedNum(d) {
-        var numDate = Math.floor(parseFloat(d)); //.ended
-
-        if (isNaN(numDate)) {
-          return 2016;
-        }
-        else {
-          return numDate;
-        }
-
-      }
 
       // append pitf
       chart.selectAll('rect.pitf')
@@ -545,7 +547,7 @@
         .call(yAxis)
         .attr('class', 'y axis');
 
-    }
+    } // end draw charts
 
     function showFullText(d, country) {
       return function(d) {
@@ -597,6 +599,35 @@
         return numDate;
       }
 
+    }
+    
+    //date parsers for pitf data
+    function began(d) {
+        if (parseFloat(d) > 1976) {
+          return parseFloat(d);
+        }
+        else {
+          return 1976;
+        }
+    }
+
+    function beganText(d) {
+        if (parseFloat(d) > 1976) {
+          return parseFloat(d);
+        }
+        else {
+          return 1977.5;
+        }
+    }
+
+    function endedNum(d) {
+        var numDate = Math.floor(parseFloat(d)); //.ended
+        if (isNaN(numDate)) {
+          return 2016;
+        }
+        else {
+          return numDate;
+        }
     }
   </script>
 
