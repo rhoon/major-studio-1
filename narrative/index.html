@@ -7,10 +7,10 @@
   <title>UNDP-Narrative</title>
   <!--D3-->
   <script src="https://d3js.org/d3.v4.min.js"></script>
-
+  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
-
+  
   <style>
 
   </style>
@@ -22,7 +22,8 @@
   <div id='intro'>
     <div class="btn" id="expandAll">Expand All</div>
     <div class="btn" id="collapseAll">Collapse All</div>
-
+    <div class="btn" id="sorter" onclick="sorter()">Sort 'em</div>
+    
     <h1 id='title'>Violence & <br />Revolution in Africa</h1>
 
     <!--<p id="explainer">-->
@@ -77,6 +78,9 @@
     </p>
 
   </div>
+  
+  <!--isotope needs chartbox for sort to work-->
+  <div id="chartbox"></div>
 
   <script>
     var margin = {
@@ -205,7 +209,6 @@
 
     }
 
-
     function expandAll() {
       return function(d) {
         var allCharts = d3.selectAll('div.chart');
@@ -244,9 +247,14 @@
           .on('mouseup', closeChart());
 
         //make chart taller
+        var divHeight = 160;
+        
         thisDiv.transition()
           .duration(500)
-          .style('height', '160px');
+          .style('height', divHeight+'px');
+          
+        thisDiv.select('h1.chart')
+          .attr('top', (divHeight/2)+'px');
 
         //declare var for use in svg, adjust yScale
         var newHeight = 60;
@@ -265,6 +273,15 @@
 
         //update pts bars
         chart.selectAll('rect.ptsAvg')
+          .attr('y', (d) => {
+            return yScale(d.value.ptsAvg);
+          })
+          .attr('height', (d) => {
+            return newHeight - yScale(d.value.ptsAvg);
+          });
+          
+        //update gini bars
+        chart.selectAll('rect.giniAvg')
           .attr('y', (d) => {
             return yScale(d.value.ptsAvg);
           })
@@ -374,17 +391,43 @@
       d3.selectAll(id).style('display', 'hidden');
     }
 
-    function drawCharts(data) {
-      // console.log('entries');
-      // console.log(d3.entries(data));
+  
+    
+    //init isotope
+    setupIsotope = function() {
+      
+      var iso = new Isotope('#chartbox', {
+        itemSelector: '.chart',
+        layoutMode: 'vertical',
+        getSortData: {
+          region: function(e) {
+            console.log(e);
+            var d = d3.select(e).datum();
+            return d.value.region;
+          },
+          overallPTS: function(e) {
+            var d = d3.select(e).datum();
+            return d.value.overallPTS;
+          }
+        }
+      });
+      
+      //initial sort
+      return iso.arrange({
+        sortBy: 'region'
+      })
+      
+    } //end setupIsotope
+    
 
+    function drawCharts(data) {
+      // isotope
+      
       data = d3.entries(data);
       console.log(data);
-      data.sort(function(a, b) {
-        return b.value.overallPTS - a.value.overallPTS;
-      })
+      
 
-      body = d3.select('body');
+      body = d3.select('#chartbox');
 
       // buttons to expand / collapse all
       body.select('#expandAll')
@@ -400,7 +443,6 @@
         .append('div')
         .attr('class', 'chart')
         .each(function(d) {
-          // console.log(d);
 
           var block = d3.select(this);
 
@@ -414,9 +456,10 @@
           // drawWIIDChart(block, d);
 
         }); //end each
+        
+        setupIsotope();
+        
     }
-
-
 
     function drawPTSChart(elem, d) {
       // console.log(d.value.name);
