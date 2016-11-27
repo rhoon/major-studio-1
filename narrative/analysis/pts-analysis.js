@@ -25,15 +25,15 @@ function calcAvg(itemsToAvg) {
     
     //itemsToAvg is an array of datapoints
     var sum = itemsToAvg.reduce(function(a, b) { // <- MDN
-          return a + b;
+        return a + b;
     }, 0);
     
     //if there is data
     if (sum != 0) { 
         var avg = (sum/itemsToAvg.length).toFixed(2);
-    //handle no data
+    //use 0 for no data (ratings are always 1 - 5)
     } else if (itemsToAvg.length == 0) { 
-        var avg = 'NA';
+        var avg = 0; 
     }
         
     return avg;

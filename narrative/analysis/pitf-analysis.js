@@ -75,7 +75,7 @@ fs.readFile("data/pitf.tsv", "utf8", function(error, data) { // from http://lear
     
     fs.writeFile('pts+pitf.json', JSON.stringify(pts), function(err) {
         if (err) {throw err;}
-        console.log("pts+wiid written");
+        console.log("pts+pitf written");
     });
     
 });

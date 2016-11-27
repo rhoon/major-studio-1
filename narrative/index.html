@@ -7,7 +7,6 @@
   <title>UNDP-Narrative</title>
   <!--D3-->
   <script src="https://d3js.org/d3.v4.min.js"></script>
-  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
   
@@ -115,6 +114,7 @@
       .scale(yScale);
 
     var barWidth = width / (2016 - 1976);
+
 
     d3.json('data/v2-consolidated.json', drawCharts);
 
@@ -391,34 +391,68 @@
       d3.selectAll(id).style('display', 'hidden');
     }
 
-  
-    
-    //init isotope
-    setupIsotope = function() {
+    function sorter() {
+      //recapture data since no global var
+      var toSort = d3.selectAll('div.chart').data();
       
-      var iso = new Isotope('#chartbox', {
-        itemSelector: '.chart',
-        layoutMode: 'vertical',
-        getSortData: {
-          region: function(e) {
-            console.log(e);
-            var d = d3.select(e).datum();
-            return d.value.region;
-          },
-          overallPTS: function(e) {
-            var d = d3.select(e).datum();
-            return d.value.overallPTS;
-          }
-        }
-      });
-      
-      //initial sort
-      return iso.arrange({
-        sortBy: 'region'
+      toSort.sort(function(a,b) {
+        return b.value.overallPTS-a.value.overallPTS;
       })
       
-    } //end setupIsotope
+      update(toSort);
+    }
     
+    function update(newData) {
+      //http://bl.ocks.org/mbostock/3808218
+      
+      console.log(newData);
+      
+      //join
+      var chart = d3.selectAll('div.chart')
+        .data(newData);
+        
+      chart.selectAll('h1')
+        .text((d) => {
+          return d.value.name;
+        });
+      
+      //update 
+      chart.selectAll('rect.ptsAvg')
+        .data((d) => {
+          var years = d3.entries(d.value.years);
+          return years;
+        })
+        .transition(500)
+        .attr('x', (d) => {
+          return xScale(parseFloat(d.key));
+        })
+        .attr('y', (d) => {
+          return yScale(d.value.ptsAvg);
+        })
+        .attr('width', barWidth)
+        .attr('height', (d) => {
+          return height - yScale(d.value.ptsAvg);
+        });
+        
+        chart.selectAll('rect.giniAvg')
+          .data((d) => {
+            var years = d3.entries(d.value.years);
+            return years;
+          })
+          .transition(500)
+          .attr('x', (d) => {
+            return xScale(parseFloat(d.key));
+          })
+          .attr('y', (d) => {
+            return height;
+          })
+          .attr('width', barWidth)
+          .attr('height', (d) => {
+            return height - yScaleGini(d.value.giniAvg)
+          });
+          
+      
+    }
 
     function drawCharts(data) {
       // isotope
@@ -426,9 +460,7 @@
       data = d3.entries(data);
       console.log(data);
       
-
-      body = d3.select('#chartbox');
-
+      var body = d3.select('body')
       // buttons to expand / collapse all
       body.select('#expandAll')
         .on('mouseup', expandAll());
@@ -436,8 +468,10 @@
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
 
+      chartBox = d3.select('#chartbox');
+
       //draw chart
-      var svg = body.selectAll('div')
+      var svg = chartBox.selectAll('div')
         .data(data)
         .enter()
         .append('div')
@@ -456,8 +490,6 @@
           // drawWIIDChart(block, d);
 
         }); //end each
-        
-        setupIsotope();
         
     }
 

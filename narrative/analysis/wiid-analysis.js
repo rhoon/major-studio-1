@@ -65,7 +65,6 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
                 countryCode = countryCode.toLowerCase().replace('undefined','');
                 console.log(countryCode);
                 
-                
                 //make wiid-only dataset
                 var country = new Object();
                 country.country = wiid[item].Country;
@@ -87,8 +86,6 @@ fs.readFile("data/wiid.csv", "utf8", function(error, wiid) {
         if (err) {throw err;}
         console.log("wiid written");
     });
-    
-    
     
     fs.writeFile('pts+wiid.json', JSON.stringify(pts), function(err) {
         if (err) {throw err;}
