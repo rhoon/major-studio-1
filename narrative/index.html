@@ -141,13 +141,13 @@
     //remove class 'open'
     function closed(thisDiv) {
       thisDiv.classed('open', false);
-      closed(thisDiv);
     }
 
     function collapseChart(d, thisDiv) {
 
       var newHeight = 10;
       yScale.range([newHeight, 0]);
+      yScaleGini.range([newHeight, 0]);
 
       //select the chart
       var chart = thisDiv.select('svg')
@@ -156,12 +156,19 @@
 
       //update pts bars  
       chart.selectAll('rect.ptsAvg')
-        .attr('y', (d) => {
-          return yScale(d.value.ptsAvg);
-        })
-        .attr('height', (d) => {
-          return newHeight - yScale(d.value.ptsAvg);
-        });
+        .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
+        .attr('height', (d) => {  return newHeight - yScale(d.value.ptsAvg);  });
+      
+      console.log('GINI');
+      console.log(yScaleGini(d.value.giniAvg));
+      //update gini bars
+        chart.selectAll('rect.giniAvg')
+          .attr('y', (d) => {  return newHeight; })
+          .attr('height', (d) => {  
+            return newHeight - yScaleGini(d.value.giniAvg) 
+            console.log(newHeight);
+            console.log(yScaleGini(d.value.giniAvg));
+          });
 
       //hide pitf data
       chart.selectAll('text.pitf.brief')
@@ -212,12 +219,6 @@
     function expandAll() {
       return function(d) {
         var allCharts = d3.selectAll('div.chart');
-
-        // allCharts.select('h1.chart')
-        //   .transition()
-        //   .duration(500)
-        //   .style('opacity', 1);
-
         expandChart(allCharts, d)
       }
     }
@@ -228,7 +229,6 @@
       return function(d) {
         var thisDiv = d3.select(this);
         expandChart(thisDiv, d);
-        console.log(d);
       }
     }
 
@@ -282,12 +282,8 @@
           
         //update gini bars
         chart.selectAll('rect.giniAvg')
-          .attr('y', (d) => {
-            return yScale(d.value.ptsAvg);
-          })
-          .attr('height', (d) => {
-            return newHeight - yScale(d.value.ptsAvg);
-          });
+          .attr('y', (d) => {  return yScale(d.value.giniAvg);  })
+          .attr('height', (d) => {  return newHeight - yScaleGini(d.value.giniAvg);  });
 
         //show pitf data
         chart.selectAll('text.pitf.brief')
@@ -321,67 +317,8 @@
 
         thisDiv.select('svg')
           .attr('overflow', 'visible');
-
-
       } // end if
     } // end function expand chart   
-
-    //show a light detail view of a country
-    function chartOn(name, dy) {
-      return function() {
-
-        thisDiv = d3.select(this);
-
-        if (thisDiv.classed('open') == false) {
-
-          var outer = thisDiv.transition()
-            .duration(500)
-            .style('height', '50px'); // HEIGHT OPEN
-
-          outer.select('h1')
-            .style('bottom', '25px');
-
-          outer.select('svg')
-            .style('bottom', '25px');
-
-          // thisDiv.select('h1.chart')
-          //   .transition()
-          //   .duration(500)
-          //   .style('opacity', 1);
-
-        } // end if
-
-      };
-    }
-
-
-    //move things back
-    function chartOff() {
-      return function(d) {
-
-        var thisDiv = d3.select(this);
-
-        if (thisDiv.classed('open') == false) {
-
-          var outer = thisDiv.transition()
-            .duration(500)
-            .style('height', '10px') // HEIGHT CLOSED
-
-          outer.select('h1')
-            .style('bottom', '5px');
-
-          outer.select('svg')
-            .style('bottom', '5px');
-
-          // thisDiv.select('h1.chart')
-          //   .transition()
-          //   .duration(200)
-          //   .style('opacity', 0);
-
-        } //end if
-
-      }
-    }
 
     function openModal(id) {
       d3.selectAll(id).style('display', 'visible');
@@ -468,10 +405,8 @@
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
 
-      chartBox = d3.select('#chartbox');
-
       //draw chart
-      var svg = chartBox.selectAll('div')
+      var svg = body.selectAll('div')
         .data(data)
         .enter()
         .append('div')
@@ -481,10 +416,6 @@
           var block = d3.select(this);
 
           block.on('mouseup', chartClick());
-          
-        // animated open / close on hover
-        // .on('mouseenter', chartOn(d.value.name, "-1em"))
-        // .on('mouseleave', chartOff())
 
           drawPTSChart(block, d);
           // drawWIIDChart(block, d);
@@ -527,7 +458,7 @@
         .enter()
         .append('rect')
         .attr('class', 'giniAvg')
-        .attr('fill', 'blue')
+        .attr('fill', '#ffc800')
         .attr('x', (d) => {
           return xScale(parseFloat(d.key));
         })
