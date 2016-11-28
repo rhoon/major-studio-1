@@ -58,9 +58,8 @@ fs.readFile("data/au-countries.csv", "utf8", function(error, data) {
     } //end wiid loop
 
     for (var country in primary) {
-        for (var year = 1977; year < 2016; year++) {
+        for (var year = 1976; year < 2016; year++) {
             
-            console.log(year);
             var nextYear, hasGiniNext, thisGini;
             
             //handle initial case

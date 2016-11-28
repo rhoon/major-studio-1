@@ -56,6 +56,7 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
     delete data['columns'];
     
     for (var datum in data) {
+        // yes 1976 is here...
         //remove country_OLD
         delete data[datum].Country_OLD;
         
@@ -77,23 +78,29 @@ fs.readFile("data/pts.csv", "utf8", function(error, data) {
         var countryCodes = data[datum].country.split(' ');
         var countryCode = countryCodes[0].replace(',','')+countryCodes[1];
         countryCode = countryCode.toLowerCase().replace('undefined','');
-        console.log('CC'+countryCode);
-        
+
         var country = data[datum].country;
         // year index
         if (datum == 0) {
             
-            //new country? add Country()
-            countries[countryCode] = new Country(data[datum].country);
-            //nest years
-            countries[countryCode].years[year] = new Year(ptsAvg);
+            console.log(data[datum].year);
+            console.log(countryCode);
+            
+            //handle initial case
+            countries[countryCode] = new Object();
+            countries[countryCode].years = new Object();
+            countries[countryCode].name = country;
+            countries[countryCode].pitf = [];
+            countries[countryCode].years[1976]= new Year(ptsAvg);
+            // countries[countryCode] = new Country(country);
+            // countries[countryCode].years[year] = new Year(ptsAvg);
+            console.log(countries[countryCode]);
             
         } else { 
-            
             var prev = datum-1;
             var year = data[datum].year;
             if (country != data[prev].country) {
-                countries[countryCode] = new Country(data[datum].country);
+                countries[countryCode] = new Country(country);
                 countries[countryCode].years[year] = new Year(ptsAvg);
             } else {
                 countries[countryCode].years[year] = new Year(ptsAvg);
