@@ -90,15 +90,15 @@
     };
 
     var width = 600 - margin.left - margin.right,
-      height = 15 - margin.top - margin.bottom;
+      height = 20 - margin.top - margin.bottom;
 
     var xScale = d3.scaleLinear()
       .range([0, width])
       .domain([1976, 2016]);
       
     var yScaleGini = d3.scaleLinear()
-      .range([height, 0])
-      .domain([0, 100]);
+      .range([0, height])
+      .domain([100, 0]);
 
     var yScale = d3.scaleLinear()
       .range([height, 0])
@@ -112,6 +112,10 @@
     var yAxis = d3.axisRight()
       .ticks(4)
       .scale(yScale);
+      
+    var yAxisGini = d3.axisRight()
+      .ticks(4)
+      .scale(yScaleGini);
 
     var barWidth = width / (2016 - 1976);
 
@@ -159,15 +163,16 @@
         .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
         .attr('height', (d) => {  return newHeight - yScale(d.value.ptsAvg);  });
       
+      
       console.log('GINI');
-      console.log(yScaleGini(d.value.giniAvg));
       //update gini bars
-        chart.selectAll('rect.giniAvg')
-          .attr('y', (d) => {  return newHeight; })
+        chart.selectAll('rect.giniAvg') 
+          chart.selectAll('rect.giniAvg')
+          .attr('y', (d) => {  return yScale(d.value.giniAvg);  })
           .attr('height', (d) => {  
-            return newHeight - yScaleGini(d.value.giniAvg) 
-            console.log(newHeight);
-            console.log(yScaleGini(d.value.giniAvg));
+            console.log(d.value.giniAvg);
+            return newHeight - yScaleGini(d.value.giniAvg);  
+            
           });
 
       //hide pitf data
@@ -184,17 +189,16 @@
         .style('opacity', 0);
 
       //hide axes
-      chart.selectAll('.axis')
-        .style('opacity', 0);
+      chart.selectAll('.axis').style('opacity', 0);
 
-      chart.select('.y')
-        .call(yAxis);
+      chart.select('.y').call(yAxis);
+        
+      chart.select('.yGini').call(yAxisGini);
 
       chart.selectAll('.x.axis')
         .attr('transform', 'translate(0, ' + newHeight + ')');
 
-      thisDiv.select('svg')
-        .attr('overflow', 'hidden');
+      thisDiv.select('svg').attr('overflow', 'hidden');
 
       chart.attr('height', newHeight);
 
@@ -202,17 +206,6 @@
       thisDiv.transition()
         .duration(500)
         .style('height', '10px'); // HEIGHT CLOSED
-
-      // thisDiv.select('h1.chart')
-      //   .transition()
-      //   .duration(200)
-      //   .style('opacity', 0);
-
-      thisDiv.select('img')
-        .transition()
-        .duration(200)
-        .style('opacity', 0)
-        .remove();
 
     }
 
@@ -238,27 +231,18 @@
 
         thisDiv.attr('class', 'chart open');
 
-        //append 'close country' button
-        thisDiv.append('img')
-          .attr('src', 'closeButton-01.svg')
-          .attr('class', 'close')
-
-        thisDiv.select('img')
-          .on('mouseup', closeChart());
-
         //make chart taller
         var divHeight = 160;
         
         thisDiv.transition()
           .duration(500)
           .style('height', divHeight+'px');
-          
-        thisDiv.select('h1.chart')
-          .attr('top', (divHeight/2)+'px');
+          // .select('h1.chart')
+          // .style('top', (divHeight/2)+'px');
+        
 
         //declare var for use in svg, adjust yScale
-        var newHeight = 60;
-        margin.top = 20;
+        var newHeight = 80;
         yScale.range([newHeight, 0]);
         yScaleGini.range([newHeight, 0]);
 
@@ -284,6 +268,7 @@
         chart.selectAll('rect.giniAvg')
           .attr('y', (d) => {  return yScale(d.value.giniAvg);  })
           .attr('height', (d) => {  return newHeight - yScaleGini(d.value.giniAvg);  });
+
 
         //show pitf data
         chart.selectAll('text.pitf.brief')
@@ -311,10 +296,13 @@
 
         chart.select('.y')
           .call(yAxis);
+          
+        chart.select('.yGini')
+          .call(yAxisGini);
 
         chart.selectAll('.x.axis')
           .attr('transform', 'translate(0, ' + newHeight + ')');
-
+        
         thisDiv.select('svg')
           .attr('overflow', 'visible');
       } // end if
@@ -353,7 +341,7 @@
           return d.value.name;
         });
       
-      //update 
+      //pts
       chart.selectAll('rect.ptsAvg')
         .data((d) => {
           var years = d3.entries(d.value.years);
@@ -371,6 +359,7 @@
           return height - yScale(d.value.ptsAvg);
         });
         
+        //gini
         chart.selectAll('rect.giniAvg')
           .data((d) => {
             var years = d3.entries(d.value.years);
@@ -387,6 +376,11 @@
           .attr('height', (d) => {
             return height - yScaleGini(d.value.giniAvg)
           });
+          
+          //pitf
+          // chart.selectAll('rect.pitf')
+          //   .enter()
+          //   .data(())
           
       
     }
@@ -427,9 +421,10 @@
     function drawPTSChart(elem, d) {
       // console.log(d.value.name);
       var country = d.value.name;
-
+      
+      elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
       elem.append('h1').attr('class', 'chart').text(country);
-
+      
       var chart = elem.append('svg')
         .attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom);
@@ -552,6 +547,10 @@
       chart.append('g')
         .call(yAxis)
         .attr('class', 'y axis');
+        
+      chart.append('g')
+        .call(yAxisGini)
+        .attr('class', 'yGini axis');
 
     } // end draw charts
 
