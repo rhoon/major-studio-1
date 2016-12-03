@@ -23,17 +23,17 @@
     <div class="btn" id="collapseAll">Collapse All</div>
     <div class="btn" id="sorter" onclick="sorter()">Sort 'em</div>
     
-    <h1 id='title'>Violence & <br />Revolution in Africa</h1>
+    <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence & Revolution <br />on Inequality in Africa</h1>
 
-    <!--<p id="explainer">-->
-    <!--Africa has been home to over 60 revolution events over the past thirty years. -->
-    <!--Even with the best of intentions, a coup can have a multitude of results, -->
-    <!--from a public democracy, to military dictatorship, and everything in between.-->
-    <!--<br /><br />-->
-    <!--This chart examines the relationship between <a href="#" onclick="openModal('.povo')">political violence</a> -->
-    <!--(<img class="key" src="bars-01.png" />) and <a id="revo" onclick="openModal('.revo')">revolution events</a> -->
-    <!--(<img class="key" src="bars-02.png" />) by country, over the last thirty years, -->
-    <!--to further examine the causes and outcomes of these connected histories. -->
+    <p id="explainer">
+    Africa has been home to over 60 revolution events over the past thirty years. 
+    Even with the best of intentions, a coup can have a multitude of results, 
+    from a public democracy, to military dictatorship, and everything in between.
+    <br /><br />
+    This chart examines the relationship between <a href="#" onclick="openModal('.povo')">political violence</a> 
+    (<img class="key" src="bars-01.png" />) and <a id="revo" onclick="openModal('.revo')">revolution events</a> 
+    (<img class="key" src="bars-02.png" />) by country, over the last thirty years, 
+    to further examine the causes and outcomes of these connected histories. 
 
     </p>
 
@@ -97,8 +97,8 @@
       .domain([1976, 2016]);
       
     var yScaleGini = d3.scaleLinear()
-      .range([0, height])
-      .domain([100, 0]);
+      .range([height, 0])
+      .domain([0, 100]);
 
     var yScale = d3.scaleLinear()
       .range([height, 0])
@@ -129,6 +129,7 @@
         collapseChart(d, allCharts);
         closed(allCharts);
       }
+
     }
 
     //close full detail view 
@@ -138,7 +139,6 @@
         collapseChart(d, thisDiv, function() {
           closed(thisDiv);
         });
-        //  //causing error
       }
     }
 
@@ -149,9 +149,9 @@
 
     function collapseChart(d, thisDiv) {
 
-      var newHeight = 10;
-      yScale.range([newHeight, 0]);
-      yScaleGini.range([newHeight, 0]);
+      var newHeight = 20 - margin.top - margin.bottom;
+      yScale.range([newHeight, 0])
+      yScaleGini.range([0, newHeight]);
 
       //select the chart
       var chart = thisDiv.select('svg')
@@ -163,17 +163,10 @@
         .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
         .attr('height', (d) => {  return newHeight - yScale(d.value.ptsAvg);  });
       
-      
-      console.log('GINI');
       //update gini bars
-        chart.selectAll('rect.giniAvg') 
-          chart.selectAll('rect.giniAvg')
-          .attr('y', (d) => {  return yScale(d.value.giniAvg);  })
-          .attr('height', (d) => {  
-            console.log(d.value.giniAvg);
-            return newHeight - yScaleGini(d.value.giniAvg);  
-            
-          });
+      chart.selectAll('rect.giniAvg')
+        .attr('y', newHeight)
+        .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
 
       //hide pitf data
       chart.selectAll('text.pitf.brief')
@@ -205,7 +198,7 @@
       //close div
       thisDiv.transition()
         .duration(500)
-        .style('height', '10px'); // HEIGHT CLOSED
+        .style('height', '20px'); // HEIGHT CLOSED
 
     }
 
@@ -244,7 +237,7 @@
         //declare var for use in svg, adjust yScale
         var newHeight = 80;
         yScale.range([newHeight, 0]);
-        yScaleGini.range([newHeight, 0]);
+        yScaleGini.range([0, newHeight]);
 
         //access data
         var years = d3.entries(d.value.years);
@@ -266,45 +259,32 @@
           
         //update gini bars
         chart.selectAll('rect.giniAvg')
-          .attr('y', (d) => {  return yScale(d.value.giniAvg);  })
-          .attr('height', (d) => {  return newHeight - yScaleGini(d.value.giniAvg);  });
-
+          .attr('y', newHeight)
+          .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
 
         //show pitf data
-        chart.selectAll('text.pitf.brief')
-          .attr('y', margin.top + 12)
-          .style('opacity', 1);
+        chart.selectAll('text.pitf.brief').attr('y', newHeight + 12).style('opacity', 1);
 
-        chart.selectAll('text.pitf.date')
-          .attr('y', margin.top)
-          .style('opacity', 1);
+        chart.selectAll('text.pitf.date').attr('y', newHeight ).style('opacity', 1);
 
-        chart.selectAll('text.pitf.read')
-          .attr('y', margin.top + 24)
-          .style('opacity', 1);
+        chart.selectAll('text.pitf.read').attr('y', newHeight + 24).style('opacity', 1);
           
-        chart.selectAll('rect.giniAvg')
-          .attr('y', newHeight);
+        chart.selectAll('rect.giniAvg').attr('y', newHeight);
           
-        chart.selectAll('rect.pitf')
-          .attr('y', newHeight);
-
+        chart.selectAll('rect.pitf').attr('y', newHeight);
 
         //show axes
-        chart.selectAll('.axis')
-          .style('opacity', 1);
+        chart.selectAll('.axis').style('opacity', 1);
 
-        chart.select('.y')
-          .call(yAxis);
+        chart.select('.y').call(yAxis);
           
         chart.select('.yGini')
-          .call(yAxisGini);
+          .call(yAxisGini)
+          .attr('transform', 'translate(0, ' + newHeight + ')');
 
         chart.selectAll('.x.axis')
           .attr('transform', 'translate(0, ' + newHeight + ')');
         
-        thisDiv.select('svg')
-          .attr('overflow', 'visible');
       } // end if
     } // end function expand chart   
 
@@ -330,58 +310,58 @@
     function update(newData) {
       //http://bl.ocks.org/mbostock/3808218
       
-      console.log(newData);
-      
       //join
       var chart = d3.selectAll('div.chart')
         .data(newData);
-        
-      chart.selectAll('h1')
-        .text((d) => {
+      
+      //update country headers (must re-bind data here, possibly due to async)
+      d3.selectAll('h1.chart')
+        .data(newData)
+        .text((d)=>{
           return d.value.name;
         });
-      
+
       //pts
       chart.selectAll('rect.ptsAvg')
-        .data((d) => {
-          var years = d3.entries(d.value.years);
-          return years;
-        })
+        .data((d) => {  var years = d3.entries(d.value.years);  return years;  })
         .transition(500)
-        .attr('x', (d) => {
-          return xScale(parseFloat(d.key));
-        })
-        .attr('y', (d) => {
-          return yScale(d.value.ptsAvg);
-        })
-        .attr('width', barWidth)
-        .attr('height', (d) => {
-          return height - yScale(d.value.ptsAvg);
-        });
+        .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
+        .attr('height', (d) => {  return height - yScale(d.value.ptsAvg);  });
         
-        //gini
-        chart.selectAll('rect.giniAvg')
-          .data((d) => {
-            var years = d3.entries(d.value.years);
-            return years;
+      //gini
+      chart.selectAll('rect.giniAvg')
+        .data((d) => {  var years = d3.entries(d.value.years);  return years;  })
+        .transition(500)
+        .attr('y', (d) => {  return height;  })
+        .attr('height', (d) => {  return height - yScaleGini(d.value.giniAvg)  });
+          
+      //select .pitf
+      chart.selectAll('rect.pitfNEW')
+          .data((d)=> {                       // logs correctly
+              return d.value.pitf;
+              console.log(d);
+           })
+          .enter()
+        .append('rect')
+          .attr('class', 'pitfNEW')
+          .attr('x', (d) => {                 //logs correctly
+            return xScale(began(d.began));
           })
-          .transition(500)
-          .attr('x', (d) => {
-            return xScale(parseFloat(d.key));
-          })
-          .attr('y', (d) => {
-            return height;
-          })
-          .attr('width', barWidth)
-          .attr('height', (d) => {
-            return height - yScaleGini(d.value.giniAvg)
+          .attr('y', height - 2)
+          .attr('height', 2)
+          .attr('width', (d) => {             //logs correctly
+            var length = xScale(endedNum(d.ended)) - xScale(began(d.began));            
+            if (length > 0) {
+              return length;
+            } else {
+              return barWidth;
+            }
           });
-          
-          //pitf
-          // chart.selectAll('rect.pitf')
-          //   .enter()
-          //   .data(())
-          
+              
+
+      // append pitf
+
+      //exit() .pitf
       
     }
 
@@ -411,14 +391,13 @@
 
           block.on('mouseup', chartClick());
 
-          drawPTSChart(block, d);
-          // drawWIIDChart(block, d);
+          drawChart(block, d);
 
         }); //end each
         
     }
 
-    function drawPTSChart(elem, d) {
+    function drawChart(elem, d) {
       // console.log(d.value.name);
       var country = d.value.name;
       
@@ -453,7 +432,6 @@
         .enter()
         .append('rect')
         .attr('class', 'giniAvg')
-        .attr('fill', '#ffc800')
         .attr('x', (d) => {
           return xScale(parseFloat(d.key));
         })
@@ -550,8 +528,9 @@
         
       chart.append('g')
         .call(yAxisGini)
-        .attr('class', 'yGini axis');
-
+        .attr('class', 'yGini axis')
+        .attr('transform', 'translate(0, ' + height + ')');
+        
     } // end draw charts
 
     function showFullText(d, country) {
