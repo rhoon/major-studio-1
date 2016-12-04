@@ -142,6 +142,10 @@
       fill: #fd9d24;
     }
     
+    rect.giniAvg.true {
+      opacity: .9;
+    }
+    
     /* PITF TEASER INFO */
     text.pitf {
       font-size: 8px;

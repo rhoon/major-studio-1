@@ -21,8 +21,7 @@
   <div id='intro'>
     <div class="btn" id="expandAll">Expand All</div>
     <div class="btn" id="collapseAll">Collapse All</div>
-    <div class="btn" id="sorter" onclick="sorter()">Sort 'em</div>
-    
+
     <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence & Revolution <br />on Inequality in Africa</h1>
 
     <p id="explainer">
@@ -168,6 +167,10 @@
         .attr('y', newHeight)
         .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
 
+      //update pitf bar
+      chart.selectAll('rect.pitf')
+        .attr('y', newHeight);
+
       //hide pitf data
       chart.selectAll('text.pitf.brief')
         .attr('y', 0)
@@ -296,72 +299,13 @@
       d3.selectAll(id).style('display', 'hidden');
     }
 
-    function sorter() {
+    function sorter(toSort) {
       //recapture data since no global var
-      var toSort = d3.selectAll('div.chart').data();
+      // var toSort = d3.selectAll('div.chart').data();
       
       toSort.sort(function(a,b) {
         return b.value.overallPTS-a.value.overallPTS;
       })
-      
-      update(toSort);
-    }
-    
-    function update(newData) {
-      //http://bl.ocks.org/mbostock/3808218
-      
-      //join
-      var chart = d3.selectAll('div.chart')
-        .data(newData);
-      
-      //update country headers (must re-bind data here, possibly due to async)
-      d3.selectAll('h1.chart')
-        .data(newData)
-        .text((d)=>{
-          return d.value.name;
-        });
-
-      //pts
-      chart.selectAll('rect.ptsAvg')
-        .data((d) => {  var years = d3.entries(d.value.years);  return years;  })
-        .transition(500)
-        .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
-        .attr('height', (d) => {  return height - yScale(d.value.ptsAvg);  });
-        
-      //gini
-      chart.selectAll('rect.giniAvg')
-        .data((d) => {  var years = d3.entries(d.value.years);  return years;  })
-        .transition(500)
-        .attr('y', (d) => {  return height;  })
-        .attr('height', (d) => {  return height - yScaleGini(d.value.giniAvg)  });
-          
-      //select .pitf
-      chart.selectAll('rect.pitfNEW')
-          .data((d)=> {                       // logs correctly
-              return d.value.pitf;
-              console.log(d);
-           })
-          .enter()
-        .append('rect')
-          .attr('class', 'pitfNEW')
-          .attr('x', (d) => {                 //logs correctly
-            return xScale(began(d.began));
-          })
-          .attr('y', height - 2)
-          .attr('height', 2)
-          .attr('width', (d) => {             //logs correctly
-            var length = xScale(endedNum(d.ended)) - xScale(began(d.began));            
-            if (length > 0) {
-              return length;
-            } else {
-              return barWidth;
-            }
-          });
-              
-
-      // append pitf
-
-      //exit() .pitf
       
     }
 
@@ -369,28 +313,40 @@
       // isotope
       
       data = d3.entries(data);
+      
+      data.sort(function(a,b) {
+        return b.value.overallPTS-a.value.overallPTS;
+      })
+      
       console.log(data);
       
-      var body = d3.select('body')
+      var body = d3.select('body');
+      
       // buttons to expand / collapse all
       body.select('#expandAll')
         .on('mouseup', expandAll());
 
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
-
+      
+      console.log('pre svg data');
+      console.log(data);
+      
       //draw chart
       var svg = body.selectAll('div')
         .data(data)
         .enter()
         .append('div')
-        .attr('class', 'chart')
+        .attr('class', (d)=> {
+          return d.key + ' chart';
+        })
         .each(function(d) {
-
+          
+          console.log('drawChart loop');
+          console.log(d);
+          
           var block = d3.select(this);
-
           block.on('mouseup', chartClick());
-
           drawChart(block, d);
 
         }); //end each
@@ -398,7 +354,8 @@
     }
 
     function drawChart(elem, d) {
-      // console.log(d.value.name);
+      console.log(d.value.name);
+      
       var country = d.value.name;
       
       elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
@@ -431,7 +388,9 @@
         .data(years)
         .enter()
         .append('rect')
-        .attr('class', 'giniAvg')
+        .attr('class', (d)=>{
+          return d.value.giniEst+' giniAvg';
+        })  //'giniAvg'
         .attr('x', (d) => {
           return xScale(parseFloat(d.key));
         })
