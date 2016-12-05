@@ -1,8 +1,24 @@
+    #header {
+      background: #ffffff;
+      position: fixed;
+      z-index: 900;
+      width: 100%;
+      padding: 15px;
+      top: 0;
+      left: 0;
+    }
+    
+    #headerBox {
+      width: 800px;
+      margin: 0 auto;
+    }
+
     body {
       font-family: Arial, sans-serif;
       font-weight: normal;
       text-align: left;
       font-size: 16px;
+      background: #f2f2f2;
     }
     
     div#intro {
@@ -12,17 +28,18 @@
       padding: 0;
       font-weight: normal;
       position: relative;
+      top: 30px;
     }
     
     .btn {  
       float: right;
       font-size: 10px;
-      font-weight: normal;
-      width: 86px;
+      font-weight: bold;
+      width: 72px;
       text-align: center;
       border: 1px solid black;
       border-radius: 3px;
-      padding: 8px 0 8px 0;
+      padding: 6px 0 6px 0;
       margin: 0 10px 0 10px;
       cursor: pointer;
     }
@@ -30,6 +47,28 @@
     .btn:hover {
       background-color: black;
       color: white;
+    }
+    
+    div.toggle {
+      font-size: 10px;
+      font-weight: normal;
+      position: relative;
+      left: -10px;
+      width: 33%;
+    }
+    
+    select {
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      height: 29px;
+      padding: 5px; /* If you add too much padding here, the options won't show in IE */
+      width: 268px;
+      border: 1px solid black;
+      font-size: 10px;
+      width: 72px;
+      height: 24px;
     }
     
     ol#footer {
@@ -40,6 +79,7 @@
     
     span#leadin {
       font-size: 16px;
+      line-height: 100%;
       letter-spacing: 0;
     }
     
@@ -75,7 +115,7 @@
       width: 785px;
       position: absolute;
       top: -5px;
-      left: 0;
+      left: 5px;
     }
     
     h5.chart {
@@ -88,11 +128,11 @@
       width: 785px;
       position: absolute;
       top: 10px;
-      left: 0;
+      left: 5px;
     }
     
     div.chart {
-      padding: 5px 0 5px 0;
+      padding: 5px 5px 5px 5px;
       height: 20px;
       border-bottom: 1px solid #e6e6e6;
       /*overflow: hidden;*/
@@ -100,16 +140,18 @@
       margin: 0 auto;
       position: relative;
       left: 7px;
+      top: 20px;
       cursor: pointer;
       opacity: 1;
+      background: white;
     }
     
     svg {
       padding: 0 0 0 0;
       margin: 0 0 0 0;
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 5px;
+      right: -10px;
       display: block;
       z-index: 100;
       font-family: Arial, sans-serif;

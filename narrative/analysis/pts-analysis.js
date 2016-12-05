@@ -144,7 +144,9 @@ function countryAvgs() {
         var current = countries[country];
         
         for (var year in current.years) {
-            pushNum(current.years[year].ptsAvg, allPTS);
+            if (current.years[year].ptsAvg != 0) { // catch error on empties
+                pushNum(current.years[year].ptsAvg, allPTS);
+            }
         }
         // console.log(allPTS);
         

@@ -18,11 +18,28 @@
 
 <body>
 
-  <div id='intro'>
-    <div class="btn" id="expandAll">Expand All</div>
-    <div class="btn" id="collapseAll">Collapse All</div>
-    <div class="btn" id="hider">Only South</div>
+  <div id='header'>
+    <div id='headerBox'>
     
+      <div class="btn" id="expandAll">Expand All</div>
+      <div class="btn" id="collapseAll">Collapse All</div>
+
+      <div class="toggle">
+        Region:
+        <select id="hider"> <!-- onchange="hider()"-->
+          <option selected>All</option>
+          <option>Southern</option>
+          <option>North</option>
+          <option>West</option>
+          <option>East</option>
+        </select>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div id='intro'>
+        
     <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence & Revolution <br />on Inequality in Africa</h1>
 
     <p id="explainer">
@@ -82,6 +99,7 @@
   <div id="chartbox"></div>
 
   <script>
+  
     var margin = {
       top: 0,
       right: 10,
@@ -123,23 +141,24 @@
     d3.json('data/v2-consolidated.json', drawCharts);
     
     //hider isolates regions
-    function hider() {
+    function hider(selected) {
       return function(d) {
+          
+          var index = d3.event.target.selectedIndex;
         
-      console.log('HIDER');
-      var charts = d3.selectAll('div.chart') //.classed('hidden', true);
+          var regions = ['All', 'Southern', 'North', 'West', 'East', 'Central'];
           
-          var selected = 'Southern';
-          var regions = ['North', 'West', 'East', 'Southern', 'Central'];
-          
-          for (var i in regions) {
-          	if (regions[i] !=  selected) {
-          	  console.log(regions[i]);
-              d3.selectAll('div.'+regions[i]).classed('hidden', true);
-            } else {
-              d3.selectAll('div.'+regions[i]).classed('hidden', false);
-            }
-          }
+          if (regions[index] == 'All') {
+            d3.selectAll('div.chart').classed('hidden', false);
+          } else { // region selected
+            for (var i in regions) {
+            	if (regions[i] !=  regions[index]) {
+            	  d3.selectAll('div.'+regions[i]).classed('hidden', true);
+              } else {   
+                d3.selectAll('div.'+regions[i]).classed('hidden', false);
+              }
+            } // end loop
+          } // end region selected
       
       }
     }
@@ -348,7 +367,7 @@
         .on('mouseup', collapseAll());
       
       body.select('#hider')
-        .on('mouseup', hider());
+        .on('change', hider());
       
       //draw chart
       var svg = body.selectAll('div')
