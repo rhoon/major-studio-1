@@ -21,7 +21,8 @@
   <div id='intro'>
     <div class="btn" id="expandAll">Expand All</div>
     <div class="btn" id="collapseAll">Collapse All</div>
-
+    <div class="btn" id="hider">Only South</div>
+    
     <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence & Revolution <br />on Inequality in Africa</h1>
 
     <p id="explainer">
@@ -120,6 +121,29 @@
 
 
     d3.json('data/v2-consolidated.json', drawCharts);
+    
+    //hider isolates regions
+    function hider() {
+      return function(d) {
+        
+      console.log('HIDER');
+      var charts = d3.selectAll('div.chart') //.classed('hidden', true);
+          
+          var selected = 'Southern';
+          var regions = ['North', 'West', 'East', 'Southern', 'Central'];
+          
+          for (var i in regions) {
+          	if (regions[i] !=  selected) {
+          	  console.log(regions[i]);
+              d3.selectAll('div.'+regions[i]).classed('hidden', true);
+            } else {
+              d3.selectAll('div.'+regions[i]).classed('hidden', false);
+            }
+          }
+      
+      }
+    }
+
 
     //close all charts
     function collapseAll() {
@@ -128,7 +152,6 @@
         collapseChart(d, allCharts);
         closed(allCharts);
       }
-
     }
 
     //close full detail view 
@@ -225,8 +248,8 @@
       //make sure chart is not already open
       if (!thisDiv.classed('open')) {
 
-        thisDiv.attr('class', 'chart open');
-
+        thisDiv.classed('open', true);
+        
         //make chart taller
         var divHeight = 160;
         
@@ -266,11 +289,11 @@
           .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
 
         //show pitf data
-        chart.selectAll('text.pitf.brief').attr('y', newHeight + 12).style('opacity', 1);
+        chart.selectAll('text.pitf.brief').attr('y', newHeight + 24).style('opacity', 1);
 
-        chart.selectAll('text.pitf.date').attr('y', newHeight ).style('opacity', 1);
+        chart.selectAll('text.pitf.date').attr('y', newHeight + 12).style('opacity', 1);
 
-        chart.selectAll('text.pitf.read').attr('y', newHeight + 24).style('opacity', 1);
+        chart.selectAll('text.pitf.read').attr('y', newHeight + 36).style('opacity', 1);
           
         chart.selectAll('rect.giniAvg').attr('y', newHeight);
           
@@ -298,15 +321,10 @@
     function closeModal(id) {
       d3.selectAll(id).style('display', 'hidden');
     }
-
-    function sorter(toSort) {
-      //recapture data since no global var
-      // var toSort = d3.selectAll('div.chart').data();
-      
-      toSort.sort(function(a,b) {
-        return b.value.overallPTS-a.value.overallPTS;
-      })
-      
+    
+    function reg(fullRegion) {
+      var firstWord = fullRegion.split(" ")[0].toLowerCase();
+      return firstWord;
     }
 
     function drawCharts(data) {
@@ -329,8 +347,8 @@
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
       
-      console.log('pre svg data');
-      console.log(data);
+      body.select('#hider')
+        .on('mouseup', hider());
       
       //draw chart
       var svg = body.selectAll('div')
@@ -338,12 +356,9 @@
         .enter()
         .append('div')
         .attr('class', (d)=> {
-          return d.key + ' chart';
+          return d.value.region + ' chart';
         })
         .each(function(d) {
-          
-          console.log('drawChart loop');
-          console.log(d);
           
           var block = d3.select(this);
           block.on('mouseup', chartClick());
@@ -354,7 +369,7 @@
     }
 
     function drawChart(elem, d) {
-      console.log(d.value.name);
+      // console.log(d.value.name); full data set not rendering?
       
       var country = d.value.name;
       
@@ -433,12 +448,9 @@
         .enter()
         .append('text')
         .attr('class', 'pitf brief')
-        .attr('x', (d) => {
-          return xScale(parseFloat(beganText(d.began)));
-        })
         .text((d) => {
-          var findSpace = d.eventDescription.slice(30, 50).indexOf(' ');
-          return d.eventDescription.slice(0, 30 + findSpace) + '...';
+          var findSpace = d.eventDescription.slice(20, 40).indexOf(' ');
+          return d.eventDescription.slice(0, 20 + findSpace) + '...';
         });
 
       chart.selectAll('text.pitf.date')
@@ -446,9 +458,6 @@
         .enter()
         .append('text')
         .attr('class', 'pitf date')
-        .attr('x', (d) => {
-          return xScale(parseFloat(beganText(d.began)));
-        })
         .text((d) => {
           var dates = Math.floor(parseFloat(d.began)) + '-' + endedString(d.ended);
           return dates;
@@ -459,21 +468,25 @@
         .enter()
         .append('text')
         .attr('class', 'pitf read')
-        .attr('x', (d) => {
-          return xScale(parseFloat(beganText(d.began)));
-        })
         .text('Read More')
         .on('mouseup', showFullText(d, country));
 
       chart.selectAll('text.pitf')
         .attr('text-anchor', (d) => {
-          if (parseFloat(d.began) > 2008) {
+          if (parseFloat(d.began) > 2007) {
             return 'end';
           }
           else {
             return 'start';
           }
-        });
+        })
+        .attr('x', (d)=> {
+          if (parseFloat(d.began) > 2007) {
+            return xScale((endedNum(d.ended)));
+          } else {
+            return xScale(parseFloat(beganText(d.began)));
+          }
+        })
 
       // create axes
       chart.append('g')
@@ -569,9 +582,11 @@
           return 2016;
         }
         else {
-          return numDate;
+          return numDate+1;
         }
     }
+    
+    
   </script>
 
 </body>

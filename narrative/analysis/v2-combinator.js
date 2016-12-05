@@ -22,6 +22,16 @@ fs.readFile("data/au-countries.csv", "utf8", function(error, data) {
     // from http://learnjsdata.com/node.html
     var regions = d3.csvParse(data);
     
+    for (var pCountry in primary) {
+        //Correct for inconsistancies Tanzania and Central African Republic
+        if (primary[pCountry].name.indexOf('Tanz') != -1) {
+            primary[pCountry].name = 'Tanzania';
+        } else if (primary[pCountry].name.indexOf('Central African Republic') != -1) {
+            primary[pCountry].name = 'Central African Republic';
+        }
+        
+    }
+    
     // match regions to countries in primary dataset
     for (var pCountry in primary) {
         for (var rCountry in regions) {
@@ -30,7 +40,7 @@ fs.readFile("data/au-countries.csv", "utf8", function(error, data) {
                 // console.log('MATCH: '+primary[pCountry].name + ' ' + primary[pCountry].region);
                 break;
             } else if (primary[pCountry].name == 'Morocco') {
-                primary[pCountry].region = 'African Union Non-Member';
+                primary[pCountry].region = 'Non-Member';
                 // console.log('Morocco');
                 break;
             }

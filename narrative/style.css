@@ -98,7 +98,6 @@
       /*overflow: hidden;*/
       width: 800px;
       margin: 0 auto;
-      display: block;
       position: relative;
       left: 7px;
       cursor: pointer;
@@ -256,5 +255,9 @@
     }
     
     .revo {
+      display: none;
+    }
+    
+    .hidden {
       display: none;
     }
