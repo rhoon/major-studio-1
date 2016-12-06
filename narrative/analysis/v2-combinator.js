@@ -111,20 +111,20 @@ fs.readFile("data/au-countries.csv", "utf8", function(error, data) {
                 
             } 
             
-            //case where there is no data to interpolate
-            // if (thisPTS == 0) {
-            //     primary[country].years[year].ptsAvg = 2.5;
-            //     primary[country].years[year].ptsNull = true;
-            // } else {
-            //     primary[country].years[year].ptsNull = false;
-            // }
+            // case where there is no data to interpolate
+            if (thisPTS == 0) {
+                primary[country].years[year].ptsAvg = 1;
+                primary[country].years[year].ptsNull = true;
+            } else {
+                primary[country].years[year].ptsNull = false;
+            }
             
-            // if (thisGini == 0) {
-            //     primary[country].years[year].giniAvg = 50;
-            //     primary[country].years[year].giniNull = true;
-            // } else {
-            //     primary[country].years[year].giniNull = false;
-            // }
+            if (thisGini == 0) {
+                primary[country].years[year].giniAvg = 20;
+                primary[country].years[year].giniNull = true;
+            } else {
+                primary[country].years[year].giniNull = false;
+            }
 
         } // end year loop
     } // end country loop

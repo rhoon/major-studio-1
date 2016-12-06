@@ -46,52 +46,15 @@
     Even with the best of intentions, a coup can have a multitude of results, 
     from a public democracy, to military dictatorship, and everything in between.
     <br /><br />
-    This chart examines the relationship between <a href="#" onclick="openModal('.povo')">political violence </a>
-    (<img class="key" src="bars-01.png" />), <a id="revo" onclick="openModal('.revo')">revolution events</a>
-    (<img class="key" src="bars-03.png" />), and income inequality (<img class="key" src="bars-02.png" />) by country, over the last forty years, 
+    This chart examines the relationship between political violence
+    (<img class="key" src="bars-01.png" />), revolution events (<img class="key" src="bars-03.png" />), 
+    and income inequality (<img class="key" src="bars-02.png" />) by country, over the last forty years, 
     to further examine the causes and outcomes of those connected histories. 
     <br /><br />
     
     </p>
 
     <!--<img id="ptsKey" src="keyNoNum.svg" />-->
-
-  </div>
-
-  <div class="modal back povo" onclick="closeModal('.povo')"></div>
-
-  <div class="modal front povo">
-    <h1>Political Violence</h1>
-
-    <p>
-      This graphic uses Political Terror Scale’s dataset for political violence. Political Terror Scale rates nations’ political violence on a scale of 1-5 annually, based on three different sources (Amnesty International, the US State Department, and Human
-      Rights watch) and reports a different number for each of these sources. The score of ‘1’ reflects the most peaceful state. ‘5’ reflects the most politically violent state. There is no ‘0’ - absence denotes a lack of data for the year / country in
-      question.
-      <br /><br /> To reduce the noise in this chart, I’ve averaged those three scores for each year rather than display them all side-by-side; however, PTS original data set has a greater fidelity and there is a deep and worthwhile discussion about
-      the different biases present in their sources on their site. By averaging, I hope to cut some of the noise presented by these biases but due to the US State Dept’s data acounting for roughly a third of that average, expect that an over-sized US-centric
-      view weighs on the dataset.
-      <br /><br /> Last, it should be noted that Political Violence is not equal to overall violence in a state and the data should be viewed accordingly.
-    </p>
-
-    <p class="sources">
-      For more details on the PTS data, please visit their site at http://politicalterrorscale.org/
-    </p>
-
-  </div>
-
-  <div class="modal back revo" onclick="closeModal('.revo')"></div>
-
-  <div class="modal front revo">
-    <h1>Revolution Events</h1>
-
-    <p>
-      We used The Center For Systemic Peace’s INSCR data, specifically the Politically Instability Task Force’s Consolidated Problem Set, Historical State Armed Conflicts and Regime Crises, 1955-2015, which gives events dated by start and end year, and a description
-      of the event.
-    </p>
-
-    <p class="sources">
-      For more details on the CSP INSCR data, please visit their site at http://www.systemicpeace.org/inscrdata.html
-    </p>
 
   </div>
   
@@ -259,7 +222,7 @@
       return function(d) {
         var thisDiv = d3.select(this);
         expandChart(thisDiv, d);
-        console.log(d);
+        
       }
     }
 
