@@ -25,9 +25,8 @@
       <div class="btn" id="collapseAll">Collapse All</div>
 
       <div class="toggle">
-        Region:
         <select id="hider"> <!-- onchange="hider()"-->
-          <option selected>All</option>
+          <option selected>All Regions</option>
           <option>Southern</option>
           <option>North</option>
           <option>West</option>
@@ -47,11 +46,12 @@
     Even with the best of intentions, a coup can have a multitude of results, 
     from a public democracy, to military dictatorship, and everything in between.
     <br /><br />
-    This chart examines the relationship between <a href="#" onclick="openModal('.povo')">political violence</a> 
-    (<img class="key" src="bars-01.png" />) and <a id="revo" onclick="openModal('.revo')">revolution events</a> 
-    (<img class="key" src="bars-02.png" />) by country, over the last thirty years, 
-    to further examine the causes and outcomes of these connected histories. 
-
+    This chart examines the relationship between <a href="#" onclick="openModal('.povo')">political violence </a>
+    (<img class="key" src="bars-01.png" />), <a id="revo" onclick="openModal('.revo')">revolution events</a>
+    (<img class="key" src="bars-03.png" />), and income inequality (<img class="key" src="bars-02.png" />) by country, over the last forty years, 
+    to further examine the causes and outcomes of those connected histories. 
+    <br /><br />
+    
     </p>
 
     <!--<img id="ptsKey" src="keyNoNum.svg" />-->
@@ -67,8 +67,8 @@
       This graphic uses Political Terror Scale’s dataset for political violence. Political Terror Scale rates nations’ political violence on a scale of 1-5 annually, based on three different sources (Amnesty International, the US State Department, and Human
       Rights watch) and reports a different number for each of these sources. The score of ‘1’ reflects the most peaceful state. ‘5’ reflects the most politically violent state. There is no ‘0’ - absence denotes a lack of data for the year / country in
       question.
-      <br /><br /> To reduce the noise in this chart, we’ve averaged out those three scores for each year rather than display them all side-by-side; however, PTS original data set has a greater fidelity and there is a deep and worthwhile discussion about
-      the different biases present in their sources on their site. By averaging, we hope to cut some of the noise presented by these biases but due to the US State Dept’s data acounting for roughly a third of that average, expect that an over-sized US-centric
+      <br /><br /> To reduce the noise in this chart, I’ve averaged those three scores for each year rather than display them all side-by-side; however, PTS original data set has a greater fidelity and there is a deep and worthwhile discussion about
+      the different biases present in their sources on their site. By averaging, I hope to cut some of the noise presented by these biases but due to the US State Dept’s data acounting for roughly a third of that average, expect that an over-sized US-centric
       view weighs on the dataset.
       <br /><br /> Last, it should be noted that Political Violence is not equal to overall violence in a state and the data should be viewed accordingly.
     </p>
@@ -107,7 +107,7 @@
       left: 5
     };
 
-    var width = 600 - margin.left - margin.right,
+    var width = 650 - margin.left - margin.right,
       height = 20 - margin.top - margin.bottom;
 
     var xScale = d3.scaleLinear()
@@ -243,7 +243,7 @@
       //close div
       thisDiv.transition()
         .duration(500)
-        .style('height', '20px'); // HEIGHT CLOSED
+        .style('height', '30px'); // HEIGHT CLOSED
 
     }
 
@@ -254,12 +254,12 @@
       }
     }
 
-
     //show full detail view of country on click
     function chartClick() {
       return function(d) {
         var thisDiv = d3.select(this);
         expandChart(thisDiv, d);
+        console.log(d);
       }
     }
 
@@ -278,9 +278,8 @@
           // .select('h1.chart')
           // .style('top', (divHeight/2)+'px');
         
-
         //declare var for use in svg, adjust yScale
-        var newHeight = 80;
+        var newHeight = 70;
         yScale.range([newHeight, 0]);
         yScaleGini.range([0, newHeight]);
 
@@ -347,7 +346,7 @@
     }
 
     function drawCharts(data) {
-      // isotope
+      var body = d3.select('body');
       
       data = d3.entries(data);
       
@@ -355,22 +354,21 @@
         return b.value.overallPTS-a.value.overallPTS;
       })
       
-      console.log(data);
-      
-      var body = d3.select('body');
-      
       // buttons to expand / collapse all
-      body.select('#expandAll')
-        .on('mouseup', expandAll());
-
       body.select('#collapseAll')
         .on('mouseup', collapseAll());
+        
+      body.select('#expandAll')
+        .data(data)  // data has to be re-bound, unsure as to why
+        .on('mouseup', expandAll());
       
       body.select('#hider')
         .on('change', hider());
       
+      console.log(data);
+      
       //draw chart
-      var svg = body.selectAll('div')
+      var svg = body.selectAll('div.chart')
         .data(data)
         .enter()
         .append('div')
@@ -378,7 +376,6 @@
           return d.value.region + ' chart';
         })
         .each(function(d) {
-          
           var block = d3.select(this);
           block.on('mouseup', chartClick());
           drawChart(block, d);
@@ -388,11 +385,10 @@
     }
 
     function drawChart(elem, d) {
-      // console.log(d.value.name); full data set not rendering?
-      
+
       var country = d.value.name;
       
-      elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
+      // elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
       elem.append('h1').attr('class', 'chart').text(country);
       
       var chart = elem.append('svg')
@@ -416,7 +412,14 @@
         .attr('width', barWidth)
         .attr('height', (d) => {
           return height - yScale(d.value.ptsAvg);
-        });
+        })
+        .style('opacity', (d) => {
+          if (d.value.ptsEst) {
+            return 0.8;
+          } else {
+            return 1;
+          }
+        })
 
       chart.selectAll('rect.giniAvg')
         .data(years)
