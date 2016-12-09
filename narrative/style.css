@@ -107,13 +107,13 @@
     
     h1.chart {
       text-align: left;
-      font-size: 12px;
-      font-weight: normal;
+      font-size: 14px;
+      font-weight: bold;
       display: block;
       width: 785px;
-      position: absolute;
-      top: 5px;
-      left: 5px;
+      position: relative;
+      top: 12px;
+      left: 20px;
     }
     
     h5.chart {
@@ -130,12 +130,12 @@
     }
     
     div.chart {
-      padding: 5px 5px 5px 5px;
-      height: 30px;
-      border-bottom: 1px solid #e6e6e6;
+      /*padding: 5px 5px 5px 5px;*/
+      height: 40px;
+      border-bottom: 1px solid #a1b2c2;
       /*overflow: hidden;*/
       width: 800px;
-      margin: 0 auto;
+      margin: -5px auto 0 auto;
       position: relative;
       left: 7px;
       cursor: pointer;
@@ -147,7 +147,7 @@
       padding: 0 0 0 0;
       margin: 0 0 0 0;
       position: absolute;
-      top: 8px;
+      top: 0;
       right: -10px;
       display: block;
       z-index: 5;
@@ -162,14 +162,30 @@
       opacity: 0;
     }
     
-    .x.axis path.domain {
+    .axis path.domain {
+      display: none;
+    }
+    
+    .y.axis text {
       display: none;
     }
     
     .axis text {
       font-family: Arial, sans-serif;
       font-size: 8px;
+      fill: #434c55;
     }
+    
+    .axis g line {
+      stroke: #434c55;
+      opacity: .5;
+    }
+    
+    line.zero {
+      stroke: #434c55;
+      opacity: .5;
+    }
+    
     
     /* PTS DATA */
     rect.ptsAvg {
@@ -178,17 +194,35 @@
     }
     
     rect.giniAvg {
-      fill: #BBBBBB;
+      fill: #a21942;
     }
     
     rect.giniAvg.true {
       opacity: .9;
     }
     
-    /* PITF TEASER INFO */
-    text.pitf {
-      font-size: 8px;
-      opacity: 0;
+    /* PITF INFO */
+    rect.pitf {
+      fill: #18486a;
+      opacity: .1;
+    }
+    
+    div.info {
+      margin-top: 16px;
+      font-size: 10px;
+      position: relative;
+      left: 20px;
+      line-height: 150%;
+    }
+    
+    div.info p {
+      margin: 0;
+      padding: 0;
+    }
+    
+    div.info h5 {
+      margin: 0;
+      padding: 0;
     }
     
     /* READ MORE BUTTON */
@@ -302,7 +336,8 @@
       display: none;
     }
     
-    div.open svg {
-      top: 15px;
-      -webkit-transition: top .25s ease-in; 
-    }
+    
+    /*div.open svg {*/
+    /*  top: 5px;*/
+    /*  -webkit-transition: top .25s ease-in; */
+    /*}*/

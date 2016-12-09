@@ -7,6 +7,7 @@
   <title>UNDP-Narrative</title>
   <!--D3-->
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
   
@@ -57,15 +58,10 @@
   
     var ptsColors = ['#56c02c', '#fcc30c', '#fd9d24', '#fd6926', '#ff3a22', '#e0240d'];
   
-    var margin = {
-      top: 0,
-      right: 10,
-      bottom: 5,
-      left: 5
-    };
+    var margin = {  top: 5,  right: 10,  bottom: 0,  left: 0 };
 
-    var width = 650 - margin.left - margin.right,
-      height = 20 - margin.top - margin.bottom;
+    var width = 580 - margin.left - margin.right,
+        height = 20 - margin.top - margin.bottom;
 
     var xScale = d3.scaleLinear()
       .range([0, width])
@@ -93,6 +89,9 @@
       .scale(yScaleGini);
 
     var barWidth = width / (2016 - 1976);
+    
+    var divOpen = 196;
+    var divClosed = 40;
 
 
     d3.json('data/v2-consolidated.json', drawCharts);
@@ -148,6 +147,7 @@
     function collapseChart(d, thisDiv) {
 
       var newHeight = 20 - margin.top - margin.bottom;
+      
       yScale.range([newHeight, 0])
       yScaleGini.range([0, newHeight]);
 
@@ -188,11 +188,10 @@
 
       chart.select('.y').call(yAxis);
         
-      chart.select('.yGini').call(yAxisGini);
+      chart.select('.y.gini').call(yAxisGini);
 
-      chart.selectAll('.x.axis')
-        .attr('transform', 'translate(0, ' + newHeight + ')');
-
+      // chart.selectAll('.x.axis');
+        
       thisDiv.select('svg').attr('overflow', 'hidden');
 
       chart.attr('height', newHeight);
@@ -223,20 +222,24 @@
     function expandChart(thisDiv, d) {
       //make sure chart is not already open
       if (!thisDiv.classed('open')) {
-
+        
+        margin = {  top: 20,  right: 20,  bottom: 0,  left: 0 };
+        
         thisDiv.classed('open', true);
         
         //make chart taller
-        var divHeight = 160;
-        
         thisDiv.transition()
           .duration(500)
-          .style('height', divHeight+'px');
-          // .select('h1.chart')
-          // .style('top', (divHeight/2)+'px');
+          .style('height', divOpen+'px');
         
         //declare var for use in svg, adjust yScale
-        var newHeight = 70;
+        var newHeight = ((divOpen/2)-margin.top)-margin.bottom;
+        
+        console.log('NEW HEIGHT');
+        console.log(newHeight);
+        console.log(margin.top);
+        console.log(margin.bottom);
+        
         yScale.range([newHeight, 0]);
         yScaleGini.range([0, newHeight]);
 
@@ -248,6 +251,10 @@
           .transition()
           .duration(500)
           .attr('height', newHeight);
+          
+        chart.select('g').attr("transform", "translate("+margin.left+","+margin.top+")");
+          
+        chart.select('rect.bg').attr('height', divOpen).attr('y', 0-margin.top);
 
         //update pts bars
         chart.selectAll('rect.ptsAvg')
@@ -264,27 +271,28 @@
           .attr('height', function(d) {  return yScaleGini(d.value.giniAvg);  });
 
         //show pitf data
-        chart.selectAll('text.pitf.brief').attr('y', newHeight + 24).style('opacity', 1);
-
-        chart.selectAll('text.pitf.date').attr('y', newHeight + 12).style('opacity', 1);
-
-        chart.selectAll('text.pitf.read').attr('y', newHeight + 36).style('opacity', 1);
+        thisDiv.selectAll('div.info').transition().duration(500).style('opacity', 1);
           
         chart.selectAll('rect.giniAvg').attr('y', newHeight);
           
-        chart.selectAll('rect.pitf').attr('y', newHeight);
+        chart.selectAll('rect.pitf').attr('height', divOpen).attr('y', 0-margin.top);
 
         //show axes
+        chart.select('line.zero').attrs({
+          y1: newHeight,
+          y2: newHeight
+        });
+        
         chart.selectAll('.axis').style('opacity', 1);
 
         chart.select('.y').call(yAxis);
           
-        chart.select('.yGini')
+        chart.select('.y.gini')
           .call(yAxisGini)
           .attr('transform', 'translate(0, ' + newHeight + ')');
 
         chart.selectAll('.x.axis')
-          .attr('transform', 'translate(0, ' + newHeight + ')');
+          .attr('transform', 'translate(0, ' + (divOpen-margin.top) + ')');
         
       } // end if
     } // end function expand chart   
@@ -347,12 +355,46 @@
       
       // elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
       elem.append('h1').attr('class', 'chart').text(country);
-      
+    
       var chart = elem.append('svg')
         .attr('width', width + margin.right + margin.left)
-        .attr('height', height + margin.top + margin.bottom);
-
+        .attr('height', height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+      var fullHeight = (height+margin.top+margin.bottom)*2;
+      
+      var pitf = d.value.pitf;
+      
+      //background
+      chart.append('rect')
+        .attrs({
+          'width':width,
+          'height': divClosed,
+          fill: '#e3e3e3',
+          y: 0-margin.top,
+          class: 'bg'
+        });
+      
       var years = d3.entries(d.value.years);
+      
+      // append pitf
+      chart.selectAll('rect.pitf')
+        .data(pitf)
+        .enter()
+        .append('rect')
+        .attr('class', 'pitf')
+        .attr('x', function(d) {
+          return xScale(began(d.began));
+        })
+        .attr('y', 0-margin.top)
+        .attr('height', fullHeight)
+        .attr('width', function(d) {
+          var length = xScale(endedNum(d.ended)) - xScale(began(d.began));
+
+          if (length > 0) {  return length;  }
+          else {  return barWidth;  }
+        });
 
       //append bars
       chart.selectAll('rect.ptsAvg')
@@ -374,13 +416,6 @@
           var i = Math.ceil(d.value.ptsAvg)-1;
           return ptsColors[i];
         });
-        // .style('opacity', function(d) {
-        //   if (d.value.ptsEst) {
-        //     return 0.8;
-        //   } else {
-        //     return 1;
-        //   }
-        // });
 
       chart.selectAll('rect.giniAvg')
         .data(years)
@@ -400,78 +435,45 @@
           return height - yScaleGini(d.value.giniAvg)
         });
 
-      var pitf = d.value.pitf;
-
-      // append pitf
-      chart.selectAll('rect.pitf')
-        .data(pitf)
-        .enter()
-        .append('rect')
-        .attr('class', 'pitf')
-        .attr('x', function(d) {
-          return xScale(began(d.began));
-        })
-        .attr('y', height - 2)
-        .attr('height', 2)
-        .attr('width', function(d) {
-          var length = xScale(endedNum(d.ended)) - xScale(began(d.began));
-
-          if (length > 0) {
-            return length;
-          }
-          else {
-            return barWidth;
-          }
-        });
-
       //descriptions of events
-
-      chart.selectAll('text.pitf.brief')
+      var info = elem.selectAll('div.info')
         .data(pitf)
         .enter()
-        .append('text')
-        .attr('class', 'pitf brief')
+        .append('div')
+        .classed('info', true)
+        .style('opacity', 0);
+      
+      info.append('h5')
+        .attr('class', 'date')
+        .text(function(d) {
+          var dates = Math.floor(parseFloat(d.began)) + '-' + endedString(d.ended);
+          return dates;
+        });
+      
+      info.append('p')
+        .attr('class', 'brief')
         .text(function(d) {
           var findSpace = d.eventDescription.slice(20, 40).indexOf(' ');
           return d.eventDescription.slice(0, 20 + findSpace) + '...';
         });
 
-      chart.selectAll('text.pitf.date')
-        .data(pitf)
-        .enter()
-        .append('text')
-        .attr('class', 'pitf date')
-        .text(function(d) {
-          var dates = Math.floor(parseFloat(d.began)) + '-' + endedString(d.ended);
-          return dates;
-        });
-
-      chart.selectAll('text.pitf.read')
-        .data(pitf)
-        .enter()
-        .append('text')
+      info.append('a')
         .attr('class', 'pitf read')
         .text('Read More')
         .on('mouseup', showFullText(d, country));
 
-      chart.selectAll('text.pitf')
-        .attr('text-anchor', function(d) {
-          if (parseFloat(d.began) > 2007) {
-            return 'end';
-          }
-          else {
-            return 'start';
-          }
-        })
-        .attr('x', function(d) {
-          if (parseFloat(d.began) > 2007) {
-            return xScale((endedNum(d.ended)));
-          } else {
-            return xScale(parseFloat(beganText(d.began)));
-          }
-        })
-
       // create axes
+      chart.append('line')
+        .attrs({
+          x1: 0,
+          x2: width,
+          y1: height,
+          y2: height,
+          // stroke: '#666666',
+          class: 'zero',
+          'stroke-width': 1
+        })
+      
       chart.append('g')
         .call(xAxis)
         .attr('class', 'x axis')
@@ -483,7 +485,7 @@
         
       chart.append('g')
         .call(yAxisGini)
-        .attr('class', 'yGini axis')
+        .attr('class', 'y axis gini')
         .attr('transform', 'translate(0, ' + height + ')');
         
     } // end draw charts
