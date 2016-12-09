@@ -46,22 +46,16 @@
     Even with the best of intentions, a coup can have a multitude of results, 
     from a public democracy, to military dictatorship, and everything in between.
     <br /><br />
-    This chart examines the relationship between political violence
-    (<img class="key" src="bars-01.png" />), revolution events (<img class="key" src="bars-03.png" />), 
-    and income inequality (<img class="key" src="bars-02.png" />) by country, over the last forty years, 
-    to further examine the causes and outcomes of those connected histories. 
-    <br /><br />
     
     </p>
 
     <!--<img id="ptsKey" src="keyNoNum.svg" />-->
 
   </div>
-  
-  <!--isotope needs chartbox for sort to work-->
-  <div id="chartbox"></div>
 
   <script>
+  
+    var ptsColors = ['#56c02c', '#fcc30c', '#fd9d24', '#fd6926', '#ff3a22', '#e0240d'];
   
     var margin = {
       top: 0,
@@ -164,13 +158,13 @@
 
       //update pts bars  
       chart.selectAll('rect.ptsAvg')
-        .attr('y', (d) => {  return yScale(d.value.ptsAvg);  })
-        .attr('height', (d) => {  return newHeight - yScale(d.value.ptsAvg);  });
+        .attr('y', function(d) {  return yScale(d.value.ptsAvg);  })
+        .attr('height', function(d) {  return newHeight - yScale(d.value.ptsAvg);  });
       
       //update gini bars
       chart.selectAll('rect.giniAvg')
         .attr('y', newHeight)
-        .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
+        .attr('height', function(d) {  return yScaleGini(d.value.giniAvg);  });
 
       //update pitf bar
       chart.selectAll('rect.pitf')
@@ -257,17 +251,17 @@
 
         //update pts bars
         chart.selectAll('rect.ptsAvg')
-          .attr('y', (d) => {
+          .attr('y', function(d) {
             return yScale(d.value.ptsAvg);
           })
-          .attr('height', (d) => {
+          .attr('height', function(d) {
             return newHeight - yScale(d.value.ptsAvg);
           });
           
         //update gini bars
         chart.selectAll('rect.giniAvg')
           .attr('y', newHeight)
-          .attr('height', (d) => {  return yScaleGini(d.value.giniAvg);  });
+          .attr('height', function(d) {  return yScaleGini(d.value.giniAvg);  });
 
         //show pitf data
         chart.selectAll('text.pitf.brief').attr('y', newHeight + 24).style('opacity', 1);
@@ -335,7 +329,7 @@
         .data(data)
         .enter()
         .append('div')
-        .attr('class', (d)=> {
+        .attr('class', function(d) {
           return d.value.region + ' chart';
         })
         .each(function(d) {
@@ -366,39 +360,43 @@
         .enter()
         .append('rect')
         .attr('class', 'ptsAvg')
-        .attr('x', (d) => {
+        .attr('x', function(d) {
           return xScale(parseFloat(d.key));
         })
-        .attr('y', (d) => {
+        .attr('y', function(d) {
           return yScale(d.value.ptsAvg);
         })
         .attr('width', barWidth)
-        .attr('height', (d) => {
+        .attr('height', function(d) {
           return height - yScale(d.value.ptsAvg);
         })
-        .style('opacity', (d) => {
-          if (d.value.ptsEst) {
-            return 0.8;
-          } else {
-            return 1;
-          }
-        })
+        .attr('fill', function(d) {
+          var i = Math.ceil(d.value.ptsAvg)-1;
+          return ptsColors[i];
+        });
+        // .style('opacity', function(d) {
+        //   if (d.value.ptsEst) {
+        //     return 0.8;
+        //   } else {
+        //     return 1;
+        //   }
+        // });
 
       chart.selectAll('rect.giniAvg')
         .data(years)
         .enter()
         .append('rect')
-        .attr('class', (d)=>{
+        .attr('class', function(d){
           return d.value.giniEst+' giniAvg';
         })  //'giniAvg'
-        .attr('x', (d) => {
+        .attr('x', function(d) {
           return xScale(parseFloat(d.key));
         })
-        .attr('y', (d) => {
+        .attr('y', function(d) {
           return height;
         })
         .attr('width', barWidth)
-        .attr('height', (d) => {
+        .attr('height', function(d) {
           return height - yScaleGini(d.value.giniAvg)
         });
 
@@ -410,12 +408,12 @@
         .enter()
         .append('rect')
         .attr('class', 'pitf')
-        .attr('x', (d) => {
+        .attr('x', function(d) {
           return xScale(began(d.began));
         })
         .attr('y', height - 2)
         .attr('height', 2)
-        .attr('width', (d) => {
+        .attr('width', function(d) {
           var length = xScale(endedNum(d.ended)) - xScale(began(d.began));
 
           if (length > 0) {
@@ -433,7 +431,7 @@
         .enter()
         .append('text')
         .attr('class', 'pitf brief')
-        .text((d) => {
+        .text(function(d) {
           var findSpace = d.eventDescription.slice(20, 40).indexOf(' ');
           return d.eventDescription.slice(0, 20 + findSpace) + '...';
         });
@@ -443,7 +441,7 @@
         .enter()
         .append('text')
         .attr('class', 'pitf date')
-        .text((d) => {
+        .text(function(d) {
           var dates = Math.floor(parseFloat(d.began)) + '-' + endedString(d.ended);
           return dates;
         });
@@ -457,7 +455,7 @@
         .on('mouseup', showFullText(d, country));
 
       chart.selectAll('text.pitf')
-        .attr('text-anchor', (d) => {
+        .attr('text-anchor', function(d) {
           if (parseFloat(d.began) > 2007) {
             return 'end';
           }
@@ -465,7 +463,7 @@
             return 'start';
           }
         })
-        .attr('x', (d)=> {
+        .attr('x', function(d) {
           if (parseFloat(d.began) > 2007) {
             return xScale((endedNum(d.ended)));
           } else {

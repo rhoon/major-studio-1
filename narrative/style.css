@@ -15,7 +15,7 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: Helvetica, Arial, sans-serif;
       font-weight: normal;
       text-align: left;
       font-size: 16px;
@@ -173,12 +173,12 @@
     
     /* PTS DATA */
     rect.ptsAvg {
-      fill: #fcc30b;
-      opacity: 1;
+      /*fill: #fcc30b;*/
+      opacity: .9;
     }
     
     rect.giniAvg {
-      fill: #fd9d24;
+      fill: #BBBBBB;
     }
     
     rect.giniAvg.true {
