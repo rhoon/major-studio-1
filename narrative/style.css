@@ -264,7 +264,7 @@
     /* Country */
     div.modal h1 {
       text-align: left;
-      font-size: 32px;
+      font-size: 2em;
       font-weight: bold;
       opacity: 1;
       border-bottom: 1px solid black;
@@ -279,7 +279,7 @@
       float: right;
       font-weight: normal;
       position: relative;
-      top: 20px;
+      top: 2em;
     }
     
     div.modal p {
@@ -376,7 +376,7 @@
           font-size: 3em;
           margin: 1em 0;
           position: relative;
-          top: 1em;
+          top: .8em;
           left: 1em;
         }
         
@@ -395,8 +395,8 @@
         div.info {
           position: relative;
           font-size: 2em;
-          top: 8em;
-          left: 1em;
+          top: 7.6em;
+          left: 1.4em;
           margin-top: 1em;
           
         }
@@ -404,7 +404,7 @@
         div.modal.front {
           width: 80%;
           padding: 5%;
-          font-size: 2em;
+          font-size: 2.5em;
           top: 2.5%;
           left: 5%;
           margin: 0;

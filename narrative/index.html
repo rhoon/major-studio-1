@@ -92,7 +92,7 @@
       
       divWidth = (winWidth*.95);
       
-      dura = 0;
+      dura = 0; // cut animation transitions
     } 
     
     console.log(smScreen);
@@ -288,7 +288,7 @@
           .style('height', function() {
             if (smScreen) {
               var heightMult = thisDiv.selectAll('div.info')._groups[0].length;
-              var newHeight = divOpenB+(200*heightMult);
+              var newHeight = divOpenB+(190*heightMult);
               return newHeight+'px';
             } else {
               return divOpenB+'px';
