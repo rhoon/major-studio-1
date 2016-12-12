@@ -1,8 +1,15 @@
 # major-studio-1
 
->I am studying the relationship between political violence, revolution events and income inequality in Africa because I want to learn more about the causes and outcomes of political violence. I am using a per year average of Political Terror Scale’s 1-5 rating, a timeline of revolution events, and interpolated averages of Gini as my variables. My visualization is based on Political Terror Scale’s database, Center for Systemic Peace’s PITF State Failure Problem Set, and the WIID database (for Gini).
+##The Impact of Violence & Revolution on Inequality in Africa
+
+This chart examines the relationship between political violence, revolution events, and income inequality, per country, over the last forty years, to further examine the causes and outcomes of those connected histories.
 
 [![](preview.png)](https://rhoon.github.io/major-studio-1/narrative/)
+
+___
+
+>I am studying the relationship between political violence, revolution events and income inequality in Africa because I want to learn more about the causes and outcomes of political violence. I am using a per year average of Political Terror Scale’s 1-5 rating, a timeline of revolution events, and interpolated averages of Gini as my variables. My visualization is based on Political Terror Scale’s database, Center for Systemic Peace’s PITF State Failure Problem Set, and the WIID database (for Gini).
+
 ___
 
 ## Data Review
