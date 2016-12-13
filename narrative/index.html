@@ -481,7 +481,7 @@
           }
         })
         .on('mouseover', nummers(countryCode))
-        .on('mouseleave', nummers(countryCode));
+        .on('mouseout', nummers(countryCode));
         
       chart.selectAll('rect.giniAvg')
         .data(years)
