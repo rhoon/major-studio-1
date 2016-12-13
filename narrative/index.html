@@ -481,23 +481,6 @@
         })
         .on('mouseover', nummers(countryCode))
         .on('mouseleave', nummers(countryCode));
-      
-      //show numbers on hover / tap for open charts
-      function nummers(c) {
-        return function(d) {
-          
-          var bar = d3.select(this);
-          var tooltip = d3.select('.'+c).select('g.'+'p'+d.key+'.tip');
-            
-            if (tooltip.classed('hidden') && tooltip.classed('on')) {
-              tooltip.classed('hidden', false);
-            } else {
-              tooltip.classed('hidden', true);
-            }
-            
-        } 
-      } // nummers
-        
         
       chart.selectAll('rect.giniAvg')
         .data(years)
@@ -705,6 +688,22 @@
 
       }
     }
+    
+    //show numbers on hover / tap for open charts
+      function nummers(c) {
+        return function(d) {
+          
+          var bar = d3.select(this);
+          var tooltip = d3.select('.'+c).select('g.'+'p'+d.key+'.tip');
+            
+            if (tooltip.classed('hidden') && tooltip.classed('on')) {
+              tooltip.classed('hidden', false);
+            } else {
+              tooltip.classed('hidden', true);
+            }
+            
+        } 
+      } // nummers
 
     function removeModal() {
       return function() {
