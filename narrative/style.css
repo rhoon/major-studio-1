@@ -147,7 +147,9 @@
     }
     
     .y.axis text {
-      display: none;
+      fill: #434c55;
+      opacity: .5;
+      /*display: none;*/
     }
     
     .axis text {
@@ -305,7 +307,8 @@
     
     img.key {
       display: inline;
-      padding: 3px;
+      padding: .15em;
+      width: 1.2em;
     }
     
     #ptsKey {

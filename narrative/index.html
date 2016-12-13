@@ -42,10 +42,11 @@
     Even with the best of intentions, a coup can have a multitude of results, 
     from a public democracy, to military dictatorship, and everything in between.
     <br /><br />
-    This chart examines the relationship between <a href='http://politicalterrorscale.org/' target='new'>political violence,</a> 
-    <a href='http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf' target='new'>revolution events,</a> and 
-    <a href='https://www.wider.unu.edu/project/wiid-world-income-inequality-database' target='new'>income inequality,</a> per country in Africa, 
-    over the last forty years, to further examine the causes and outcomes of those connected histories.
+    This chart examines the relationship between <a href='http://politicalterrorscale.org/' target='new'>political violence,</a> (<img src='bar-pts.png' class='key'>)
+    <a href='http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf' target='new'>revolution events,</a> (<img src='bar-pitf.png' class='key'>) and 
+    <a href='https://www.wider.unu.edu/project/wiid-world-income-inequality-database' target='new'>income inequality,</a>
+    (<img src='bar-gini.png' class='key'>)
+    per country in Africa, over the last forty years, to further examine the causes and outcomes of those connected histories.
     <br /><br />
     </p>
 
@@ -113,12 +114,12 @@
       .scale(xScale);
 
     var yAxis = d3.axisRight()
-      .ticks(4)
+      .ticks(5)
       .tickSize(tSize)
       .scale(yScale);
       
     var yAxisGini = d3.axisRight()
-      .ticks(4)
+      .ticks(5)
       .tickSize(tSize)
       .scale(yScaleGini);
 
@@ -176,7 +177,7 @@
 
     function collapseChart(d, thisDiv) {
       
-      margin = {  top: 5,  right: 10,  bottom: 0,  left: 0 };
+      margin = {  top: 10,  right: 10,  bottom: 0,  left: 0 };
       
       var newHeight = (divClosedB/2) - margin.top - margin.bottom;
       
@@ -207,6 +208,7 @@
       //update midline
       chart.select('line.zero')
         .attrs({
+          x1:0,
           y1:newHeight,
           y2:newHeight
         })
@@ -299,14 +301,6 @@
         yScale.range([newHeight, 0]);
         yScaleGini.range([0, newHeight]);
 
-        //will need an additional parameter for width on each thing
-        //but could use the same parameters as before and recalc
-        // OR could use tooltips on bars with labels <-- this is lighter and uses space
-        // more efficiently
-        
-        // add tooltip events on expanded chart...remove on collapsed?x
-        // 
-
         //update height of container
         var chart = thisDiv.select('svg')
           .transition()
@@ -340,6 +334,7 @@
 
         //show axes
         chart.select('line.zero').attrs({
+          x1: 20,
           y1: newHeight,
           y2: newHeight
         });
@@ -493,7 +488,9 @@
           y: height,
           width: barWidth,
           height: function(d) { return height - yScaleGini(d.value.giniAvg); }
-        });
+        })
+        .on('mouseover', nummers(countryCode))
+        .on('mouseout', nummers(countryCode));
 
       //descriptions of events
       var info = elem.selectAll('div.info')
