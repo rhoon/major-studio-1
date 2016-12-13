@@ -240,6 +240,8 @@
         
       thisDiv.select('svg').attr('overflow', 'hidden');
       
+      thisDiv.selectAll('g.tip').classed('on', false);
+      
       //close div
       thisDiv.transition()
         .duration(dura)
@@ -458,7 +460,6 @@
         .attr('height', fullHeight)
         .attr('width', function(d) {
           var length = xScale(endedNum(d.ended)) - xScale(began(d.began));
-
           if (length > 0) {  return length;  }
           else {  return barWidth;  }
         });
