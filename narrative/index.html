@@ -60,7 +60,7 @@
     var smScreen = false;
     var winWidth = window.innerWidth;
     
-    var margin = { top: 5, right: 10, bottom: 0, left: 0 };
+    var margin = { top: 10, right: 10, bottom: 0, left: 0 };
 
     var width = 580 - margin.left - margin.right,
         height = 20 - margin.top - margin.bottom;
@@ -87,7 +87,7 @@
       divClosed = 240;
       divClosedB = 120;
       divOpen = 400;
-      divOpenB = 537;
+      divOpenB = 550; //537
       tSize = 10;
       
       divWidth = (winWidth*.95);
@@ -279,8 +279,14 @@
       if (!thisDiv.classed('open')) {
         
         margin = {  top: 20,  right: 20,  bottom: 0,  left: 0 };
+        if (smScreen) { margin = {  top: 50,  right: 20,  bottom: 0,  left: 0 }; }
         
         thisDiv.classed('open', true);
+        thisDiv.selectAll('text.ptsHov').classed('on', true);
+        
+        //access data
+        var years = d3.entries(d.value.years);
+        console.log(years);
         
         //make chart taller
         thisDiv.transition()
@@ -301,8 +307,13 @@
         yScale.range([newHeight, 0]);
         yScaleGini.range([0, newHeight]);
 
-        //access data
-        var years = d3.entries(d.value.years);
+        //will need an additional parameter for width on each thing
+        //but could use the same parameters as before and recalc
+        // OR could use tooltips on bars with labels <-- this is lighter and uses space
+        // more efficiently
+        
+        // add tooltip events on expanded chart...remove on collapsed?x
+        // 
 
         //update height of container
         var chart = thisDiv.select('svg')
@@ -316,18 +327,18 @@
 
         //update pts bars
         chart.selectAll('rect.ptsAvg')
-          .attr('y', function(d) {
-            return yScale(d.value.ptsAvg);
-          })
-          .attr('height', function(d) {
-            return newHeight - yScale(d.value.ptsAvg);
+          .attrs({
+            y: function(d) { return yScale(d.value.ptsAvg); },
+            height: function(d) { return newHeight - yScale(d.value.ptsAvg); }
           });
-          
+        
         //update gini bars
         chart.selectAll('rect.giniAvg')
-          .attr('y', newHeight)
-          .attr('height', function(d) {  return yScaleGini(d.value.giniAvg);  });
-
+          .attrs({
+            y: newHeight,
+            height: function(d) { return yScaleGini(d.value.giniAvg); }
+          });
+        
         //show pitf data
         thisDiv.selectAll('div.info').transition().duration(dura).style('opacity', 1);
           
@@ -405,7 +416,7 @@
         .enter()
         .append('div')
         .attr('class', function(d) {
-          return d.value.region + ' chart';
+          return d.value.region + ' chart '+d.key;
         })
         .style('width', divWidth+'px')
         .each(function(d) {
@@ -420,6 +431,7 @@
     function drawChart(elem, d) {
 
       var country = d.value.name;
+      var countryCode = d.key;
       
       // elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
       elem.append('h1').attr('class', 'chart').text(country);
@@ -469,39 +481,99 @@
         .data(years)
         .enter()
         .append('rect')
-        .attr('class', 'ptsAvg')
-        .attr('x', function(d) {
-          return xScale(parseFloat(d.key));
+        .attrs({
+          class: 'ptsAvg',
+          x: function(d) { return xScale(parseFloat(d.key)); },
+          y: function(d) { return yScale(d.value.ptsAvg); },
+          width: barWidth,
+          height: function(d) { return height - yScale(d.value.ptsAvg); },
+          fill: function(d) {
+            var i = Math.ceil(d.value.ptsAvg)-1;
+            return ptsColors[i];
+          }
         })
-        .attr('y', function(d) {
-          return yScale(d.value.ptsAvg);
+        .on('mouseover', nummers(countryCode))
+        .on('mouseleave', nummers(countryCode));
+      
+      //show numbers on hover / tap for open charts
+      function nummers(c) {
+        return function(d) {
+          
+          var bar = d3.select(this);
+          var numPTS = d3.select('.'+c).select('text.'+'p'+d.key+'.ptsHov');
+          var numGini = d3.select('.'+c).select('text.p'+d.key+'.giniHov');
+            
+            if (numPTS.classed('hidden') && numPTS.classed('on')) {
+              numPTS.classed('hidden', false);
+              numGini.classed('hidden', false);
+            } else {
+              numPTS.classed('hidden', true);
+              numGini.classed('hidden', true);
+            }
+            
+        } 
+      } // nummers
+        
+      chart.selectAll('text.ptsHov')
+        .data(years)
+        .enter()
+        .append('text')
+        .attrs({
+          class: function(d) { return 'p'+d.key+' ptsHov hidden' },
+          x: function(d) { return xScale(parseFloat(d.key))+(barWidth/2); },
+          y: margin.top-15, //function(d) { return yScale(d.value.ptsAvg); }
+          fill: function(d) {
+            var i = Math.ceil(d.value.ptsAvg)-1;
+            return ptsColors[i];
+          }
         })
-        .attr('width', barWidth)
-        .attr('height', function(d) {
-          return height - yScale(d.value.ptsAvg);
-        })
-        .attr('fill', function(d) {
-          var i = Math.ceil(d.value.ptsAvg)-1;
-          return ptsColors[i];
-        });
-
+        .text( function(d) { 
+          //add key data if small screen
+          if (smScreen) {
+            return 'PTS: '+d.value.ptsAvg; 
+          } else {
+            return d.value.ptsAvg; 
+          }
+        } );
+        
       chart.selectAll('rect.giniAvg')
         .data(years)
         .enter()
         .append('rect')
-        .attr('class', function(d){
-          return d.value.giniEst+' giniAvg';
-        })  //'giniAvg'
-        .attr('x', function(d) {
-          return xScale(parseFloat(d.key));
-        })
-        .attr('y', function(d) {
-          return height;
-        })
-        .attr('width', barWidth)
-        .attr('height', function(d) {
-          return height - yScaleGini(d.value.giniAvg)
+        .attrs({
+          class: function(d){ return d.value.giniEst+' giniAvg'; },
+          x: function(d) {  return xScale(parseFloat(d.key));  },
+          y: height,
+          width: barWidth,
+          height: function(d) { return height - yScaleGini(d.value.giniAvg); }
         });
+        
+      chart.selectAll('text.giniHov')
+        .data(years)
+        .enter()
+        .append('text')
+        .attrs({
+          class: function(d) { return 'p'+d.key+' giniHov hidden' },
+          x: function(d) { return xScale(parseFloat(d.key))+barWidth/2; },
+          y: divOpen-50
+        })
+        .text( function(d) { 
+          //add key data if small screen
+          var gini = d.value.giniAvg;
+          if (gini != '0') {
+            var est;
+            if (d.value.giniEst) { est=' (EST)'; } else {  est=''; } 
+            
+            if (smScreen) {
+              return 'Gini: '+d.value.giniAvg+est; 
+            } else {
+              return d.value.giniAvg+est; 
+            }
+          } else {
+            return 'NA';
+          }
+          
+        } );
 
       //descriptions of events
       var info = elem.selectAll('div.info')

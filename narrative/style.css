@@ -189,6 +189,17 @@
       opacity: .9;
     }
     
+    text.ptsHov {
+      font-size: .6em;
+      text-anchor: middle;
+    }
+    
+    text.giniHov {
+      font-size: .6em;
+      text-anchor: middle;
+      fill: #a21942;
+    }
+    
     /* Y AXIS LABELS */
     svg.labels {
       position: absolute;
@@ -337,11 +348,6 @@
     }
     
     
-    /*div.open svg {*/
-    /*  top: 5px;*/
-    /*  -webkit-transition: top .25s ease-in; */
-    /*}*/
-    
     @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait) { 
         
         div#intro {
@@ -395,7 +401,7 @@
         div.info {
           position: relative;
           font-size: 2em;
-          top: 7.6em;
+          top: 8.5em;
           left: 1.4em;
           margin-top: 1em;
           
@@ -431,6 +437,7 @@
         }
         
         select {
+          -webkit-appearance:none !important;
           background: #444;
           color: #f5f5f5;
           font-weight: bold;
@@ -458,5 +465,16 @@
         
         .x.axis {
           stroke-width: 1px;
+        }
+        
+        text.ptsHov {
+          font-size: 1.5em;
+          text-anchor: middle;
+        }
+        
+        text.giniHov {
+          font-size: 1.5em;
+          text-anchor: middle;
+          fill: #a21942;
         }
     }
