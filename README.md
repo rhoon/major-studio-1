@@ -31,6 +31,10 @@ Center for Systemic Peace - broad datasets detailing coup events and other polit
 Currently associated with George Mason University.
 http://www.systemicpeace.org/inscrdata.html
 
+###Primary Source 3:
+WIID – World Income Inequality Database
+https://www.wider.unu.edu/project/wiid-world-income-inequality-database
+
 ###Supplemental Sources:
 
 "Poverty and Equity Database" The World Bank 

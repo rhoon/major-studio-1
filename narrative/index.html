@@ -26,7 +26,7 @@
       <div class="btn" id="collapseAll">Collapse All</div>
 
       <div class="toggle">
-        <select id="hider"> <!-- onchange="hider()"-->
+        <select id="hider"> 
           <option selected>All Regions</option>
           <option>Southern</option>
           <option>North</option>
@@ -47,15 +47,16 @@
     Even with the best of intentions, a coup can have a multitude of results, 
     from a public democracy, to military dictatorship, and everything in between.
     <br /><br />
-    
+    This chart examines the relationship between <a href='http://politicalterrorscale.org/' target='new'>political violence,</a> 
+    <a href='http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf' target='new'>revolution events,</a> and 
+    <a href='https://www.wider.unu.edu/project/wiid-world-income-inequality-database' target='new'>income inequality,</a> per country in Africa, 
+    over the last forty years, to further examine the causes and outcomes of those connected histories.
+    <br /><br />
     </p>
-
-    <!--<img id="ptsKey" src="keyNoNum.svg" />-->
 
   </div>
 
   <script>
-    // matchMedia - not compatible with Opera (1.1% of users)
     
     var smScreen = false;
     var winWidth = window.innerWidth;
@@ -94,9 +95,6 @@
       
       dura = 0; // cut animation transitions
     } 
-    
-    console.log(smScreen);
-    console.log(winWidth);
   
     var ptsColors = ['#56c02c', '#fcc30c', '#fd9d24', '#fd6926', '#ff3a22', '#e0240d'];
   
@@ -186,8 +184,6 @@
       margin = {  top: 5,  right: 10,  bottom: 0,  left: 0 };
       
       var newHeight = (divClosedB/2) - margin.top - margin.bottom;
-      
-      console.log(newHeight);
       
       yScale.range([newHeight, 0])
       yScaleGini.range([0, newHeight]);
@@ -286,8 +282,7 @@
         
         //access data
         var years = d3.entries(d.value.years);
-        console.log(years);
-        
+
         //make chart taller
         thisDiv.transition()
           .duration(dura)
@@ -408,8 +403,6 @@
       body.select('#hider')
         .on('change', hider());
       
-      console.log(data);
-      
       //draw chart
       var svg = body.selectAll('div.chart')
         .data(data)
@@ -433,7 +426,6 @@
       var country = d.value.name;
       var countryCode = d.key;
       
-      // elem.append('h5').attr('class', 'chart').text(d.value.region+' Africa');
       elem.append('h1').attr('class', 'chart').text(country);
     
       var chart = elem.append('svg')
@@ -450,7 +442,7 @@
       chart.append('rect')
         .attrs({
           'width':width,
-          'height': fullHeight, //divClosed,
+          'height': fullHeight, 
           fill: '#e3e3e3',
           y: 0-margin.top,
           class: 'bg'
@@ -521,7 +513,7 @@
         .attrs({
           class: function(d) { return 'p'+d.key+' ptsHov hidden' },
           x: function(d) { return xScale(parseFloat(d.key))+(barWidth/2); },
-          y: margin.top-15, //function(d) { return yScale(d.value.ptsAvg); }
+          y: margin.top-15, 
           fill: function(d) {
             var i = Math.ceil(d.value.ptsAvg)-1;
             return ptsColors[i];
@@ -547,7 +539,7 @@
           width: barWidth,
           height: function(d) { return height - yScaleGini(d.value.giniAvg); }
         });
-        
+      
       chart.selectAll('text.giniHov')
         .data(years)
         .enter()
@@ -555,7 +547,7 @@
         .attrs({
           class: function(d) { return 'p'+d.key+' giniHov hidden' },
           x: function(d) { return xScale(parseFloat(d.key))+barWidth/2; },
-          y: divOpen-50
+          y: function(d) { if (smScreen) { return divOpen-100 } else { return divOpen-50 } } 
         })
         .text( function(d) { 
           //add key data if small screen
@@ -610,7 +602,6 @@
           x2: w,
           y1: h,
           y2: h,
-          // stroke: '#666666',
           class: 'zero',
           'stroke-width': 1
         })
@@ -668,7 +659,6 @@
     function showFullText(d, country) {
       return function(d) {
 
-        // console.log(d.began);
         var dates = d.began + ' - ' + endedString(d.ended);
 
         d3.select('body')
@@ -698,15 +688,13 @@
 
     function removeModal() {
       return function() {
-
         d3.selectAll('div.modal')
           .remove();
-
       }
     }
 
     function endedString(d) {
-      var numDate = Math.floor(parseFloat(d)); //.ended
+      var numDate = Math.floor(parseFloat(d)); 
 
       if (isNaN(numDate)) {
         return 'ONGOING';
@@ -737,7 +725,7 @@
     }
 
     function endedNum(d) {
-        var numDate = Math.floor(parseFloat(d)); //.ended
+        var numDate = Math.floor(parseFloat(d)); 
         if (isNaN(numDate)) {
           return 2016;
         }

@@ -24,7 +24,6 @@
     }
     
     div#intro {
-      /*border-bottom: 1px solid black;*/
       width: 785px;
       margin: 0 auto 50px;
       padding: 0;
@@ -53,7 +52,7 @@
       font-weight: normal;
       position: relative;
       float: right;
-      margin-right: .625em; /*10px*/
+      margin-right: 1em; 
     }
     
     select {
@@ -61,18 +60,11 @@
       color: #f5f5f5;
       border: none;
       font-weight: bold;
-      padding: 5px; /* If you add too much padding here, the options won't show in IE */
-      /*border: 1px solid black;*/
+      padding: 5px; 
       font-size: 1em;
       width: 100px;
       height: 25px;
     }
-    
-    /*ol#footer {*/
-    /*  font-size: .625em;*/
-    /*  position: absolute;*/
-    /*  bottom: 10px;*/
-    /*}*/
     
     span#leadin {
       font-size: .38em;
@@ -82,7 +74,7 @@
     
     h1#title {
       text-align: left;
-      font-size: 2.625em; /*2.625em*/
+      font-size: 2.625em; 
       font-weight: bold;
       margin-bottom: 0;
       line-height: 90%;
@@ -177,7 +169,6 @@
     
     /* PTS DATA */
     rect.ptsAvg {
-      /*fill: #fcc30b;*/
       opacity: .9;
     }
     
