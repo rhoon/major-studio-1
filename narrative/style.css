@@ -180,17 +180,6 @@
       opacity: .9;
     }
     
-    text.ptsHov {
-      font-size: .6em;
-      text-anchor: middle;
-    }
-    
-    text.giniHov {
-      font-size: .6em;
-      text-anchor: middle;
-      fill: #a21942;
-    }
-    
     /* Y AXIS LABELS */
     svg.labels {
       position: absolute;
@@ -338,6 +327,11 @@
       display: none;
     }
     
+    .tip text {
+      font-size: .625em;
+      font-weight: bold;
+    }
+    
     
     @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait) { 
         
@@ -458,14 +452,8 @@
           stroke-width: 1px;
         }
         
-        text.ptsHov {
-          font-size: 1.5em;
-          text-anchor: middle;
+        .tip text {
+          font-size: 1.2em;
         }
         
-        text.giniHov {
-          font-size: 1.5em;
-          text-anchor: middle;
-          fill: #a21942;
-        }
     }

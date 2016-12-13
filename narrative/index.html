@@ -8,12 +8,7 @@
   <!--D3-->
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
-  
-  <style>
-
-  </style>
 
 </head>
 
@@ -278,7 +273,7 @@
         if (smScreen) { margin = {  top: 50,  right: 20,  bottom: 0,  left: 0 }; }
         
         thisDiv.classed('open', true);
-        thisDiv.selectAll('text.ptsHov').classed('on', true);
+        thisDiv.selectAll('g.tip').classed('on', true);
         
         //access data
         var years = d3.entries(d.value.years);
@@ -492,41 +487,17 @@
         return function(d) {
           
           var bar = d3.select(this);
-          var numPTS = d3.select('.'+c).select('text.'+'p'+d.key+'.ptsHov');
-          var numGini = d3.select('.'+c).select('text.p'+d.key+'.giniHov');
+          var tooltip = d3.select('.'+c).select('g.'+'p'+d.key+'.tip');
             
-            if (numPTS.classed('hidden') && numPTS.classed('on')) {
-              numPTS.classed('hidden', false);
-              numGini.classed('hidden', false);
+            if (tooltip.classed('hidden') && tooltip.classed('on')) {
+              tooltip.classed('hidden', false);
             } else {
-              numPTS.classed('hidden', true);
-              numGini.classed('hidden', true);
+              tooltip.classed('hidden', true);
             }
             
         } 
       } // nummers
         
-      chart.selectAll('text.ptsHov')
-        .data(years)
-        .enter()
-        .append('text')
-        .attrs({
-          class: function(d) { return 'p'+d.key+' ptsHov hidden' },
-          x: function(d) { return xScale(parseFloat(d.key))+(barWidth/2); },
-          y: margin.top-15, 
-          fill: function(d) {
-            var i = Math.ceil(d.value.ptsAvg)-1;
-            return ptsColors[i];
-          }
-        })
-        .text( function(d) { 
-          //add key data if small screen
-          if (smScreen) {
-            return 'PTS: '+d.value.ptsAvg; 
-          } else {
-            return d.value.ptsAvg; 
-          }
-        } );
         
       chart.selectAll('rect.giniAvg')
         .data(years)
@@ -539,33 +510,6 @@
           width: barWidth,
           height: function(d) { return height - yScaleGini(d.value.giniAvg); }
         });
-      
-      chart.selectAll('text.giniHov')
-        .data(years)
-        .enter()
-        .append('text')
-        .attrs({
-          class: function(d) { return 'p'+d.key+' giniHov hidden' },
-          x: function(d) { return xScale(parseFloat(d.key))+barWidth/2; },
-          y: function(d) { if (smScreen) { return divOpen-100 } else { return divOpen-50 } } 
-        })
-        .text( function(d) { 
-          //add key data if small screen
-          var gini = d.value.giniAvg;
-          if (gini != '0') {
-            var est;
-            if (d.value.giniEst) { est=' (EST)'; } else {  est=''; } 
-            
-            if (smScreen) {
-              return 'Gini: '+d.value.giniAvg+est; 
-            } else {
-              return d.value.giniAvg+est; 
-            }
-          } else {
-            return 'NA';
-          }
-          
-        } );
 
       //descriptions of events
       var info = elem.selectAll('div.info')
@@ -653,6 +597,82 @@
           class: 'label',
           'text-anchor': 'end'
         }).text('Inequality (Gini)');
+        
+      // TOOLTIPS / HOVERS
+      
+      // dims
+      var lineHt = 15,
+          boxHt = 65,
+          boxWd = 100;
+          leftPad = 10;
+          topPad = 5;
+      if (smScreen) {
+         lineHt = lineHt*2;
+         boxHt = boxHt*2;
+         boxWd = boxWd*2;
+         leftPad = leftPad*2;
+         topPad = topPad*2;
+      }
+          
+      //append
+      var tooltip = chart.selectAll('g.tip')
+        .data(years)
+        .enter()
+        .append('g')
+        .attrs({
+          class: function(d) { return 'p'+d.key+' tip hidden' },
+          transform: function(d) {
+            var x = xScale(parseFloat(d.key))+barWidth;
+            if (parseFloat(d.key)>1996) {
+              x = xScale(parseFloat(d.key))-boxWd;
+            } 
+            return 'translate('+x+',0)';
+          }
+        });
+        
+      tooltip.append('rect')
+        .attrs({
+          width: boxWd,
+          height: boxHt,
+          x: 0,
+          y: 0,
+          fill: '#ffffff'
+        });
+        
+      tooltip.append('text')
+        .attrs({
+          x: leftPad,
+          y: topPad+lineHt,
+          class: 'tipYear'
+        })
+        .text(function(d) { return d.key });
+        
+      tooltip.append('text')
+        .attrs({
+          x: leftPad,
+          y: topPad+(lineHt*2),
+          class: 'tipPTS',
+          fill: function(d) {
+            var i = Math.ceil(d.value.ptsAvg)-1;
+            return ptsColors[i];
+          }
+        })
+        .text(function(d) { return 'PTS: '+d.value.ptsAvg});
+        
+      tooltip.append('text')
+        .attrs({
+          x: leftPad,
+          y: topPad+(lineHt*3),
+          class: 'tipGini',
+          fill: '#a21942'
+        })
+        .text(function(d) { 
+          var gini = d.value.giniAvg,
+              est = '';
+          if (d.value.giniEst && gini != 0) { est = ' (EST)' };
+          if (gini == 0) { gini = 'N/A' };
+          return 'Gini: '+gini+est;
+        })
         
     } // end draw charts
 
