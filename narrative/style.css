@@ -92,10 +92,6 @@
       color: black;
     }
     
-    p#explainer a:hover {
-      color: gray;
-    }
-    
     h1.chart {
       text-align: left;
       font-size: .875em;
