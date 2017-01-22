@@ -331,6 +331,8 @@
 
         chart.selectAll('rect.pitf').attr('height', divOpen).attr('y', 0-margin.top);
 
+        chart.selectAll('rect.hoverYear').attr('height', divOpen).attr('y', 0-margin.top);
+
         //show axes
         chart.select('line.zero').attrs({
           x1: 20,
@@ -473,9 +475,7 @@
             var i = Math.ceil(d.value.ptsAvg)-1;
             return ptsColors[i];
           }
-        })
-        .on('mouseover', showNum(countryCode))
-        .on('mouseout', hideNum(countryCode));
+        });
 
       chart.selectAll('rect.giniAvg')
         .data(years)
@@ -487,9 +487,23 @@
           y: height,
           width: barWidth,
           height: function(d) { return height - yScaleGini(d.value.giniAvg); }
-        })
-        .on('mouseover', showNum(countryCode))
-        .on('mouseout', hideNum(countryCode));
+        });
+
+        //create hovers to help show what's selected
+        chart.selectAll('rect.hoverYear')
+          .data(years)
+          .enter()
+          .append('rect')
+          .attrs({
+            class: function(d) { return 'p'+d.key+' hoverYear' },
+            x: function(d) { return xScale(parseFloat(d.key)); },
+            y: 0,
+            width: barWidth,
+            height: height*2,
+          })
+          .style('opacity', 0)
+          .on('mouseover', showNum(countryCode))
+          .on('mouseout', hideNum(countryCode));
 
       //descriptions of events
       var info = elem.selectAll('div.info')
@@ -582,10 +596,10 @@
 
       // dims
       var lineHt = 15,
-          boxHt = 65,
-          boxWd = 100;
-          leftPad = 10;
-          topPad = 5;
+          boxHt = 52,
+          boxWd = 90;
+          leftPad = 5;
+          topPad = 0;
       if (smScreen) {
          lineHt = lineHt*2;
          boxHt = boxHt*2;
@@ -606,7 +620,7 @@
             if (parseFloat(d.key)>1996) {
               x = xScale(parseFloat(d.key))-boxWd;
             }
-            return 'translate('+x+',0)';
+            return 'translate('+x+','+((divOpen/2)-boxHt)+')';
           }
         });
 
@@ -637,7 +651,13 @@
             return ptsColors[i];
           }
         })
-        .text(function(d) { return 'PTS: '+d.value.ptsAvg});
+        .text(function(d) {
+          if (d.value.ptsAvg == 0) {
+            return 'PTS: N/A';
+          } else {
+            return 'PTS: '+d.value.ptsAvg;
+          }
+        });
 
       tooltip.append('text')
         .attrs({
@@ -694,6 +714,7 @@
 
           if (tooltip.classed('on')) {
             tooltip.classed('hidden', false);
+            bar.style('opacity', .05);
           }
         }
       }
@@ -705,26 +726,10 @@
 
           if (tooltip.classed('on')) {
             tooltip.classed('hidden', true);
+            bar.style('opacity', 0);
           }
         }
       }
-
-      // function nummers(c) {
-      //   return function(d) {
-      //
-      //     var bar = d3.select(this);
-      //     var tooltip = d3.select('.'+c).select('g.'+'p'+d.key+'.tip');
-      //
-      //       if (tooltip.classed('hidden') && tooltip.classed('on')) {
-      //         tooltip.classed('hidden', false);
-      //         console.log('SHOW!');
-      //       } else {
-      //         tooltip.classed('hidden', true);
-      //         console.log('HIDE!');
-      //       }
-      //
-      //   }
-      // } // nummers
 
     function removeModal() {
       return function() {
