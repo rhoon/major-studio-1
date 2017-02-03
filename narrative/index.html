@@ -17,6 +17,8 @@
   <div id='header'>
     <div id='headerBox'>
 
+      <h3 id='smallTitle'>The Impact of Violence &amp; Revolution <br />on Inequality in Africa</h6>
+
       <div class="btn" id="expandAll">Expand All</div>
       <div class="btn" id="collapseAll">Collapse All</div>
 
@@ -29,13 +31,12 @@
           <option>East</option>
         </select>
       </div>
-
     </div>
   </div>
 
   <div id='intro'>
 
-    <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence & Revolution <br />on Inequality in Africa</h1>
+    <h1 id='title'><span id='leadin'>The Impact of </span><br />Violence &amp; Revolution <br />on Inequality in Africa</h1>
 
     <p id="explainer">
     Africa has been home to over 60 revolution events over the past thirty years.
@@ -45,14 +46,35 @@
     This chart examines the relationship between <img src='bar-pts.png' class='key'> <a href='http://politicalterrorscale.org/' target='new'>political violence,</a>
     <img src='bar-pitf.png' class='key'> <a href='http://www.systemicpeace.org/inscr/PITF%20Consolidated%20Case%20List%202015.pdf' target='new'>revolution events,</a> and
     <img src='bar-gini.png' class='key'> <a href='https://www.wider.unu.edu/project/wiid-world-income-inequality-database' target='new'>income inequality,</a>
-    per country in Africa, over the last forty years, to further  the causes anmes of those connected histories.
+    per country in Africa, over the last forty years, to further examine the impact of those connected histories.
     <br /><br />
     </p>
 
   </div>
 
   <script>
+    //scroll events
+    window.onscroll = function() { testFunction() };
 
+    function testFunction() {
+      if (!smScreen) {
+        // console.log(document.body.scrollTop);
+        var s = document.body.scrollTop;
+        var f = 400;
+        //intro fade out
+        var o = 1-(s/400);
+        //header fade in
+        var oh = 0;
+        if (s > 200) {
+          oh = ((s-200)/200);
+        }
+
+        d3.select('div#intro').style('opacity', o);
+        d3.select('div#header').style('opacity', oh);
+      }
+    }
+
+    //dims
     var smScreen = false;
     var winWidth = window.innerWidth;
 
@@ -436,7 +458,7 @@
         .attrs({
           'width':width,
           'height': fullHeight,
-          fill: '#e3e3e3',
+          fill: '#e3e3e3', //#e3e3e3
           y: 0-margin.top,
           class: 'bg'
         });

@@ -1,17 +1,28 @@
     #header {
-      background: #f2f2f2;
+      background: #fff;
       position: fixed;
       z-index: 50;
       width: 100%;
-      padding: 15px;
+      opacity: 0;
+      padding: 0px;
       top: 0;
       left: 0;
+      -webkit-box-shadow: 0px 3px 14px -4px rgba(230,230,230,1);
+      -moz-box-shadow: 0px 3px 14px -4px rgba(230,230,230,1);
+      box-shadow: 0px 3px 14px -4px rgba(230,230,230,1);
     }
 
     #headerBox {
       width: 800px;
       margin: 0 auto;
       padding: 0;
+    }
+
+    #smallTitle {
+      float: left;
+      display: block;
+      font-size: 1em;
+      width: 40%;
     }
 
     body {
@@ -21,15 +32,16 @@
       font-size: 1em;
       background: #f2f2f2;
       color: #444;
+      min-height: 1200px;
     }
 
     div#intro {
       width: 785px;
-      margin: 0 auto 50px;
+      margin: 100px auto 100px;
       padding: 0;
       font-weight: normal;
       position: relative;
-      top: 2em;
+      /*top: 2em;*/
       z-index: 20;
     }
 
@@ -37,14 +49,15 @@
       float: right;
       font-size: .625em;
       font-weight: bold;
-      width: 72px;
+      width: 80px;
       text-align: center;
       border-radius: 4px;
+      border: 1px solid #444;
       padding: 7px 0 7px 0;
-      margin: 0 10px 0 10px;
+      margin: 20px 0 0 20px;
       cursor: pointer;
-      background: #444;
-      color: #f2f2f2;
+      /*background: #444;*/
+      color: #444; /*#f2f2f2;*/
     }
 
     div.toggle {
@@ -52,18 +65,20 @@
       font-weight: normal;
       position: relative;
       float: right;
-      margin-right: 1em;
+      margin: 20px 0 0 0;
+      /*margin-right: 1em;*/
     }
 
     select {
-      background: #444;
-      color: #f5f5f5;
-      border: none;
+      background: none;
+      color: #444;
+      border: 1px solid #444;
+      /*border: none;*/
       font-weight: bold;
       padding: 5px;
       font-size: 1em;
       width: 100px;
-      height: 25px;
+      height: 28px;
     }
 
     span#leadin {
@@ -74,17 +89,19 @@
 
     h1#title {
       text-align: left;
-      font-size: 2.625em;
+      font-size: 3.5em;
       font-weight: bold;
       margin-bottom: 0;
       line-height: 90%;
-      letter-spacing: -1px;
+      letter-spacing: -.04em;
     }
 
     div p#explainer {
-      width: 64%;
-      margin-top: 35px;
+      width: 75%;
+      font-weight: lighter;
+      margin-top: 2em;
       line-height: 145%;
+      font-size: 1.2em;
     }
 
     p#explainer a {
@@ -100,14 +117,14 @@
       width: 785px;
       position: relative;
       top: 12px;
-      left: 20px;
+      left: 15px;
       margin-bottom: 20px;
     }
 
     div.chart {
       height: 40px;
-      border-bottom: 1px solid #a1b2c2;
-      margin: -5px auto 0 auto;
+      /*border-bottom: 1px solid #a1b2c2;*/
+      margin: 0px auto 0 auto;
       position: relative;
       left: 7px;
       cursor: pointer;
@@ -200,7 +217,7 @@
       margin-top: 6px;
       font-size: 10px;
       position: relative;
-      left: 20px;
+      left: 15px;
       line-height: 150%;
     }
 
@@ -339,10 +356,18 @@
 
     @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait) {
 
+        #smallTitle {
+          display: none;
+        }
+
         div#intro {
           width: 95%;
           font-size: 2em;
           top: 3em;
+        }
+
+        h1#title {
+          font-size: 2.5em;
         }
 
         div p#explainer {
@@ -415,8 +440,8 @@
           padding: .75em .5em;
           margin: 0 .5em 0 .5em;
           cursor: pointer;
-          background: #444;
-          color: #f2f2f2;
+          border: 2px solid #444;
+
         }
 
         div.toggle {
@@ -427,8 +452,6 @@
 
         select {
           -webkit-appearance:none !important;
-          background: #444;
-          color: #f5f5f5;
           font-weight: bold;
           padding: .75em .75em;
           width: 8em;
@@ -438,6 +461,7 @@
 
         #header {
           padding: 2em;
+          opacity: 1;
         }
 
         #headerBox {
