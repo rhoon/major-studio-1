@@ -12,7 +12,7 @@
 #headerBox {
   width: 800px;
   margin: 0 auto;
-  padding: 0; }
+  padding: 0 0 0 12px; }
 
 #smallTitle {
   float: left;
@@ -309,10 +309,11 @@ img.key {
     font-size: 2em;
     top: 3em; }
   h1#title {
+    margin-top: 2em;
     font-size: 2.5em; }
   div p#explainer {
     width: 95%;
-    font-size: 1em;
+    font-size: .8em;
     line-height: 150%; }
   div.chart {
     height: 240px;
@@ -361,13 +362,16 @@ img.key {
     text-align: center;
     border-radius: .2em;
     padding: .75em .5em;
-    margin: 0 .5em 0 .5em;
+    /*margin: 0 0 0 .5em;*/
     cursor: pointer;
     border: 2px solid #444; }
   div.toggle {
     font-size: 2em;
     width: initial;
-    height: initial; }
+    height: initial;
+    float: left;
+    border: 2px solid #444;
+    border-radius: 8px; }
   select {
     -webkit-appearance: none !important;
     font-weight: bold;
@@ -379,7 +383,10 @@ img.key {
     padding: 2em;
     opacity: 1; }
   #headerBox {
-    width: 90%; }
+    width: 93%;
+    margin: 0 auto;
+    position: relative;
+    right: 2.5em; }
   #expandAll {
     display: none; }
   line.zero {
