@@ -36,7 +36,7 @@
     }
 
     div#intro {
-      width: 785px;
+      width: 580px;
       margin: 100px auto 100px;
       padding: 0;
       font-weight: normal;
@@ -97,7 +97,7 @@
     }
 
     div p#explainer {
-      width: 75%;
+      width: 100%;
       font-weight: lighter;
       margin-top: 2em;
       line-height: 145%;
